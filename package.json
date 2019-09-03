@@ -1,0 +1,27 @@
+{
+  "name": "faceted-search",
+  "version": "1.0.0",
+  "description": "Travis: [![Build Status](https://travis-ci.com/Ohtu-FaceTed/FaceTed-Search.svg?branch=master)](https://travis-ci.com/Ohtu-FaceTed/FaceTed-Search)",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "start": "http-server src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ohtu-FaceTed/FaceTed-Search.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ohtu-FaceTed/FaceTed-Search/issues"
+  },
+  "homepage": "https://github.com/Ohtu-FaceTed/FaceTed-Search#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  }
+}
