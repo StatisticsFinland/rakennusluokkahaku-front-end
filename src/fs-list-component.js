@@ -46,7 +46,7 @@ class FsListComponent extends HTMLElement {
     const data = await this.fetchData();
     // filter to show only bottom level classifications
     this.items = data.filter(item => {
-      return item.level == "3";
+      return item.level === 3;
     });
     // map classifications to list items
     this.items = this.items.map(item => {
@@ -57,7 +57,9 @@ class FsListComponent extends HTMLElement {
     if (!this.shadowRoot) {
       this.attachShadow({ mode: "open" });
       //stamp template to DOM
-      this.shadowRoot.innerHTML = this.style + this.template;
+      const temp = document.createElement("template");
+      temp.innerHTML = this.style + this.template;
+      this.shadowRoot.appendChild(temp.content.cloneNode(true));
     }
   }
 
