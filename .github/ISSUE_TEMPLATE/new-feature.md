@@ -12,5 +12,3 @@ assignees: ''
 ### Tasklist
 - [ ] ToDo checklist item
 - [x] DONE checklist item
-
-### Dependencies
