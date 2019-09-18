@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "http-server src/",
-    "test": "echo \"Testi testi\" && exit 0"
+    "test": "echo \"Testi testi\" && exit 0",
+    "lint": "eslint . "
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,10 @@
   "homepage": "https://github.com/Ohtu-FaceTed/FaceTed-Search#readme",
   "dependencies": {},
   "devDependencies": {
+    "eslint": "^6.4.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-cypress": "^2.6.1",
+    "eslint-plugin-jasmine": "^2.10.1",
     "http-server": "^0.11.1"
   }
 }
