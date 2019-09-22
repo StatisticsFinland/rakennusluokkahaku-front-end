@@ -3,11 +3,18 @@ class FsListComponent extends HTMLElement {
         super();
         this.classifications = null;
         this.scores = null;
-        this.addEventListener('updateScores', this.updateScores.bind(this));
+        // listen to score updates from question-element
+        const parentDiv = document.getElementById('faceted');
+        parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
     }
 
     updateScores(event) {
-        console.log(event);
+        console.log('got event');
+        console.log(event.detail);
+        console.log('event');
+        // map scores to data
+        // sort data
+        // re-render
     }
 
     get template() {
@@ -72,6 +79,7 @@ class FsListComponent extends HTMLElement {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
         }
+        console.log(this.shadowRoot);
         // clear the possible old render
         this.shadowRoot.innerHTML = '';
 
@@ -122,7 +130,10 @@ class FsListComponent extends HTMLElement {
     }
 
     // possible cleanup here
-    disconnectedCallback() { }
+    disconnectedCallback() {
+        const div = document.getElementById('faceted');
+        div.removeEventListener('updateScores', this.updateScores.bind(this));
+    }
 }
 
 // check for polyfills
