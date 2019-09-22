@@ -1,34 +1,61 @@
 class FsListComponent extends HTMLElement {
     constructor() {
         super();
-        this.items = null;
+        this.classifications = null;
+        this.scores = null;
+        this.addEventListener('updateScores', this.updateScores.bind(this));
+    }
+
+    updateScores(event) {
+        console.log(event);
     }
 
     get template() {
-        if (!this.items) {
+        if (!this.classifications) {
             return '<h1>Error fetching data</h1>';
         }
-        // show only first 10 results for demo
-        const lis = this.items.slice(0, 10).join('');
+        if (!this.scores) {
+            return `<div>
+                <p>Haun tulokset päivittyvät tänne</p>
+                <button>Skip</button> 
+                    </div>`;
+        }
+        const lis = this.createListItems();
+
         return `
     <div>
-      <ul>
+      <ul id="classifications">
         ${lis}
       </ul>
     </div>
     `;
     }
 
+    createListItems() {
+        // filter to show only bottom level classifications
+        let classificationsToShow = this.classifications.filter((item) => {
+            return item.level === 3;
+        });
+        // map classifications to list items
+        classificationsToShow = classificationsToShow.map((item) => {
+            return `<li id="${item.code}">${item.code} ${item.classificationItemNames[0].name}</li>`;
+        });
+        const lis = classificationsToShow.slice(0, 10).join('');
+        return lis;
+    }
+
     get style() {
         return `
     <style>
+    div {
+        border: 1px solid #c5c5c5;
+        width: 30%;
+    }
     ul {
           list-style: none;
-          border: 1px solid #c5c5c5;
-          width: 30%;
         }
     li {
-      margin: 5px 5px 5px -25px;
+           margin: 5px 5px 5px -25px;
     }
     </style>
     `;
@@ -41,30 +68,61 @@ class FsListComponent extends HTMLElement {
         ).then((res) => res.json());
     }
 
-    // async so we can fetch data before drawing component
-    async connectedCallback() {
-        const data = await this.fetchData();
-        // filter to show only bottom level classifications
-        this.items = data.filter((item) => {
-            return item.level === 3;
-        });
-        // map classifications to list items
-        this.items = this.items.map((item) => {
-            return `<li>${item.code} ${item.classificationItemNames[0].name}</li>`;
-        });
-
-        // polyfills like this being here instead of constructor
+    renderList() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
-            // stamp template to DOM
-            const temp = document.createElement('template');
-            temp.innerHTML = this.style + this.template;
-            this.shadowRoot.appendChild(temp.content.cloneNode(true));
+        }
+        // clear the possible old render
+        this.shadowRoot.innerHTML = '';
+
+        // stamp template to DOM
+        const temp = document.createElement('template');
+        temp.innerHTML = this.style + this.template;
+        this.shadowRoot.appendChild(temp.content.cloneNode(true));
+        // add eventlisteners to listitems
+        this.addEventListeners();
+
+        // placeholder button hack
+        const button = this.shadowRoot.querySelector('button');
+        if (button) {
+            button.addEventListener('click', this.showListItems.bind(this));
         }
     }
 
+    addEventListeners() {
+        const lis = this.shadowRoot.querySelectorAll('li');
+        let odd = true;
+        lis.forEach((li) => {
+            li.style.background = odd ? '#bbbbbb' : '#dddddd';
+            odd = !odd;
+            li.addEventListener('click', (e) => {
+                const classification = this.classifications.find((item) => {
+                    return item.code === li.id;
+                });
+                const event = new CustomEvent('showDetails', {detail: classification, bubbles: true});
+                console.log(event);
+                // write something to test this
+                // this.dispatchEvent(event)
+            });
+        });
+    }
+
+    showListItems() {
+        this.scores = 'placeholder';
+        this.renderList();
+    }
+
+
+    // async so we can fetch data before drawing component
+    async connectedCallback() {
+        const data = await this.fetchData();
+        console.log(data);
+        this.classifications = data;
+        this.renderList();
+    }
+
     // possible cleanup here
-    disconnectedCallback() {}
+    disconnectedCallback() { }
 }
 
 // check for polyfills
