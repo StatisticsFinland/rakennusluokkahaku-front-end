@@ -107,10 +107,15 @@ class FsListComponent extends HTMLElement {
                 const classification = this.classifications.find((item) => {
                     return item.code === li.id;
                 });
-                const event = new CustomEvent('showDetails', {detail: classification, bubbles: true});
+                const event = new CustomEvent('showDetails',
+                    {
+                        detail: classification,
+                        bubbles: true,
+                        composed: true,
+                    });
                 console.log(event);
-                // write something to test this
-                // this.dispatchEvent(event)
+                // TODO write something to test this
+                this.dispatchEvent(event);
             });
         });
     }

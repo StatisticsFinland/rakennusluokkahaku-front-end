@@ -39,7 +39,7 @@ class FsEventComponent extends HTMLElement {
                     detail: 'Hello World!',
                     composed: true,
                 });
-            e.target.dispatchEvent(event);
+            this.dispatchEvent(event);
             console.log('event sent');
         });
     }
