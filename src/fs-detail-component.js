@@ -4,13 +4,11 @@ class FsDetailComponent extends HTMLElement {
         this.classification = null;
 
         const parentDiv = document.getElementById('faceted');
-        console.log(parentDiv);
         parentDiv.addEventListener('showDetails', this.updateDetail.bind(this));
     }
 
     updateDetail(event) {
         const item = event.detail;
-        console.log('got detail');
         // parse a sane object from the mess
         this.classification = {
             code: item.code,
@@ -18,6 +16,7 @@ class FsDetailComponent extends HTMLElement {
             note: item.explanatoryNotes[0].generalNote[0],
 
         };
+        console.log(`got detail for ${this.classification.name}`);
         this.render();
     }
 

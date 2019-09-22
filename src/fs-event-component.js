@@ -36,11 +36,10 @@ class FsEventComponent extends HTMLElement {
             const event = new CustomEvent('updateScores',
                 {
                     bubbles: true,
-                    detail: 'Hello World!',
+                    detail: 'Scores go here',
                     composed: true,
                 });
             this.dispatchEvent(event);
-            console.log('event sent');
         });
     }
 }

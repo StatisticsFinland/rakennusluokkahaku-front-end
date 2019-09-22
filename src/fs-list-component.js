@@ -9,12 +9,11 @@ class FsListComponent extends HTMLElement {
     }
 
     updateScores(event) {
-        console.log('got event');
-        console.log(event.detail);
-        console.log('event');
-        // map scores to data
-        // sort data
-        // re-render
+        console.log(event);
+        // TODO map scores to data
+        // TODO sort data for real
+        this.classifications.sort((a, b) => Number(b.code) - Number(a.code));
+        this.renderList();
     }
 
     get template() {
@@ -79,7 +78,6 @@ class FsListComponent extends HTMLElement {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
         }
-        console.log(this.shadowRoot);
         // clear the possible old render
         this.shadowRoot.innerHTML = '';
 
@@ -101,6 +99,7 @@ class FsListComponent extends HTMLElement {
         const lis = this.shadowRoot.querySelectorAll('li');
         let odd = true;
         lis.forEach((li) => {
+            // TODO move styling to somewhere sane
             li.style.background = odd ? '#bbbbbb' : '#dddddd';
             odd = !odd;
             li.addEventListener('click', (e) => {
@@ -113,8 +112,6 @@ class FsListComponent extends HTMLElement {
                         bubbles: true,
                         composed: true,
                     });
-                console.log(event);
-                // TODO write something to test this
                 this.dispatchEvent(event);
             });
         });
@@ -129,7 +126,6 @@ class FsListComponent extends HTMLElement {
     // async so we can fetch data before drawing component
     async connectedCallback() {
         const data = await this.fetchData();
-        console.log(data);
         this.classifications = data;
         this.renderList();
     }
