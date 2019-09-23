@@ -1,4 +1,4 @@
-class FsEventComponent extends HTMLElement {
+class FsEvent extends HTMLElement {
     constructor() {
         super();
     }
@@ -44,4 +44,4 @@ class FsEventComponent extends HTMLElement {
     }
 }
 
-customElements.define('fs-event-component', FsEventComponent);
+customElements.define('fs-event', FsEvent);

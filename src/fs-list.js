@@ -1,4 +1,4 @@
-class FsListComponent extends HTMLElement {
+class FsList extends HTMLElement {
     constructor() {
         super();
         this.classifications = null;
@@ -139,5 +139,5 @@ class FsListComponent extends HTMLElement {
 
 // check for polyfills
 const register = () =>
-    customElements.define('fs-list-component', FsListComponent);
+    customElements.define('fs-list', FsList);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
