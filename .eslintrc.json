@@ -1,0 +1,56 @@
+{
+  "env": {
+    "browser": true,
+
+    "es6": true,
+
+    "jasmine": true,
+
+    "cypress/globals": true
+  },
+
+  "extends": [
+    "eslint:recommended",
+
+    "plugin:jasmine/recommended",
+
+    "plugin:cypress/recommended",
+
+    "google"
+  ],
+
+  "globals": {
+    "Atomics": "readonly",
+
+    "SharedArrayBuffer": "readonly",
+
+    "IGNORE_ONBEFOREUNLOAD": "writable",
+
+    "fixture": "writable"
+  },
+
+  "parserOptions": {
+    "ecmaVersion": 2018,
+
+    "sourceType": "module"
+  },
+
+  "rules": {
+    "indent": ["error", 4],
+
+    "require-jsdoc": [
+      "off",
+      {
+        "require": {
+          "FunctionDeclaration": true
+        }
+      }
+    ],
+
+    "max-len": ["error", { "code": 160 }],
+
+    "linebreak-style": ["warn", "unix"]
+  },
+
+  "plugins": ["jasmine", "cypress"]
+}
