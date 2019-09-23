@@ -1,6 +1,7 @@
 class FsList extends HTMLElement {
     constructor() {
         super();
+        this.original = null;
         this.classifications = null;
         this.scores = null;
         // listen to score updates from question-element
@@ -9,10 +10,16 @@ class FsList extends HTMLElement {
     }
 
     updateScores(event) {
-        console.log(event);
-        // TODO map scores to data
-        // TODO sort data for real
-        this.classifications.sort((a, b) => Number(b.code) - Number(a.code));
+        this.scores = true;
+        const newData = event.detail;
+        this.classifications = this.original.map((item, i) => {
+            const newObj = {...item};
+            newObj.score = newData[i].score;
+            return newObj;
+        });
+        this.classifications.sort((a, b) => {
+            return b.score - a.score;
+        });
         this.renderList();
     }
 
@@ -44,7 +51,9 @@ class FsList extends HTMLElement {
         });
         // map classifications to list items
         classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="${item.code}">${item.code} ${item.classificationItemNames[0].name}</li>`;
+            return `<li id="${item.code}">
+                        ${item.code} ${item.classificationItemNames[0].name} ${item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''}
+                    </li>`;
         });
         const lis = classificationsToShow.slice(0, 10).join('');
         return lis;
@@ -127,6 +136,8 @@ class FsList extends HTMLElement {
     async connectedCallback() {
         const data = await this.fetchData();
         this.classifications = data;
+        this.original = this.classifications.filter((item) => item.level === 3);
+
         this.renderList();
     }
 

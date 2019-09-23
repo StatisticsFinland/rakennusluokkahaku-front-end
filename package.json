@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "start": "http-server src/",
+    "start": "http-server src/ --cors",
     "test": "karma start --coverage",
     "lint": "eslint . "
   },

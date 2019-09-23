@@ -16,7 +16,6 @@ class FsDetail extends HTMLElement {
             note: item.explanatoryNotes[0].generalNote[0],
 
         };
-        console.log(`got detail for ${this.classification.name}`);
         this.render();
     }
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import {html, fixture, expect} from '@open-wc/testing';
+import {fixture, expect} from '@open-wc/testing';
 
 import '../src/fs-detail';
 
