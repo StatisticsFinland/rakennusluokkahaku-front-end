@@ -8,6 +8,9 @@ class FsQuestion extends HTMLElement {
     }
 
     get template() {
+        if (!this.question) {
+            return `<p>Error fetching data</p>`
+        }
         return `
         <div class='comp'>
           <p class='question'>

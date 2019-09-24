@@ -3,14 +3,12 @@ class FsList extends HTMLElement {
         super();
         this.data = null;
         this.classifications = null;
-        this.hidden = true;
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
     }
 
     updateScores(event) {
-        this.hidden = false;
         const newData = event.detail;
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -26,12 +24,6 @@ class FsList extends HTMLElement {
     get template() {
         if (!this.data) {
             return '<h1>Error fetching data from api</h1>';
-        }
-        if (this.hidden) {
-            return `<div>
-                <p>Haun tulokset päivittyvät tänne</p>
-                <button>Skip</button> 
-                    </div>`;
         }
         const lis = this.createListItems();
 
@@ -92,12 +84,6 @@ class FsList extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         // add eventlisteners to listitems
         this.addEventListeners();
-
-        // placeholder button hack
-        const button = this.shadowRoot.querySelector('button');
-        if (button) {
-            button.addEventListener('click', this.showListItems.bind(this));
-        }
     }
 
     addEventListeners() {
@@ -120,11 +106,6 @@ class FsList extends HTMLElement {
                 this.dispatchEvent(event);
             });
         });
-    }
-
-    showListItems() {
-        this.hidden = false;
-        this.renderList();
     }
 
     async connectedCallback() {
