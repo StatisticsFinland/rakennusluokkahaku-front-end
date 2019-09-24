@@ -1,10 +1,10 @@
+const baseUrl = 'http://0.0.0.0:5000';
+
 class FsQuestion extends HTMLElement {
     constructor() {
         super();
         this.question = null;
-        this.answer = null;
         this.reply = null;
-        this.endpoint = 'http://0.0.0.0:5000';
     }
 
     get template() {
@@ -66,9 +66,9 @@ class FsQuestion extends HTMLElement {
         `;
     }
 
-    // fetch for getting the preliminary question
+    // get the preliminary question
     async fetchQuestion() {
-        const url = `${this.endpoint}/question`;
+        const url = `${baseUrl}/question`;
         return await fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -80,21 +80,23 @@ class FsQuestion extends HTMLElement {
             .catch((error) => console.error('Error:', error));
     }
 
-    // fetch for sending answer and getting new question & categories
-    async postAnswer() {
-        return await fetch(`${this.endpoint}/answer`, {
+    // POST answer and get new question and scores
+    async postAnswer(answer) {
+        const url = `${baseUrl}/answer`;
+        return await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             mode: 'cors',
-            body: JSON.stringify(this.answer),
+            body: JSON.stringify(answer),
         }).then((response) => response.json());
     }
 
     // sends new classes to list element
     updateClasses() {
         console.log(this.reply);
+        // TODO change the send data to real data
         const newData = testidata.map((item) => {
             const newItem = item;
             newItem.score = Math.random();
@@ -119,22 +121,23 @@ class FsQuestion extends HTMLElement {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
         }
-        // stamp template to DOM
+
         this.shadowRoot.innerHTML = '';
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
+
         this.addEventListeners();
     }
 
-    // formulates and sends answer object to backend
+    // handles the logic for responding to user input
     async handleAnswer(response) {
-        this.answer = {
+        const answer = {
             language: 'suomi',
             attribute_id: this.question.attribute_id,
             response: response,
         };
-        this.reply = await this.postAnswer();
+        this.reply = await this.postAnswer(answer);
         this.updateClasses();
         this.question = this.reply.new_question;
         this.render();
@@ -144,14 +147,12 @@ class FsQuestion extends HTMLElement {
     addEventListeners() {
         const okButton = this.shadowRoot.querySelector('.ok');
         okButton.addEventListener('click', (e) => {
-            this.handleAnswer('yes');
-            this.render();
+            this.handleAnswer(true);
         });
 
         const noButton = this.shadowRoot.querySelector('.no');
         noButton.addEventListener('click', (e) => {
-            this.handleAnswer('no');
-            this.render();
+            this.handleAnswer(false);
         });
     }
 }

@@ -1,18 +1,18 @@
 class FsList extends HTMLElement {
     constructor() {
         super();
-        this.original = null;
+        this.data = null;
         this.classifications = null;
-        this.scores = null;
+        this.hidden = true;
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
     }
 
     updateScores(event) {
-        this.scores = true;
+        this.hidden = false;
         const newData = event.detail;
-        this.classifications = this.original.map((item, i) => {
+        this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
             newObj.score = newData[i].score;
             return newObj;
@@ -24,10 +24,10 @@ class FsList extends HTMLElement {
     }
 
     get template() {
-        if (!this.classifications) {
-            return '<h1>Error fetching data</h1>';
+        if (!this.data) {
+            return '<h1>Error fetching data from api</h1>';
         }
-        if (!this.scores) {
+        if (this.hidden) {
             return `<div>
                 <p>Haun tulokset päivittyvät tänne</p>
                 <button>Skip</button> 
@@ -45,12 +45,8 @@ class FsList extends HTMLElement {
     }
 
     createListItems() {
-        // filter to show only bottom level classifications
-        let classificationsToShow = this.classifications.filter((item) => {
-            return item.level === 3;
-        });
         // map classifications to list items
-        classificationsToShow = classificationsToShow.map((item) => {
+        const classificationsToShow = this.classifications.map((item) => {
             return `<li id="${item.code}">
                         ${item.code} ${item.classificationItemNames[0].name} ${item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''}
                     </li>`;
@@ -127,21 +123,21 @@ class FsList extends HTMLElement {
     }
 
     showListItems() {
-        this.scores = 'placeholder';
+        this.hidden = false;
         this.renderList();
     }
 
-
-    // async so we can fetch data before drawing component
     async connectedCallback() {
         const data = await this.fetchData();
-        this.classifications = data;
-        this.original = this.classifications.filter((item) => item.level === 3);
+        this.data = data.filter((item) => item.level === 3);
+        // make a deep copy
+        this.classifications = this.data.map((item) => {
+            return {...item};
+        });
 
         this.renderList();
     }
 
-    // possible cleanup here
     disconnectedCallback() {
         const div = document.getElementById('faceted');
         div.removeEventListener('updateScores', this.updateScores.bind(this));
