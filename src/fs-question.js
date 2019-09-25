@@ -1,4 +1,4 @@
-const baseUrl = 'http://0.0.0.0:5000';
+const baseUrl = 'http://faceted.ddns.net:5000';
 
 class FsQuestion extends HTMLElement {
     constructor() {
@@ -8,13 +8,10 @@ class FsQuestion extends HTMLElement {
     }
 
     get template() {
-        if (!this.question) {
-            return `<p>Error fetching data</p>`
-        }
         return `
         <div class='comp'>
           <p class='question'>
-            Onko rakennuksessa <span>${this.question.attribute_name}</span>?
+            Onko rakennuksessa <span>${this.question ? this.question.attribute_name : 'Error no. 992834758'}</span>?
           </p>
           <div class='button-container'>
             <button class="ok">Kyllä</button>
@@ -117,7 +114,9 @@ class FsQuestion extends HTMLElement {
         const data = await this.fetchQuestion();
         this.question = data;
 
-        this.render();
+        if (this.question) {
+            this.render();
+        }
     }
 
     render() {
