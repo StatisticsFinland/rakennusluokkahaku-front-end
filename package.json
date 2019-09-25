@@ -31,6 +31,7 @@
     "eslint-plugin-cypress": "^2.6.1",
     "eslint-plugin-jasmine": "^2.10.1",
     "http-server": "^0.11.1",
+    "karma": "^4.3.0",
     "karma-cli": "^2.0.0",
     "lit-html": "^1.1.2",
     "sinon": "^7.5.0",
