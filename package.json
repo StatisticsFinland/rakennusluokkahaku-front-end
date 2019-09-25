@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "start": "http-server src/",
+    "start": "http-server src/ -p 80",
     "test": "echo \"Testi testi\" && exit 0",
     "lint": "eslint . "
   },
