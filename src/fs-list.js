@@ -1,30 +1,29 @@
-class FsListComponent extends HTMLElement {
+class FsList extends HTMLElement {
     constructor() {
         super();
+        this.data = null;
         this.classifications = null;
-        this.scores = null;
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
     }
 
     updateScores(event) {
-        console.log(event);
-        // TODO map scores to data
-        // TODO sort data for real
-        this.classifications.sort((a, b) => Number(b.code) - Number(a.code));
+        const newData = event.detail;
+        this.classifications = this.data.map((item, i) => {
+            const newObj = {...item};
+            newObj.score = newData[i].score;
+            return newObj;
+        });
+        this.classifications.sort((a, b) => {
+            return b.score - a.score;
+        });
         this.renderList();
     }
 
     get template() {
-        if (!this.classifications) {
-            return '<h1>Error fetching data</h1>';
-        }
-        if (!this.scores) {
-            return `<div>
-                <p>Haun tulokset päivittyvät tänne</p>
-                <button>Skip</button> 
-                    </div>`;
+        if (!this.data) {
+            return '<h1>Error fetching data from api</h1>';
         }
         const lis = this.createListItems();
 
@@ -38,13 +37,11 @@ class FsListComponent extends HTMLElement {
     }
 
     createListItems() {
-        // filter to show only bottom level classifications
-        let classificationsToShow = this.classifications.filter((item) => {
-            return item.level === 3;
-        });
         // map classifications to list items
-        classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="${item.code}">${item.code} ${item.classificationItemNames[0].name}</li>`;
+        const classificationsToShow = this.classifications.map((item) => {
+            return `<li id="${item.code}">
+                        ${item.code} ${item.classificationItemNames[0].name} ${item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''}
+                    </li>`;
         });
         const lis = classificationsToShow.slice(0, 10).join('');
         return lis;
@@ -87,12 +84,6 @@ class FsListComponent extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         // add eventlisteners to listitems
         this.addEventListeners();
-
-        // placeholder button hack
-        const button = this.shadowRoot.querySelector('button');
-        if (button) {
-            button.addEventListener('click', this.showListItems.bind(this));
-        }
     }
 
     addEventListeners() {
@@ -117,20 +108,17 @@ class FsListComponent extends HTMLElement {
         });
     }
 
-    showListItems() {
-        this.scores = 'placeholder';
-        this.renderList();
-    }
-
-
-    // async so we can fetch data before drawing component
     async connectedCallback() {
         const data = await this.fetchData();
-        this.classifications = data;
+        this.data = data.filter((item) => item.level === 3);
+        // make a deep copy
+        this.classifications = this.data.map((item) => {
+            return {...item};
+        });
+
         this.renderList();
     }
 
-    // possible cleanup here
     disconnectedCallback() {
         const div = document.getElementById('faceted');
         div.removeEventListener('updateScores', this.updateScores.bind(this));
@@ -139,5 +127,5 @@ class FsListComponent extends HTMLElement {
 
 // check for polyfills
 const register = () =>
-    customElements.define('fs-list-component', FsListComponent);
+    customElements.define('fs-list', FsList);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
