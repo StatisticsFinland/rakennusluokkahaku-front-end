@@ -1,4 +1,4 @@
-class FsDetailComponent extends HTMLElement {
+class FsDetail extends HTMLElement {
     constructor() {
         super();
         this.classification = null;
@@ -16,7 +16,6 @@ class FsDetailComponent extends HTMLElement {
             note: item.explanatoryNotes[0].generalNote[0],
 
         };
-        console.log(`got detail for ${this.classification.name}`);
         this.render();
     }
 
@@ -68,4 +67,4 @@ class FsDetailComponent extends HTMLElement {
         parentDiv.removeEventListener('showDetails', this.updateDetail.bind(this));
     }
 }
-customElements.define('fs-detail-component', FsDetailComponent);
+customElements.define('fs-detail', FsDetail);
