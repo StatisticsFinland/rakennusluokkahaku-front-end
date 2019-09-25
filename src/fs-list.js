@@ -5,7 +5,9 @@ class FsList extends HTMLElement {
         this.classifications = null;
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
-        parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
+        if (parentDiv) {
+            parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
+        }
     }
 
     updateScores(event) {
@@ -121,7 +123,9 @@ class FsList extends HTMLElement {
 
     disconnectedCallback() {
         const div = document.getElementById('faceted');
-        div.removeEventListener('updateScores', this.updateScores.bind(this));
+        if (div) {
+            div.removeEventListener('updateScores', this.updateScores.bind(this));
+        }
     }
 }
 

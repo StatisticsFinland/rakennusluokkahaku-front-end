@@ -3,8 +3,11 @@ class FsDetail extends HTMLElement {
         super();
         this.classification = null;
 
+
         const parentDiv = document.getElementById('faceted');
-        parentDiv.addEventListener('showDetails', this.updateDetail.bind(this));
+        if (parentDiv) {
+            parentDiv.addEventListener('showDetails', this.updateDetail.bind(this));
+        }
     }
 
     updateDetail(event) {
@@ -64,7 +67,9 @@ class FsDetail extends HTMLElement {
 
     disconnectedCallback() {
         const parentDiv = document.getElementById('faceted');
-        parentDiv.removeEventListener('showDetails', this.updateDetail.bind(this));
+        if (parentDiv) {
+            parentDiv.removeEventListener('showDetails', this.updateDetail.bind(this));
+        }
     }
 }
 customElements.define('fs-detail', FsDetail);
