@@ -10,4 +10,4 @@ Then to start the server, run the following command in the project root:
 
 > http-server src/
 
-By default, the server is then available at [localhost:8080](http://127.0.0.1:8080)
+By default, the server is then available at [localhost](http://127.0.0.1)
