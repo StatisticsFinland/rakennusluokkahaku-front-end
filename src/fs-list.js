@@ -12,7 +12,17 @@ class FsList extends HTMLElement {
     }
 
     updateScores(event) {
-        const newData = event.detail;
+        let newData = event.detail;
+        // purkkaa
+        const ids = new Set();
+        newData = newData.map((item) => {
+            if (ids.has(item.class_id)) {
+                return null;
+            }
+            ids.add(item.class_id);
+            return item;
+        }).filter((item) => item != null);
+        // end purkka
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
             newObj.score = newData[i].score;
@@ -114,7 +124,7 @@ class FsList extends HTMLElement {
 
     async connectedCallback() {
         const data = await this.fetchData();
-        this.data = data.filter((item) => item.level === 3);
+        this.data = data.filter((item) => item.level === 3 && item.code !== '1919');
         // make a deep copy
         this.classifications = this.data.map((item) => {
             return {...item};
