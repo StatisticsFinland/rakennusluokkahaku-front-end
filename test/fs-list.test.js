@@ -43,4 +43,28 @@ describe('List element test suite', () => {
 
         expect(eventspy.called).to.equal(true);
     });
+
+    it('updates list based on scores', async () => {
+        // fetch and construct some test data
+        let data = await elem.fetchData();
+        data = data.filter((item) => item.level === 3 && item.code !== '1919');
+        data = data.map((item, i) => {
+            return {
+                class_name: item.classificationItemNames[0].name,
+                class_id: item.code,
+                score: i,
+            };
+        });
+        // add a duplicate
+        data.push({class_id: '1912', class_name: 'asd', score: 0});
+        const event = {
+            detail: data,
+        };
+        elem.updateScores(event);
+        const li = elem.shadowRoot.querySelector('li');
+
+        // 1912 is the last one on the list
+        // so it has highest score so it should be the first one displayed
+        expect(li.id).to.equal('1912');
+    });
 });
