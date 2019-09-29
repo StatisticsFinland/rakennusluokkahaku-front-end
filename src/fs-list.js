@@ -7,7 +7,10 @@ class FsList extends HTMLElement {
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
-            parentDiv.addEventListener('updateScores', this.updateScores.bind(this));
+            parentDiv.addEventListener(
+                'updateScores',
+                this.updateScores.bind(this)
+            );
         }
     }
 
@@ -15,13 +18,15 @@ class FsList extends HTMLElement {
         let newData = event.detail;
         // purkkaa
         const ids = new Set();
-        newData = newData.map((item) => {
-            if (ids.has(item.class_id)) {
-                return null;
-            }
-            ids.add(item.class_id);
-            return item;
-        }).filter((item) => item != null);
+        newData = newData
+            .map((item) => {
+                if (ids.has(item.class_id)) {
+                    return null;
+                }
+                ids.add(item.class_id);
+                return item;
+            })
+            .filter((item) => item != null);
         // end purkka
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -52,12 +57,15 @@ class FsList extends HTMLElement {
 
     createListItems() {
         // map classifications to list items
-        const classificationsToShow = this.classifications.map((item) => {
+        let classificationsToShow = this.classifications.slice(0, 10);
+        classificationsToShow = classificationsToShow.map((item) => {
             return `<li id="${item.code}">
-                        ${item.code} ${item.classificationItemNames[0].name} ${item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''}
+                        ${item.code} ${item.classificationItemNames[0].name} ${
+    item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''
+}
                     </li>`;
         });
-        const lis = classificationsToShow.slice(0, 10).join('');
+        const lis = classificationsToShow.join('');
         return lis;
     }
 
@@ -111,12 +119,11 @@ class FsList extends HTMLElement {
                 const classification = this.classifications.find((item) => {
                     return item.code === li.id;
                 });
-                const event = new CustomEvent('showDetails',
-                    {
-                        detail: classification,
-                        bubbles: true,
-                        composed: true,
-                    });
+                const event = new CustomEvent('showDetails', {
+                    detail: classification,
+                    bubbles: true,
+                    composed: true,
+                });
                 this.dispatchEvent(event);
             });
         });
@@ -124,7 +131,9 @@ class FsList extends HTMLElement {
 
     async connectedCallback() {
         const data = await this.fetchData();
-        this.data = data.filter((item) => item.level === 3 && item.code !== '1919');
+        this.data = data.filter(
+            (item) => item.level === 3 && item.code !== '1919'
+        );
         // make a deep copy
         this.classifications = this.data.map((item) => {
             return {...item};
@@ -136,12 +145,14 @@ class FsList extends HTMLElement {
     disconnectedCallback() {
         const div = document.getElementById('faceted');
         if (div) {
-            div.removeEventListener('updateScores', this.updateScores.bind(this));
+            div.removeEventListener(
+                'updateScores',
+                this.updateScores.bind(this)
+            );
         }
     }
 }
 
 // check for polyfills
-const register = () =>
-    customElements.define('fs-list', FsList);
+const register = () => customElements.define('fs-list', FsList);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
