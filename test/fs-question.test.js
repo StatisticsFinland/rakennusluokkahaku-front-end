@@ -52,7 +52,7 @@ describe('question test', async () => {
         expect(element.reply).to.be.equal(null);
         const okButton = element.shadowRoot.querySelector('.ok');
         okButton.click();
-        await sleep(2000);
+        await sleep(1500);
         console.log(element.reply);
 
         expect(element.reply).to.be.not.equal(null);
