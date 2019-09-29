@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture, server} from '@open-wc/testing';
+import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
@@ -37,9 +37,15 @@ describe('question test', async () => {
     it('it should dispatch event', async () => {
         const eventspy = sinon.spy();
         element.addEventListener('updateScores', eventspy);
+        element.reply = {
+            new_question: [],
+            building_classes: [],
+        };
+
         element.updateClasses();
 
         expect(eventspy.called).to.equal(true);
+        element.reply = null;
     });
 
     it('gets reply from backend', async () => {
