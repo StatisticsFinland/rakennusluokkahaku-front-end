@@ -29,18 +29,18 @@ describe('List element test suite', () => {
 
     it('renders 10 list items after fetch', () => {
         const lis = elem.shadowRoot.querySelectorAll('li');
+
         expect(lis.length).to.be.equal(10);
     });
 
 
-    
     it('sends detail event on click', async () => {
         const eventspy = sinon.spy();
         elem.addEventListener('showDetails', eventspy);
 
         const li = elem.shadowRoot.querySelector('li');
-        li.click()
+        li.click();
+
         expect(eventspy.called).to.equal(true);
     });
-    
 });
