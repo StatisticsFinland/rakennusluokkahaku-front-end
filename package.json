@@ -7,9 +7,10 @@
     "doc": "doc"
   },
   "scripts": {
-    "start": "http-server src/ -p 80 --cors",
+    "start": "http-server src/ --cors",
+    "production": "http-server src/ -p 80 --cors",
     "test": "karma start",
-    "lint": "eslint . "
+    "lint": "eslint . --fix"
   },
   "repository": {
     "type": "git",

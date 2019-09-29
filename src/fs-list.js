@@ -3,6 +3,7 @@ class FsList extends HTMLElement {
         super();
         this.data = null;
         this.classifications = null;
+        this.hidden = true;
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
@@ -20,6 +21,7 @@ class FsList extends HTMLElement {
         this.classifications.sort((a, b) => {
             return b.score - a.score;
         });
+        this.hidden = false;
         this.renderList();
     }
 
