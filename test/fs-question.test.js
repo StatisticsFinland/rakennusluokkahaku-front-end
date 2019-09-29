@@ -53,7 +53,6 @@ describe('question test', async () => {
         const okButton = element.shadowRoot.querySelector('.ok');
         okButton.click();
         await sleep(1500);
-        console.log(element.reply);
 
         expect(element.reply).to.be.not.equal(null);
     });
@@ -62,7 +61,7 @@ describe('question test', async () => {
         const question = element.question.attribute_name;
         const noButton = element.shadowRoot.querySelector('.no');
         noButton.click();
-        await sleep(1000);
+        await sleep(1500);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });
