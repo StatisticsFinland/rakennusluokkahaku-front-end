@@ -16,6 +16,7 @@ class FsQuestion extends HTMLElement {
           <div class='button-container'>
             <button class="ok">Kyllä</button>
             <button class="no">Ei</button>
+            <button class="skip">Ohita</button>
           </div>
         </div>
         `;
@@ -142,12 +143,16 @@ class FsQuestion extends HTMLElement {
     addEventListeners() {
         const okButton = this.shadowRoot.querySelector('.ok');
         okButton.addEventListener('click', (e) => {
-            this.handleAnswer(true);
+            this.handleAnswer('yes');
         });
 
         const noButton = this.shadowRoot.querySelector('.no');
         noButton.addEventListener('click', (e) => {
-            this.handleAnswer(false);
+            this.handleAnswer('no');
+        });
+        const skipButton = this.shadowRoot.querySelector('.skip');
+        skipButton.addEventListener('click', (e) => {
+            this.handleAnswer('skip');
         });
     }
 }

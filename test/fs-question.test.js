@@ -20,10 +20,10 @@ describe('question test', async () => {
         expect(element.question).to.be.not.equal(null);
     });
 
-    it('has two answer buttons', async () => {
+    it('has three answer buttons', async () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
 
-        expect(buttons.length).to.equal(2);
+        expect(buttons.length).to.equal(3);
     });
 
     it('event listener added to button', async () => {
