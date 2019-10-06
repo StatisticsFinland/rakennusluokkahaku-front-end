@@ -11,29 +11,71 @@ class FsDetail extends HTMLElement {
     }
 
     updateDetail(event) {
-        const item = event.detail;
-        // parse a sane object from the mess
-        this.classification = {
-            code: item.code,
-            name: item.classificationItemNames[0].name,
-            note: item.explanatoryNotes[0].generalNote[0],
-
-        };
+        this.classification = event.detail;
         this.render();
     }
 
     get template() {
         if (!this.classification) {
+            this.hidden = true;
             return '';
         }
+        this.hidden = false;
         const item = this.classification;
         return `
         <div>
             <h3> ${item.code} ${item.name} </h3>
             <ul>
-                <li> ${item.note} </li>
+                <li>${item.note}</li>
+                ${this.excludes}
+                ${this.includes}
+                ${this.includesAlso}
+                ${this.keywords}
             </ul>
         </div>
+        `;
+    }
+
+    get excludes() {
+        if (!this.classification.excludes) {
+            return '';
+        }
+        return `
+            <li>
+                <span class="header">Tähän ei kuulu: </span><span>${this.classification.excludes}</span>
+            </li>
+            `;
+    }
+
+    get includes() {
+        if (!this.classification.includes) {
+            return '';
+        }
+        return `
+        <li>
+            <span class="header">Tähän kuuluu: </span><span>${this.classification.includes}</span>
+        </li>
+        `;
+    }
+
+    get includesAlso() {
+        if (!this.classification.includesAlso) {
+            return '';
+        }
+        return `
+        <li>
+            <span class=header">Tähän kuuluu myös: </span><span>${this.classification.includesAlso}</span>
+        </li>
+        `;
+    }
+
+    get keywords() {
+        if (!this.classification.keywords) {
+            return '';
+        }
+        return `
+        <li><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span>
+        </li>
         `;
     }
 
@@ -42,7 +84,26 @@ class FsDetail extends HTMLElement {
     <style>
     div {
         border: 1px solid #c5c5c5;
-        width: 30%;
+        width: 50%;
+    }
+    h3 {
+        font-size 1em;
+        margin: 0;
+        padding-top: 10px;
+        padding-bottom: 2px;
+    }
+    ul {
+        list-style: none;
+        padding-top: 0px;
+        margin-top 0px;
+    }
+    li {
+        padding 0;
+        white-space: pre-wrap;
+    }
+    .header {
+        font-weight: bold;
+        font-size: 1em;
     }
     </style>
     `;

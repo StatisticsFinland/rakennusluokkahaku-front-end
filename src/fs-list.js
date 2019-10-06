@@ -74,19 +74,20 @@ class FsList extends HTMLElement {
     <style>
     div {
         border: 1px solid #c5c5c5;
-        width: 30%;
+        width: 50%;
     }
     ul {
           list-style: none;
         }
     li {
+           padding: 0px;
            margin: 5px 5px 5px -25px;
     }
     </style>
     `;
     }
 
-    // native fetch for getting json
+    // Fetch classifications from stat.fi API
     async fetchData() {
         return await fetch(
             'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=fi'
@@ -116,11 +117,27 @@ class FsList extends HTMLElement {
             li.style.background = odd ? '#bbbbbb' : '#dddddd';
             odd = !odd;
             li.addEventListener('click', (e) => {
-                const classification = this.classifications.find((item) => {
+                const c = this.classifications.find((item) => {
                     return item.code === li.id;
                 });
+                const item = {
+                    name: c.classificationItemNames[0].name,
+                    keywords: c.classificationIndexEntry[0].text.join(', '),
+                    code: c.code,
+                    visible: true,
+                    note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length-1],
+                };
+                if (c.explanatoryNotes[0].excludes) {
+                    item.excludes = c.explanatoryNotes[0].excludes[c.explanatoryNotes[0].excludes.length-1];
+                }
+                if (c.explanatoryNotes[0].includes) {
+                    item.includes = c.explanatoryNotes[0].includes[c.explanatoryNotes[0].includes.length-1];
+                }
+                if (c.explanatoryNotes[0].includesAlso) {
+                    item.includesAlso = c.explanatoryNotes[0].includesAlso[c.explanatoryNotes[0].includesAlso.length-1];
+                }
                 const event = new CustomEvent('showDetails', {
-                    detail: classification,
+                    detail: item,
                     bubbles: true,
                     composed: true,
                 });
