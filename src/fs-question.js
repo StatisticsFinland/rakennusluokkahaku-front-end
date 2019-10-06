@@ -105,9 +105,7 @@ class FsQuestion extends HTMLElement {
         const data = await this.fetchQuestion();
         this.question = data;
 
-        if (this.question) {
-            this.render();
-        }
+        this.render();
     }
 
     render() {

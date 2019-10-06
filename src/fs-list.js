@@ -59,7 +59,7 @@ class FsList extends HTMLElement {
         // map classifications to list items
         let classificationsToShow = this.classifications.slice(0, 10);
         classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="${item.code}">${item.code} ${item.classificationItemNames[0].name} ${item.score ?
+            return `<li id="id${item.code}">${item.code} ${item.classificationItemNames[0].name} ${item.score ?
                 `Score: ${Number(item.score).toFixed(2)}` :
                 ''}</li>`;
         });
@@ -118,23 +118,25 @@ class FsList extends HTMLElement {
             odd = !odd;
             li.addEventListener('click', (e) => {
                 const c = this.classifications.find((item) => {
-                    return item.code === li.id;
+                    return item.code === li.id.slice(2, 6);
                 });
                 const item = {
                     name: c.classificationItemNames[0].name,
                     keywords: c.classificationIndexEntry[0].text.join(', '),
                     code: c.code,
-                    visible: true,
                     note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length-1],
                 };
-                if (c.explanatoryNotes[0].excludes) {
-                    item.excludes = c.explanatoryNotes[0].excludes[c.explanatoryNotes[0].excludes.length-1];
+                const ex = c.explanatoryNotes[0].excludes;
+                if (ex && ex.join('').replace(',', '').trim()) {
+                    item.excludes = ex;
                 }
-                if (c.explanatoryNotes[0].includes) {
-                    item.includes = c.explanatoryNotes[0].includes[c.explanatoryNotes[0].includes.length-1];
+                const inc = c.explanatoryNotes[0].includes;
+                if (inc && inc.join('').replace(',', '').trim()) {
+                    item.includes = inc;
                 }
-                if (c.explanatoryNotes[0].includesAlso) {
-                    item.includesAlso = c.explanatoryNotes[0].includesAlso[c.explanatoryNotes[0].includesAlso.length-1];
+                const incA = c.explanatoryNotes[0].includesAlso;
+                if (incA && incA.join('').replace(',', '').trim()) {
+                    item.includesAlso = incA;
                 }
                 const event = new CustomEvent('showDetails', {
                     detail: item,

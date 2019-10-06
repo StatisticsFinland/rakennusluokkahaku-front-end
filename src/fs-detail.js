@@ -25,7 +25,7 @@ class FsDetail extends HTMLElement {
         <div>
             <h3> ${item.code} ${item.name} </h3>
             <ul>
-                <li>${item.note}</li>
+                <li class="note">${item.note}</li>
                 ${this.excludes}
                 ${this.includes}
                 ${this.includesAlso}
@@ -41,7 +41,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-            <li><span class="header">Tähän ei kuulu: </span><span>${this.classification.excludes}</span></li>
+            <li class="excludes"><span class="header">Tähän ei kuulu: </span><span>${this.classification.excludes}</span></li>
             `;
     }
 
@@ -50,7 +50,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li><span class="header">Tähän kuuluu: </span><span>${this.classification.includes}</span></li>
+        <li class="includes"><span class="header">Tähän kuuluu: </span><span>${this.classification.includes}</span></li>
         `;
     }
 
@@ -59,7 +59,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li><span class=header">Tähän kuuluu myös: </span><span>${this.classification.includesAlso}</span></li>
+        <li class="includesAlso"><span class="header">Tähän kuuluu myös: </span><span>${this.classification.includesAlso}</span></li>
         `;
     }
 
@@ -68,7 +68,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span></li>
+        <li class="keywords"><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span></li>
         `;
     }
 
