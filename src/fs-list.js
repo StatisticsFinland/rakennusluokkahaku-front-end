@@ -59,11 +59,9 @@ class FsList extends HTMLElement {
         // map classifications to list items
         let classificationsToShow = this.classifications.slice(0, 10);
         classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="${item.code}">
-                        ${item.code} ${item.classificationItemNames[0].name} ${
-    item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''
-}
-                    </li>`;
+            return `<li id="${item.code}">${item.code} ${item.classificationItemNames[0].name} ${item.score ?
+                `Score: ${Number(item.score).toFixed(2)}` :
+                ''}</li>`;
         });
         const lis = classificationsToShow.join('');
         return lis;
@@ -74,14 +72,16 @@ class FsList extends HTMLElement {
     <style>
     div {
         border: 1px solid #c5c5c5;
-        width: 50%;
+        width: auto;
     }
     ul {
           list-style: none;
+          padding 1px 1px 1px 1px;
+          margin 1px 1px 1px 1px;
         }
     li {
-           padding: 0px;
-           margin: 5px 5px 5px -25px;
+           padding: 1px 1px 1px 1px;
+           margin: 1px 1px 1px -30px;
     }
     </style>
     `;

@@ -3,7 +3,6 @@ class FsDetail extends HTMLElement {
         super();
         this.classification = null;
 
-
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
             parentDiv.addEventListener('showDetails', this.updateDetail.bind(this));
@@ -22,7 +21,7 @@ class FsDetail extends HTMLElement {
         }
         this.hidden = false;
         const item = this.classification;
-        return `
+        const template = `
         <div>
             <h3> ${item.code} ${item.name} </h3>
             <ul>
@@ -34,6 +33,7 @@ class FsDetail extends HTMLElement {
             </ul>
         </div>
         `;
+        return template;
     }
 
     get excludes() {
@@ -41,9 +41,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-            <li>
-                <span class="header">Tähän ei kuulu: </span><span>${this.classification.excludes}</span>
-            </li>
+            <li><span class="header">Tähän ei kuulu: </span><span>${this.classification.excludes}</span></li>
             `;
     }
 
@@ -52,9 +50,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li>
-            <span class="header">Tähän kuuluu: </span><span>${this.classification.includes}</span>
-        </li>
+        <li><span class="header">Tähän kuuluu: </span><span>${this.classification.includes}</span></li>
         `;
     }
 
@@ -63,9 +59,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li>
-            <span class=header">Tähän kuuluu myös: </span><span>${this.classification.includesAlso}</span>
-        </li>
+        <li><span class=header">Tähän kuuluu myös: </span><span>${this.classification.includesAlso}</span></li>
         `;
     }
 
@@ -74,8 +68,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span>
-        </li>
+        <li><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span></li>
         `;
     }
 
@@ -84,13 +77,12 @@ class FsDetail extends HTMLElement {
     <style>
     div {
         border: 1px solid #c5c5c5;
-        width: 50%;
+        width: auto;
     }
     h3 {
         font-size 1em;
         margin: 0;
-        padding-top: 10px;
-        padding-bottom: 2px;
+        padding: 10px 10px 5x 10px;
     }
     ul {
         list-style: none;

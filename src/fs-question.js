@@ -29,15 +29,12 @@ class FsQuestion extends HTMLElement {
             font-family: Arial;
             font-size: 18px;
             padding: 10px 10px 5px 10px;
-            position: absolute;
-            top: 30%;
-            left: 55%;
-            transform: translate(-50%,-50%);
+            margin: 10px 10px 10px 150px;
             border: 2px solid #c5c5c5;
             border-radius: 2px;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-            
-            min-width: 300px;
+            width: auto;
+            max-width: 35ch
           }
           .question {
             font-size: 18px;
