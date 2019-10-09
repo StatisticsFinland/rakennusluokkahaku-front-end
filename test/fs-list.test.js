@@ -37,6 +37,7 @@ describe('List element test suite', () => {
         const li = elem.shadowRoot.querySelector('li');
         li.click();
 
+        expect(li).to.have.class('selected');
         expect(eventspy.called).to.equal(true);
     });
 

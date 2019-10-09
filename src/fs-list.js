@@ -47,11 +47,16 @@ class FsList extends HTMLElement {
         const lis = this.createListItems();
 
         return `
-    <div>
-      <ul id="classifications">
-        ${lis}
-      </ul>
-    </div>
+        <div class="comp">
+            <div class="blue">
+                <h3>Hakutulokset</h3>
+            </div>
+            <div class="white">  
+                <ul id="classifications">
+                ${lis}
+                </ul>
+            </div>
+        </div>
     `;
     }
 
@@ -70,7 +75,29 @@ class FsList extends HTMLElement {
     get style() {
         return `
     <style>
+    .comp {
+        font-family: Arial;
+        font-size: 18px;
+        background-color: white;
+        margin: 10px 10px 10px 10px;
+        border: 2px solid #c5c5c5;
+        border-radius: 2px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        width: auto;
+      }
     div {
+        border: 1px solid #c5c5c5;
+        width: auto;
+    }
+    .blue {
+        padding: 10px 10px 5px 10px;
+        background-color: #0073b0;
+        color: white;
+        padding:  5px 5px 5px 5px;
+        margin: 0px;
+      }
+    .white{
+        padding: 10px 10px 5px 10px;
         border: 1px solid #c5c5c5;
         width: auto;
     }
@@ -78,11 +105,23 @@ class FsList extends HTMLElement {
           list-style: none;
           padding 1px 1px 1px 1px;
           margin 1px 1px 1px 1px;
+          vertical-align:middle;
+          
         }
     li {
            padding: 1px 1px 1px 1px;
-           margin: 1px 1px 1px -30px;
+           margin: 1px 1px 1px -40px;
+           list-style-type: none;
+           cursor: pointer;
     }
+    li:hover {
+        background-color: #e0effa;
+    }
+    .selected {
+        background-color: #badcf5 !important;
+        font-weight: bold;
+    }
+    
     </style>
     `;
     }
@@ -111,12 +150,12 @@ class FsList extends HTMLElement {
 
     addEventListeners() {
         const lis = this.shadowRoot.querySelectorAll('li');
-        let odd = true;
         lis.forEach((li) => {
-            // TODO move styling to somewhere sane
-            li.style.background = odd ? '#bbbbbb' : '#dddddd';
-            odd = !odd;
             li.addEventListener('click', (e) => {
+                lis.forEach((li) => {
+                    li.classList.remove('selected');
+                });
+                li.classList.add('selected');
                 const c = this.classifications.find((item) => {
                     return item.code === li.id.slice(2, 6);
                 });

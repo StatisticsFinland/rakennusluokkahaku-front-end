@@ -28,13 +28,13 @@ class FsQuestion extends HTMLElement {
         .comp {
             font-family: Arial;
             font-size: 18px;
+            background-color: white;
             padding: 10px 10px 5px 10px;
-            margin: 10px 10px 10px 150px;
+            margin: 10px 10px 10px 10px;
             border: 2px solid #c5c5c5;
             border-radius: 2px;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             width: auto;
-            max-width: 35ch
           }
           .question {
             font-size: 18px;
@@ -46,7 +46,7 @@ class FsQuestion extends HTMLElement {
           }
           button {
             min-width: 80px;
-            background-color: #4078a5;
+            background-color: #0073b0;
             border-style: hidden;
             box-shadow: 2px 2px 1px #888888;
             border-radius: 4px;
@@ -70,6 +70,7 @@ class FsQuestion extends HTMLElement {
         return await fetch(url, {
             method: 'GET',
             mode: 'cors',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -87,6 +88,7 @@ class FsQuestion extends HTMLElement {
                 'Content-Type': 'application/json',
             },
             mode: 'cors',
+            credentials: 'include',
             body: JSON.stringify(answer),
         }).then((response) => response.json());
     }
