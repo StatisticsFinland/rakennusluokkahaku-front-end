@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const {createDefaultConfig} = require('@open-wc/testing-karma');
-const merge = require('webpack-merge');
+const merge = require('deepmerge');
 
 module.exports = (config) => {
     config.set(
@@ -11,14 +11,28 @@ module.exports = (config) => {
                 //
                 // npm run test -- --grep test/foo/bar.test.js
                 // npm run test -- --grep test/bar/*
-                {pattern: config.grep ? config.grep : 'test/**/*.test.js', type: 'module'},
+                {
+                    pattern: config.grep ? config.grep : 'test/**/*.test.js',
+                    type: 'module',
+                },
             ],
 
             esm: {
                 nodeResolve: true,
             },
             // you can overwrite/extend the config further
-        }),
+
+            coverageIstanbulReporter: {
+                thresholds: {
+                    global: {
+                        statements: 80,
+                        lines: 80,
+                        branches: 50,
+                        functions: 80,
+                    },
+                },
+            },
+        })
     );
     return config;
 };

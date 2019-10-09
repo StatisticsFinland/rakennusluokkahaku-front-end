@@ -169,10 +169,13 @@ class FsList extends HTMLElement {
                 if (ex && ex.join('').replace(',', '').trim()) {
                     item.excludes = ex;
                 }
+                /* FIXME: kysy asiakkaalta
+                Näitä ei ole koko datassa
                 const inc = c.explanatoryNotes[0].includes;
                 if (inc && inc.join('').replace(',', '').trim()) {
                     item.includes = inc;
                 }
+                */
                 const incA = c.explanatoryNotes[0].includesAlso;
                 if (incA && incA.join('').replace(',', '').trim()) {
                     item.includesAlso = incA;
