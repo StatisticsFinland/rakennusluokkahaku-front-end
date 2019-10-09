@@ -9,7 +9,7 @@
   "scripts": {
     "start": "http-server src/ --cors",
     "production": "http-server src/ -p 80 --cors",
-    "test": "karma start",
+    "test": "karma start --coverage",
     "lint": "eslint src/ test/ --fix"
   },
   "repository": {

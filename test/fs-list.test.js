@@ -63,4 +63,31 @@ describe('List element test suite', () => {
         // so it has highest score so it should be the first one displayed
         expect(li.id).to.equal('id1912');
     });
+
+    it('sends complex objects correctly', () => {
+        // generate test data
+        let data = apiData.filter((item) => item.level === 3 && item.code !== '1919');
+        data = data.map((item, i) => {
+            return {
+                class_name: item.classificationItemNames[0].name,
+                class_id: item.code,
+                score: i,
+            };
+        });
+        // 0512 has fields ex ja inca so we want it on top of list
+        data.find((item) => item.class_id === '0512').score = 999;
+        const event = {
+            detail: data,
+        };
+        elem.updateScores(event);
+        const li = elem.shadowRoot.querySelector('li');
+        // check we got the correct one
+        expect(li.id).to.equal('id0512');
+
+        const eventspy = sinon.spy();
+        elem.addEventListener('showDetails', eventspy);
+        li.click();
+
+        expect(eventspy.called).to.equal(true);
+    });
 });
