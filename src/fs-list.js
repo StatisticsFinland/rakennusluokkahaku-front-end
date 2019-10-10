@@ -167,7 +167,7 @@ class FsList extends HTMLElement {
                 };
                 const ex = c.explanatoryNotes[0].excludes;
                 if (ex && ex.join('').replace(',', '').trim()) {
-                    item.excludes = ex;
+                    item.excludes = Array.from(new Set(ex)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
                 }
                 /* FIXME: kysy asiakkaalta
                 Näitä ei ole koko datassa
@@ -177,8 +177,8 @@ class FsList extends HTMLElement {
                 }
                 */
                 const incA = c.explanatoryNotes[0].includesAlso;
-                if (incA && incA.join('').replace(',', '').trim()) {
-                    item.includesAlso = incA;
+                if (incA && incA.join('').replace(' ', '').trim()) {
+                    item.includesAlso = Array.from(new Set(incA)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
                 }
                 const event = new CustomEvent('showDetails', {
                     detail: item,
