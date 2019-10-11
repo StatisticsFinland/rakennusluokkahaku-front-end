@@ -30,7 +30,7 @@ describe('List element test suite', () => {
     });
 
 
-    it('sends detail event on click', async () => {
+    it('sends detail event on click', () => {
         const eventspy = sinon.spy();
         elem.addEventListener('showDetails', eventspy);
 
@@ -41,7 +41,7 @@ describe('List element test suite', () => {
         expect(eventspy.called).to.equal(true);
     });
 
-    it('updates list based on scores', async () => {
+    it('updates list based on scores', () => {
         // construct some test data
         let data = apiData.filter((item) => item.level === 3 && item.code !== '1919');
         data = data.map((item, i) => {

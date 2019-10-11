@@ -20,13 +20,13 @@ describe('question test', async () => {
         expect(element.question).to.be.not.equal(null);
     });
 
-    it('has three answer buttons', async () => {
+    it('has three answer buttons', () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
 
         expect(buttons.length).to.equal(3);
     });
 
-    it('event listener added to buttons', async () => {
+    it('event listener added to buttons', () => {
         const okButton = element.shadowRoot.querySelector('.ok');
         const okSpy = sinon.spy(okButton, 'addEventListener');
 
@@ -42,7 +42,7 @@ describe('question test', async () => {
         expect(skipSpy.calledWith('click')).to.equal(true);
     });
 
-    it('it should dispatch event', async () => {
+    it('it should dispatch event', () => {
         const eventspy = sinon.spy();
         element.addEventListener('updateScores', eventspy);
         element.reply = {

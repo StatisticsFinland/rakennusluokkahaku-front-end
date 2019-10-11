@@ -14,7 +14,7 @@ describe('Detail element tests', () => {
         expect(el.classification).to.equal(null);
     });
 
-    it('is hidden initially', async () => {
+    it('is hidden initially', () => {
         expect(el.hidden).to.equal(true);
     });
 
@@ -37,7 +37,7 @@ describe('Detail element tests', () => {
         expect(includes).to.equal(null);
     });
 
-    it('renders all fields correctly', async () => {
+    it('renders all fields correctly', () => {
         const classification = {
             code: '0110',
             name: 'Omakotitalot',
