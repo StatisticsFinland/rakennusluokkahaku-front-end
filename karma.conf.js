@@ -23,6 +23,8 @@ module.exports = (config) => {
             // you can overwrite/extend the config further
 
             coverageIstanbulReporter: {
+                reports: ['html', 'lcovonly'],
+
                 thresholds: {
                     global: {
                         statements: 80,
