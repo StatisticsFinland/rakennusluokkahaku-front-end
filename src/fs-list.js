@@ -15,19 +15,8 @@ class FsList extends HTMLElement {
     }
 
     updateScores(event) {
-        let newData = event.detail;
-        // purkkaa
-        const ids = new Set();
-        newData = newData
-            .map((item) => {
-                if (ids.has(item.class_id)) {
-                    return null;
-                }
-                ids.add(item.class_id);
-                return item;
-            })
-            .filter((item) => item != null);
-        // end purkka
+        // Sort the data to make sure it is in the same order as this.data
+        const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
             newObj.score = newData[i].score;
