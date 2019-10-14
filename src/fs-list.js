@@ -15,19 +15,8 @@ class FsList extends HTMLElement {
     }
 
     updateScores(event) {
-        let newData = event.detail;
-        // purkkaa
-        const ids = new Set();
-        newData = newData
-            .map((item) => {
-                if (ids.has(item.class_id)) {
-                    return null;
-                }
-                ids.add(item.class_id);
-                return item;
-            })
-            .filter((item) => item != null);
-        // end purkka
+        // Sort the data to make sure it is in the same order as this.data
+        const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
             newObj.score = newData[i].score;
@@ -47,11 +36,16 @@ class FsList extends HTMLElement {
         const lis = this.createListItems();
 
         return `
-    <div>
-      <ul id="classifications">
-        ${lis}
-      </ul>
-    </div>
+        <div class="comp">
+            <div class="blue">
+                <h3>Hakutulokset</h3>
+            </div>
+            <div class="white">  
+                <ul id="classifications">
+                ${lis}
+                </ul>
+            </div>
+        </div>
     `;
     }
 
@@ -59,11 +53,9 @@ class FsList extends HTMLElement {
         // map classifications to list items
         let classificationsToShow = this.classifications.slice(0, 10);
         classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="${item.code}">
-                        ${item.code} ${item.classificationItemNames[0].name} ${
-    item.score ? `Score: ${Number(item.score).toFixed(2)}` : ''
-}
-                    </li>`;
+            return `<li id="id${item.code}">${item.code} ${item.classificationItemNames[0].name} ${item.score ?
+                `Score: ${Number(item.score).toFixed(2)}` :
+                ''}</li>`;
         });
         const lis = classificationsToShow.join('');
         return lis;
@@ -72,21 +64,58 @@ class FsList extends HTMLElement {
     get style() {
         return `
     <style>
+    .comp {
+        font-family: Arial;
+        font-size: 18px;
+        background-color: white;
+        margin: 10px 10px 10px 10px;
+        border: 2px solid #c5c5c5;
+        border-radius: 2px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        width: auto;
+      }
     div {
         border: 1px solid #c5c5c5;
-        width: 30%;
+        width: auto;
+    }
+    .blue {
+        padding: 10px 10px 5px 10px;
+        background-color: #0073b0;
+        color: white;
+        padding:  5px 5px 5px 5px;
+        margin: 0px;
+      }
+    .white{
+        padding: 10px 10px 5px 10px;
+        border: 1px solid #c5c5c5;
+        width: auto;
     }
     ul {
           list-style: none;
+          padding 1px 1px 1px 1px;
+          margin 1px 1px 1px 1px;
+          vertical-align:middle;
+          
         }
     li {
-           margin: 5px 5px 5px -25px;
+           padding: 1px 1px 1px 1px;
+           margin: 1px 1px 1px -40px;
+           list-style-type: none;
+           cursor: pointer;
     }
+    li:hover {
+        background-color: #e0effa;
+    }
+    .selected {
+        background-color: #badcf5 !important;
+        font-weight: bold;
+    }
+    
     </style>
     `;
     }
 
-    // native fetch for getting json
+    // Fetch classifications from stat.fi API
     async fetchData() {
         return await fetch(
             'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=fi'
@@ -110,17 +139,38 @@ class FsList extends HTMLElement {
 
     addEventListeners() {
         const lis = this.shadowRoot.querySelectorAll('li');
-        let odd = true;
         lis.forEach((li) => {
-            // TODO move styling to somewhere sane
-            li.style.background = odd ? '#bbbbbb' : '#dddddd';
-            odd = !odd;
             li.addEventListener('click', (e) => {
-                const classification = this.classifications.find((item) => {
-                    return item.code === li.id;
+                lis.forEach((li) => {
+                    li.classList.remove('selected');
                 });
+                li.classList.add('selected');
+                const c = this.classifications.find((item) => {
+                    return item.code === li.id.slice(2, 6);
+                });
+                const item = {
+                    name: c.classificationItemNames[0].name,
+                    keywords: c.classificationIndexEntry[0].text.join(', '),
+                    code: c.code,
+                    note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length-1],
+                };
+                const ex = c.explanatoryNotes[0].excludes;
+                if (ex && ex.join('').replace(',', '').trim()) {
+                    item.excludes = Array.from(new Set(ex)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+                }
+                /* FIXME: kysy asiakkaalta
+                Näitä ei ole koko datassa
+                const inc = c.explanatoryNotes[0].includes;
+                if (inc && inc.join('').replace(',', '').trim()) {
+                    item.includes = inc;
+                }
+                */
+                const incA = c.explanatoryNotes[0].includesAlso;
+                if (incA && incA.join('').replace(' ', '').trim()) {
+                    item.includesAlso = Array.from(new Set(incA)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+                }
                 const event = new CustomEvent('showDetails', {
-                    detail: classification,
+                    detail: item,
                     bubbles: true,
                     composed: true,
                 });

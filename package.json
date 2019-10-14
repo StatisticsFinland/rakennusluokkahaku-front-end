@@ -9,8 +9,8 @@
   "scripts": {
     "start": "http-server src/ --cors",
     "production": "http-server src/ -p 80 --cors",
-    "test": "karma start",
-    "lint": "eslint . --fix"
+    "test": "karma start --coverage",
+    "lint": "eslint src/ test/ --fix"
   },
   "repository": {
     "type": "git",
@@ -26,12 +26,13 @@
   "devDependencies": {
     "@open-wc/testing": "^2.3.4",
     "@open-wc/testing-karma": "3.1.13",
-    "@open-wc/testing-karma-bs": "1.1.38",
+    "coveralls": "^3.0.7",
+    "deepmerge": "^4.1.1",
     "eslint": "^6.4.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-cypress": "^2.6.1",
     "eslint-plugin-jasmine": "^2.10.1",
-    "http-server": "^0.11.1",
+    "http-server": "0.9.0",
     "karma": "^4.3.0",
     "karma-cli": "^2.0.0",
     "lit-html": "^1.1.2",
