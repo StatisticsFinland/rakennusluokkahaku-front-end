@@ -13,16 +13,15 @@ describe('question test', async () => {
         element = await fixture('<fs-question></fs-question');
     });
 
-    it('gets initial question from backend', async () => {
+   it('gets initial question from backend', async () => {
         expect(element.question).to.be.equal(null);
-        await sleep(1000);
-
+        await sleep(6000);
+        
         expect(element.question).to.be.not.equal(null);
-    });
+    }).timeout(7000);
 
     it('has three answer buttons', () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
-
         expect(buttons.length).to.equal(3);
     });
 
@@ -60,28 +59,28 @@ describe('question test', async () => {
         expect(element.reply).to.be.equal(null);
         const okButton = element.shadowRoot.querySelector('.ok');
         okButton.click();
-        await sleep(1500);
+        await sleep(6000);
 
         expect(element.reply).to.be.not.equal(null);
-    });
+    }).timeout(7000);
 
     it('question changes after answer is provided', async () => {
         const question = element.question.attribute_name;
         const noButton = element.shadowRoot.querySelector('.no');
         noButton.click();
-        await sleep(1500);
+        await sleep(6000);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
-    });
+    }).timeout(7000);
 
     it('provides new question with skip', async () => {
         const question = element.question.attribute_name;
         const skipButton = element.shadowRoot.querySelector('.skip');
         skipButton.click();
-        await sleep(1500);
+        await sleep(6000);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
-    });
+    }).timeout(7000);
 });
 
 const sleep = (milliseconds) => {
