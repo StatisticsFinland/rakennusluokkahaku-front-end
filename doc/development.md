@@ -29,6 +29,9 @@ Install project dependencies
 pip install -r requirements.txt
 ```
 ### Running the server
+NOTE: All shell commands from now on assume you are at the root of the project
+
+
 Now you can start up the backend locally
 ```bash
 python app.py
@@ -58,7 +61,10 @@ Install the local http-server and test dependencies
 ```bash
 npm install
 ```
-### Using local backend
+### Using local backend with the front
+NOTE: All shell commands from now on assume you are at the root of the project
+
+
 For using the local backend you must change the first line of `src/fs-question.js` from
 ```javascript
 const baseUrl = 'http://faceted.ddns.net:5000';
@@ -66,6 +72,14 @@ const baseUrl = 'http://faceted.ddns.net:5000';
 to
 ```javascript
 const baseUrl = 'http://0.0.0.0:5000';
+```
+Easiest way to do this is to use a npm script:
+```bash
+npm run local
+```
+And to change back
+```bash
+npm run remote
 ```
 ### Running the server
 ```bash
