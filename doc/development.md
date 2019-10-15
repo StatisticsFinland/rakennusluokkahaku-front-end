@@ -3,13 +3,13 @@
 ## Prerequisites
 
 -   [git version-control](https://git-scm.com/)
--   [node.js and npm newest LTS](https://nodejs.org/en/)
+-   [node.js and npm LTS version](https://nodejs.org/en/)
 -   [Python 3.6 or newer](https://www.python.org/downloads/)
 -   [Chromium-Browser](https://www.chromium.org/getting-involved/download-chromium) or [Google Chrome](https://www.google.com/chrome/browser/desktop/index.html)
 
 ## Setting up backend
 
-Create a directory and clone the repository from github
+Create a directory and clone the repository from GitHub
 
 ```bash
 cd
@@ -19,20 +19,26 @@ git clone https://github.com/Ohtu-FaceTed/FaceTed-Backend.git
 cd FaceTed-Backend
 ```
 
-Install the Python virtual environment module venv
+Install the Python [virtual environment](https://docs.python.org/3/library/venv.html) module venv.
 
 ```bash
 pip install venv
 ```
 
-Create a new venv inside the directory and activate it
+Create a new virtual environment inside the directory.
 
 ```bash
 python -m venv venv/
+```
+Activate the virtual environment.
+
+```bash
 source venv/bin/activate
 ```
+#### Note that you should do this step everytime you work on the project.
+You can exit the virtual environment with `deactivate` or by closing the terminal.
 
-Install project dependencies
+Install project dependencies.
 
 ```bash
 pip install -r requirements.txt
@@ -42,7 +48,7 @@ pip install -r requirements.txt
 
 #### Note: All shell commands from now on assume you are at the root of the project and the virtual environment is active
 
-Now you can start up the backend locally
+Now you can start up the backend locally.
 
 ```bash
 python app.py
@@ -50,7 +56,7 @@ python app.py
 
 By default it is open at http://0.0.0.0:5000/
 
-Type the following for a list of available commandline arguments
+Type the following for a list of available commandline arguments.
 
 ```bash
 python app.py --help
@@ -68,7 +74,7 @@ You can lint and autoformat the code with `./lint.sh` before making a commit to 
 
 ## Setting up frontend
 
-Clone the repository from github
+Clone the repository from GitHub.
 
 ```bash
 cd
@@ -78,7 +84,7 @@ git clone https://github.com/Ohtu-FaceTed/FaceTed-Search.git
 cd FaceTed-Search
 ```
 
-Install the local http-server and test dependencies
+Install the local http-server and test dependencies.
 
 ```bash
 npm install
@@ -86,7 +92,7 @@ npm install
 
 ### Using local backend with the front
 
-#### Note: All shell commands from now on assume you are at the root of the project
+#### Note: All shell commands from now on assume you are at the root of the project.
 
 For using the local backend you must change the first line of `src/fs-question.js` from
 
@@ -100,13 +106,13 @@ to
 const baseUrl = "http://0.0.0.0:5000";
 ```
 
-Easiest way to do this is to use the provided npm script "local":
+Easiest way to do this is to use the provided npm script "local".
 
 ```bash
 npm run local
 ```
 
-And to change back
+And to change back you can use the script "remote".
 
 ```bash
 npm run remote
@@ -124,7 +130,7 @@ Starts the server on http://127.0.0.1:8080 by default. Open it to see the local 
 
 Before running the tests for the first time you need to set the CHROME_BIN environment variable to point to either Chromium-Browser or Google Chrome.
 
-For example on linux you can add the line
+For example on Linux you can add the line
 
 ```bash
 export CHROME_BIN=/path/to/chrome/executable
@@ -144,7 +150,7 @@ export CHROME_BIN=/usr/bin/chromium-browser
 npm test
 ```
 
-Runs the test suite and generates coverage-report to `coverage/index.html`
+Runs the test suite and generates coverage-report to `coverage/index.html`.
 
 ### Linting
 
