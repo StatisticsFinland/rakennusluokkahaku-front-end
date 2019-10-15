@@ -10,7 +10,7 @@
 Create a directory and clone the repository from github
 ```bash
 cd
-mkdir faceted
+mkdir -p faceted
 cd faceted
 git clone https://github.com/Ohtu-FaceTed/FaceTed-Backend.git
 cd FaceTed-Backend
@@ -53,6 +53,7 @@ You can lint and autoformat the code with `./lint.sh` before making a commit to 
 Clone the repository from github
 ```bash
 cd
+mkdir -p faceted
 cd faceted
 git clone https://github.com/Ohtu-FaceTed/FaceTed-Search.git
 cd FaceTed-Search
@@ -73,7 +74,7 @@ to
 ```javascript
 const baseUrl = 'http://0.0.0.0:5000';
 ```
-Easiest way to do this is to use a npm script:
+Easiest way to do this is to use the provided npm script "local":
 ```bash
 npm run local
 ```
