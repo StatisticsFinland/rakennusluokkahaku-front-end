@@ -29,7 +29,7 @@ Install project dependencies
 pip install -r requirements.txt
 ```
 ### Running the server
-NOTE: All shell commands from now on assume you are at the root of the project
+#### Note: All shell commands from now on assume you are at the root of the project and the virtual environment is active
 
 
 Now you can start up the backend locally
@@ -62,7 +62,7 @@ Install the local http-server and test dependencies
 npm install
 ```
 ### Using local backend with the front
-NOTE: All shell commands from now on assume you are at the root of the project
+#### Note: All shell commands from now on assume you are at the root of the project
 
 
 For using the local backend you must change the first line of `src/fs-question.js` from
