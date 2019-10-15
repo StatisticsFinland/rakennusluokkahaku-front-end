@@ -2,13 +2,14 @@
 
 ## Prerequisites
 * [git version-control](https://git-scm.com/)
-* [node.js and npm LTS](https://nodejs.org/en/)
+* [node.js and npm newest LTS](https://nodejs.org/en/)
 * [Python 3.6 or newer](https://www.python.org/downloads/)
 * [Chromium-Browser](https://www.chromium.org/getting-involved/download-chromium) or [Google Chrome](https://www.google.com/chrome/browser/desktop/index.html)
 
 ## Setting up backend
 Create a directory and clone the repository from github
 ```bash
+cd
 mkdir faceted
 cd faceted
 git clone https://github.com/Ohtu-FaceTed/FaceTed-Backend.git
@@ -32,14 +33,14 @@ Now you can start up the backend locally
 ```bash
 python app.py
 ```
-By default it is open at (http://0.0.0.0:5000/)
+By default it is open at http://0.0.0.0:5000/
 
 Type the following for a list of available commandline arguments
 ```bash
 python app.py --help
 ```
 
-For example `python app.py --profile` launches the server in debug mode and profiler active which prints function calls and runtimes for each served request.
+For example `python app.py --profile` launches the server in debug mode and a profiler active which prints function calls and runtimes for each served request.
 ### Running tests
 Run the test suite with `./test.sh`. Html-formatted coverage-report can be found in `htmlcov/index.html`.
 ### Linting
@@ -70,7 +71,7 @@ const baseUrl = 'http://0.0.0.0:5000';
 ```bash
 npm start
 ```
-Starts the server on (http://127.0.0.1:8080) by default. Open it to see the local frontend.
+Starts the server on http://127.0.0.1:8080 by default. Open it to see the local frontend.
 ### Setting up tests
 Before running the tests for the first time you need to set the CHROME_BIN environment variable to point to either Chromium-Browser or Google Chrome.
 
@@ -93,5 +94,5 @@ Runs the test suite and generates coverage-report to `coverage/index.html`
 ```
 npm run lint
 ```
-Autoformats the source files with eslint. If there are errors that can't be fixed automatically, they are printed to the console and you must fix them first. Should always run this before commits.
+Autoformats the source files with eslint. If there are errors that can't be fixed automatically, they are printed to the console and you must fix them first. You should always run this before commits.
 
