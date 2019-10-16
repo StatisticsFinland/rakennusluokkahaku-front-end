@@ -82,6 +82,35 @@ describe('question test', async () => {
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     }).timeout(7000);
+
+    it('Renders attribute_name based question string from reply', () => {
+        const q = {
+            attribute_name: 'Kirjasto',
+            attribute_id: '0240',
+        };
+        element.question = q;
+        element.render();
+
+        const questionText = element.shadowRoot.querySelector('.question');
+
+        expect(questionText).to.contain.html('Onko rakennuksessa Kirjasto?');
+        expect(questionText).to.not.contain.html('Erillinen kysymys?');
+    });
+
+    it('Renders the optional question string from reply', () => {
+        const q = {
+            attribute_name: 'Sauna',
+            attribute_id: '0110',
+            attribute_question: 'Erillinen kysymys?',
+        };
+        element.question = q;
+        element.render();
+
+        const questionText = element.shadowRoot.querySelector('.question');
+
+        expect(questionText).to.contain.html('Erillinen kysymys?');
+        expect(questionText).to.not.contain.html('Sauna');
+    });
 });
 
 const sleep = (milliseconds) => {
