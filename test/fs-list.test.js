@@ -11,6 +11,7 @@ let apiData;
 
 describe('List element test suite', () => {
     before(async () => {
+        // inject function for testing
         const fetchDataStub = () => classifications;
         elem = await fixture(html`<fs-list .fetchData=${fetchDataStub}></fs-list>`);
         apiData = elem.data;
