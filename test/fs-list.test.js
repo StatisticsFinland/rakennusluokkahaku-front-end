@@ -1,21 +1,18 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
-import {expect, fixture} from '@open-wc/testing';
+import {expect, fixture, html} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-list';
-
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import {classifications} from './data';
 
 let elem;
 let apiData;
 
 describe('List element test suite', () => {
     before(async () => {
-        elem = await fixture('<fs-list></fs-list>');
-        await sleep(1500);
+        const fetchDataStub = () => classifications;
+        elem = await fixture(html`<fs-list .fetchData=${fetchDataStub}></fs-list>`);
         apiData = elem.data;
     });
 
@@ -52,16 +49,16 @@ describe('List element test suite', () => {
             };
         });
         // add a duplicate
-        data.push({class_id: '1912', class_name: 'asd', score: 0});
+        data.push({class_id: '0512', class_name: 'asd', score: 0});
         const event = {
             detail: data,
         };
         elem.updateScores(event);
         const li = elem.shadowRoot.querySelector('li');
 
-        // 1912 is the last one on the list
+        // 0512 is the last one on the list
         // so it has highest score so it should be the first one displayed
-        expect(li.id).to.equal('id1912');
+        expect(li.id).to.equal('id0512');
     });
 
     it('sends complex objects correctly', () => {
