@@ -9,17 +9,20 @@ class FsQuestion extends HTMLElement {
 
     get template() {
         return `
-        <div class='comp'>
-          <p class='question'>
-            Onko rakennuksessa <span>${this.question.attribute_name}</span>?
-          </p>
-          <div class='button-container'>
+        <div class="comp">
+          <p class="question">${this.questionString}</p>
+          <div class="button-container">
             <button class="ok">Kyllä</button>
             <button class="no">Ei</button>
             <button class="skip">Ohita</button>
           </div>
         </div>
         `;
+    }
+
+    get questionString() {
+        const qString = this.question.attribute_question;
+        return qString ? qString : `Onko rakennuksessa ${this.question.attribute_name}?`;
     }
 
     get style() {
@@ -104,8 +107,13 @@ class FsQuestion extends HTMLElement {
     }
 
     async connectedCallback() {
-        const data = await this.fetchQuestion();
-        this.question = data;
+        // check if function injected in attributes for testing
+        if (this.hasAttribute('fetchQuestion')) {
+            this.question = this.getAttribute('fetchQuestion')();
+        } else {
+            const data = await this.fetchQuestion();
+            this.question = data;
+        }
 
         this.render();
     }

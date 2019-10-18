@@ -180,7 +180,8 @@ class FsList extends HTMLElement {
     }
 
     async connectedCallback() {
-        const data = await this.fetchData();
+        // check if function injected in attributes for testing
+        const data = this.hasAttribute('fetchData') ? this.getAttribute('fetchData')() : await this.fetchData();
         this.data = data.filter(
             (item) => item.level === 3 && item.code !== '1919'
         );

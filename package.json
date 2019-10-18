@@ -10,7 +10,9 @@
     "start": "http-server src/ --cors",
     "production": "http-server src/ -p 80 --cors",
     "test": "karma start --coverage",
-    "lint": "eslint src/ test/ --fix"
+    "lint": "eslint src/ test/ --fix",
+    "local": "sed -i'.original' -e 's#'http://faceted.ddns.net:5000'#'http://0.0.0.0:5000'#g' src/fs-question.js",
+    "remote": "sed -i'.original' -e 's#'http://0.0.0.0:5000'#'http://faceted.ddns.net:5000'#g' src/fs-question.js"
   },
   "repository": {
     "type": "git",
