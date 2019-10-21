@@ -1,24 +1,27 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture} from '@open-wc/testing';
+import {expect, fixture, html} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
+import {questions, buildingClasses} from './data';
 
 let element;
+let postAnswerStub;
 
 describe('question test', async () => {
     before(async () => {
-        element = await fixture('<fs-question></fs-question');
+        // inject function for testing
+        const fetchQuestionStub = () => questions.shift();
+        element = await fixture(html`<fs-question .fetchQuestion=${fetchQuestionStub}></fs-question>`);
+
+        postAnswerStub = sinon.stub(element, 'postAnswer');
     });
 
     it('gets initial question from backend', async () => {
-        expect(element.question).to.be.equal(null);
-        await sleep(6000);
-
         expect(element.question).to.be.not.equal(null);
-    }).timeout(7000);
+    });
 
     it('has three answer buttons', () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
@@ -57,31 +60,44 @@ describe('question test', async () => {
     });
 
     it('gets reply from backend', async () => {
+        postAnswerStub.returns({
+            building_classes: buildingClasses,
+            new_question: questions.shift(),
+            success: true,
+        });
+
         expect(element.reply).to.be.equal(null);
         const okButton = element.shadowRoot.querySelector('.ok');
-        okButton.click();
-        await sleep(6000);
+        await okButton.click();
 
         expect(element.reply).to.be.not.equal(null);
-    }).timeout(7000);
+    });
 
     it('question changes after answer is provided', async () => {
+        postAnswerStub.returns({
+            building_classes: buildingClasses,
+            new_question: questions.shift(),
+            success: true,
+        });
         const question = element.question.attribute_name;
         const noButton = element.shadowRoot.querySelector('.no');
-        noButton.click();
-        await sleep(6000);
+        await noButton.click();
 
         expect(element.question.attribute_name).to.be.not.equal(question);
-    }).timeout(7000);
+    });
 
     it('provides new question with skip', async () => {
+        postAnswerStub.returns({
+            building_classes: buildingClasses,
+            new_question: questions.shift(),
+            success: true,
+        });
         const question = element.question.attribute_name;
         const skipButton = element.shadowRoot.querySelector('.skip');
-        skipButton.click();
-        await sleep(6000);
+        await skipButton.click();
 
         expect(element.question.attribute_name).to.be.not.equal(question);
-    }).timeout(7000);
+    });
 
     it('Renders attribute_name based question string from reply', () => {
         const q = {
@@ -112,7 +128,3 @@ describe('question test', async () => {
         expect(questionText).to.not.contain.html('Sauna');
     });
 });
-
-const sleep = (milliseconds) => {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
