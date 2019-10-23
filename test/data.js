@@ -1,5 +1,12 @@
 /* eslint-disable max-len*/
 
+function mockResponse(body) {
+    return new window.Response(JSON.stringify(body), {
+        status: 200,
+        headers: {'Content-type': 'application/json'},
+    });
+}
+
 // 4 questions to play around with
 const questions = [
     {
@@ -776,4 +783,4 @@ const classifications = [
     },
 ];
 
-export {questions, buildingClasses, classifications};
+export {questions, buildingClasses, classifications, mockResponse};

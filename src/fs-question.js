@@ -195,5 +195,3 @@ class FsQuestion extends HTMLElement {
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
-
-export default FsQuestion;

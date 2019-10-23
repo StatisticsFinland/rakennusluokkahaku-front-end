@@ -211,5 +211,3 @@ class FsList extends HTMLElement {
 // check for polyfills
 const register = () => customElements.define('fs-list', FsList);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
-
-export default FsList;

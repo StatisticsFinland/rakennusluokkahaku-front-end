@@ -1,33 +1,33 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture, defineCE} from '@open-wc/testing';
+import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
-import FsQuestion from '../src/fs-question';
-import {questions, buildingClasses} from './data';
+import '../src/fs-question';
+import {questions, buildingClasses, mockResponse} from './data';
 
 let element;
-let postAnswerStub;
-let getPreviousStub;
+let fetchStub;
 
 describe('question test', async () => {
-    before(async () => {
-        // override fetchQuestion
-        const component = defineCE(class extends FsQuestion {
-            async fetchQuestion() {
-                return questions.shift();
-            }
-        });
+    beforeEach(async () => {
+        fetchStub = sinon.stub(window, 'fetch')
+            .onCall(0).resolves(mockResponse(questions[0]))
+            .onCall(1).resolves(mockResponse({
+                building_classes: buildingClasses,
+                new_question: questions[1],
+                success: true,
+            }));
+        element = await fixture('<fs-question></fs-question>');
+    });
 
-        element = await fixture(`<${component}></${component}>`);
-
-        postAnswerStub = sinon.stub(element, 'postAnswer');
-        getPreviousStub = sinon.stub(element, 'getPrevious');
+    afterEach(() => {
+        window.fetch.restore();
     });
 
     it('gets initial question from backend', async () => {
-        expect(element.question).to.be.not.equal(null);
+        expect(element.question).to.be.not.undefined;
     });
 
     it('starts counting correctly', async () => {
@@ -70,16 +70,10 @@ describe('question test', async () => {
         element.reply = null;
     });
 
-    it('gets reply from backend, adds back button and keeps counting correctly', async () => {
-        postAnswerStub.returns({
-            building_classes: buildingClasses,
-            new_question: questions[1],
-            success: true,
-        });
-
+    it('gets reply from backend, adds back button and keeps counting correctly', () => {
         expect(element.reply).to.be.equal(null);
         const okButton = element.shadowRoot.querySelector('.ok');
-        await okButton.click();
+        okButton.click();
 
         expect(element.reply).to.be.not.equal(null);
 
@@ -89,46 +83,35 @@ describe('question test', async () => {
         expect(element.qNumber).to.be.equal(3);
     });
 
-    it('back button works as intended', async () => {
-        getPreviousStub.returns({
-            new_question: questions.shift(),
-        });
-        const backButton = element.shadowRoot.querySelector('.previous');
-        await backButton.click();
+    it('back button works as intended', () => {
+        const okButton = element.shadowRoot.querySelector('.ok');
+        const buttons = element.shadowRoot.querySelectorAll('button');
+        okButton.click();
 
         expect(element.qNumber).to.be.equal(2);
+        expect(buttons.length).to.equal(4);
 
-        await backButton.click();
+        fetchStub.resolves(mockResponse(questions[0]));
+
+        const backButton = element.shadowRoot.querySelector('.previous');
+        backButton.click();
 
         expect(element.qNumber).to.be.equal(1);
-
-        const buttons = element.shadowRoot.querySelectorAll('button');
-
         expect(buttons.length).to.equal(3);
     });
 
-    it('question changes after answer is provided', async () => {
-        postAnswerStub.returns({
-            building_classes: buildingClasses,
-            new_question: questions.shift(),
-            success: true,
-        });
+    it('question changes after answer is provided', () => {
         const question = element.question.attribute_name;
         const noButton = element.shadowRoot.querySelector('.no');
-        await noButton.click();
+        noButton.click();
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });
 
-    it('provides new question with skip', async () => {
-        postAnswerStub.returns({
-            building_classes: buildingClasses,
-            new_question: questions.shift(),
-            success: true,
-        });
+    it('provides new question with skip', () => {
         const question = element.question.attribute_name;
         const skipButton = element.shadowRoot.querySelector('.skip');
-        await skipButton.click();
+        skipButton.click();
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });

@@ -1,25 +1,24 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
-import {expect, fixture, defineCE} from '@open-wc/testing';
+import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
-import FsList from '../src/fs-list';
-import {classifications} from './data';
+import '../src/fs-list';
+import {classifications, mockResponse} from './data';
 
 let elem;
 let apiData;
 
 describe('List element test suite', () => {
     before(async () => {
-        // override fetchData
-        const component = defineCE(class extends FsList {
-            async fetchData() {
-                return classifications;
-            }
-        });
+        sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
 
-        elem = await fixture(`<${component}></${component}>`);
-        apiData = elem.data;
+        elem = await fixture('<fs-list></fs-list>');
+        apiData = classifications;
+    });
+
+    after(() => {
+        window.fetch.restore();
     });
 
     it('has fetched data', () => {
