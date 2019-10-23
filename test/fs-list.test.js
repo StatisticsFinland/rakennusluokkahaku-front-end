@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
-import {expect, fixture, html} from '@open-wc/testing';
+import {expect, fixture, defineCE} from '@open-wc/testing';
 import sinon from 'sinon';
 
-import '../src/fs-list';
+import FsList from '../src/fs-list';
 import {classifications} from './data';
 
 let elem;
@@ -11,9 +11,14 @@ let apiData;
 
 describe('List element test suite', () => {
     before(async () => {
-        // inject function for testing
-        const fetchDataStub = () => classifications;
-        elem = await fixture(html`<fs-list .fetchData=${fetchDataStub}></fs-list>`);
+        // override fetchData
+        const component = defineCE(class extends FsList {
+            async fetchData() {
+                return classifications;
+            }
+        });
+
+        elem = await fixture(`<${component}></${component}>`);
         apiData = elem.data;
     });
 

@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture, html} from '@open-wc/testing';
+import {expect, fixture, defineCE} from '@open-wc/testing';
 import sinon from 'sinon';
 
-import '../src/fs-question';
+import FsQuestion from '../src/fs-question';
 import {questions, buildingClasses} from './data';
 
 let element;
@@ -12,9 +12,14 @@ let postAnswerStub;
 
 describe('question test', async () => {
     before(async () => {
-        // inject function for testing
-        const fetchQuestionStub = () => questions.shift();
-        element = await fixture(html`<fs-question .fetchQuestion=${fetchQuestionStub}></fs-question>`);
+        // override fetchQuestion
+        const component = defineCE(class extends FsQuestion {
+            async fetchQuestion() {
+                return questions.shift();
+            }
+        });
+
+        element = await fixture(`<${component}></${component}>`);
 
         postAnswerStub = sinon.stub(element, 'postAnswer');
     });

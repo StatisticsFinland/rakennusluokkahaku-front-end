@@ -180,8 +180,7 @@ class FsList extends HTMLElement {
     }
 
     async connectedCallback() {
-        // check if function injected in attributes for testing
-        const data = this.hasAttribute('fetchData') ? this.getAttribute('fetchData')() : await this.fetchData();
+        const data = await this.fetchData();
         this.data = data.filter(
             (item) => item.level === 3 && item.code !== '1919'
         );
@@ -207,3 +206,5 @@ class FsList extends HTMLElement {
 // check for polyfills
 const register = () => customElements.define('fs-list', FsList);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
+
+export default FsList;
