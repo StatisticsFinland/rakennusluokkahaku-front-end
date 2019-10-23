@@ -27,7 +27,6 @@ describe('List element test suite', () => {
         expect(lis.length).to.be.equal(10);
     });
 
-
     it('sends detail event on click', () => {
         const eventspy = sinon.spy();
         elem.addEventListener('showDetails', eventspy);
@@ -87,5 +86,14 @@ describe('List element test suite', () => {
         li.click();
 
         expect(eventspy.called).to.equal(true);
+    });
+
+    it('is hidden if no data is provided', () => {
+        const event = {
+            detail: null,
+        };
+        elem.updateScores(event);
+
+        expect(elem.hidden).to.equal(true);
     });
 });
