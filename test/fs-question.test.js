@@ -9,6 +9,7 @@ import {questions, buildingClasses} from './data';
 
 let element;
 let postAnswerStub;
+let getPreviousStub;
 
 describe('question test', async () => {
     before(async () => {
@@ -22,10 +23,15 @@ describe('question test', async () => {
         element = await fixture(`<${component}></${component}>`);
 
         postAnswerStub = sinon.stub(element, 'postAnswer');
+        getPreviousStub = sinon.stub(element, 'getPrevious');
     });
 
     it('gets initial question from backend', async () => {
         expect(element.question).to.be.not.equal(null);
+    });
+
+    it('starts counting correctly', async () => {
+        expect(element.qNumber).to.be.equal(1);
     });
 
     it('has three answer buttons', () => {
@@ -64,10 +70,10 @@ describe('question test', async () => {
         element.reply = null;
     });
 
-    it('gets reply from backend', async () => {
+    it('gets reply from backend, adds back button and keeps counting correctly', async () => {
         postAnswerStub.returns({
             building_classes: buildingClasses,
-            new_question: questions.shift(),
+            new_question: questions[1],
             success: true,
         });
 
@@ -76,6 +82,29 @@ describe('question test', async () => {
         await okButton.click();
 
         expect(element.reply).to.be.not.equal(null);
+
+        const buttons = element.shadowRoot.querySelectorAll('button');
+
+        expect(buttons.length).to.equal(4);
+        expect(element.qNumber).to.be.equal(3);
+    });
+
+    it('back button works as intended', async () => {
+        getPreviousStub.returns({
+            new_question: questions.shift(),
+        });
+        const backButton = element.shadowRoot.querySelector('.previous');
+        await backButton.click();
+
+        expect(element.qNumber).to.be.equal(2);
+
+        await backButton.click();
+
+        expect(element.qNumber).to.be.equal(1);
+
+        const buttons = element.shadowRoot.querySelectorAll('button');
+
+        expect(buttons.length).to.equal(3);
     });
 
     it('question changes after answer is provided', async () => {
