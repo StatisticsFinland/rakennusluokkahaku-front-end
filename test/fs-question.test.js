@@ -27,7 +27,7 @@ describe('question test', async () => {
     });
 
     it('gets initial question from backend', async () => {
-        expect(element.question).to.be.not.undefined;
+        expect(element.question).to.have.keys(['attribute_id', 'attribute_name', 'attribute_question']);
     });
 
     it('starts counting correctly', async () => {
@@ -70,48 +70,58 @@ describe('question test', async () => {
         element.reply = null;
     });
 
-    it('gets reply from backend, adds back button and keeps counting correctly', () => {
+    it('gets reply from backend, adds back button and keeps counting correctly', async () => {
+        let buttons = element.shadowRoot.querySelectorAll('button');
+
         expect(element.reply).to.be.equal(null);
+        expect(buttons.length).to.equal(3);
+        expect(element.qNumber).to.be.equal(1);
+
         const okButton = element.shadowRoot.querySelector('.ok');
         okButton.click();
+        await sleep(200);
+
+        buttons = element.shadowRoot.querySelectorAll('button');
 
         expect(element.reply).to.be.not.equal(null);
-
-        const buttons = element.shadowRoot.querySelectorAll('button');
-
         expect(buttons.length).to.equal(4);
-        expect(element.qNumber).to.be.equal(3);
+        expect(element.qNumber).to.be.equal(2);
     });
 
-    it('back button works as intended', () => {
+    it('back button works as intended', async () => {
+        await sleep(100);
         const okButton = element.shadowRoot.querySelector('.ok');
-        const buttons = element.shadowRoot.querySelectorAll('button');
         okButton.click();
-
-        expect(element.qNumber).to.be.equal(2);
-        expect(buttons.length).to.equal(4);
+        await sleep(100);
 
         fetchStub.resolves(mockResponse(questions[0]));
 
         const backButton = element.shadowRoot.querySelector('.previous');
         backButton.click();
+        await sleep(100);
+
+        const buttons = element.shadowRoot.querySelectorAll('button');
 
         expect(element.qNumber).to.be.equal(1);
         expect(buttons.length).to.equal(3);
     });
 
-    it('question changes after answer is provided', () => {
+    it('question changes after answer is provided', async () => {
+        await sleep(100);
         const question = element.question.attribute_name;
         const noButton = element.shadowRoot.querySelector('.no');
         noButton.click();
+        await sleep(100);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });
 
-    it('provides new question with skip', () => {
+    it('provides new question with skip', async () => {
+        await sleep(100);
         const question = element.question.attribute_name;
         const skipButton = element.shadowRoot.querySelector('.skip');
         skipButton.click();
+        await sleep(100);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });
@@ -145,3 +155,7 @@ describe('question test', async () => {
         expect(questionText).to.not.contain.html('Sauna');
     });
 });
+
+const sleep = (milliseconds) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
