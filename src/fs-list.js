@@ -16,6 +16,11 @@ class FsList extends HTMLElement {
 
     updateScores(event) {
         // Sort the data to make sure it is in the same order as this.data
+        if (!event.detail) {
+            this.hidden = true;
+            this.renderList();
+            return;
+        }
         const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -164,7 +169,7 @@ class FsList extends HTMLElement {
                     name: c.classificationItemNames[0].name,
                     keywords: c.classificationIndexEntry[0].text.join(', '),
                     code: c.code,
-                    note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length-1],
+                    note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
                 };
                 const ex = c.explanatoryNotes[0].excludes;
                 if (ex && ex.join('').replace(',', '').trim()) {
@@ -192,8 +197,7 @@ class FsList extends HTMLElement {
     }
 
     async connectedCallback() {
-        // check if function injected in attributes for testing
-        const data = this.hasAttribute('fetchData') ? this.getAttribute('fetchData')() : await this.fetchData();
+        const data = await this.fetchData();
         this.data = data.filter(
             (item) => item.level === 3 && item.code !== '1919'
         );

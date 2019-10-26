@@ -5,17 +5,19 @@ class FsQuestion extends HTMLElement {
         super();
         this.question = null;
         this.reply = null;
+        this.qNumber = 1;
     }
 
     get template() {
         return `
         <div class="comp">
-          <p class="question">${this.questionString}</p>
+          <p class="question">${this.qNumber}. ${this.questionString}</p>
           <div class="button-container">
             <button class="ok">Kyllä</button>
             <button class="no">Ei</button>
             <button class="skip">Ohita</button>
-          </div>
+            ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
+            </div>
         </div>
         `;
     }
@@ -96,6 +98,21 @@ class FsQuestion extends HTMLElement {
         }).then((response) => response.json());
     }
 
+    // GET previous question and scores
+    async getPrevious() {
+        const url = `${baseUrl}/previous`;
+        return await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((res) => res.json())
+            .catch((error) => console.error('Error:', error));
+    }
+
     // sends new classes to list element
     updateClasses() {
         const event = new CustomEvent('updateScores', {
@@ -107,13 +124,8 @@ class FsQuestion extends HTMLElement {
     }
 
     async connectedCallback() {
-        // check if function injected in attributes for testing
-        if (this.hasAttribute('fetchQuestion')) {
-            this.question = this.getAttribute('fetchQuestion')();
-        } else {
-            const data = await this.fetchQuestion();
-            this.question = data;
-        }
+        const data = await this.fetchQuestion();
+        this.question = data;
 
         this.render();
     }
@@ -138,9 +150,20 @@ class FsQuestion extends HTMLElement {
             attribute_id: this.question.attribute_id,
             response: response,
         };
-        this.reply = await this.postAnswer(answer);
+        if (response === 'previous') {
+            this.qNumber--;
+            this.reply = await this.getPrevious();
+        } else {
+            this.qNumber++;
+            this.reply = await this.postAnswer(answer);
+        }
+        if (this.qNumber !== 1) {
+            this.question = this.reply.new_question;
+        } else {
+            this.question = this.reply;
+        }
+
         this.updateClasses();
-        this.question = this.reply.new_question;
         this.render();
     }
 
@@ -159,6 +182,13 @@ class FsQuestion extends HTMLElement {
         skipButton.addEventListener('click', (e) => {
             this.handleAnswer('skip');
         });
+        // /add back button if availialbe
+        if (this.qNumber !== 1) {
+            const previousButton = this.shadowRoot.querySelector('.previous');
+            previousButton.addEventListener('click', (e) => {
+                this.handleAnswer('previous');
+            });
+        }
     }
 }
 
