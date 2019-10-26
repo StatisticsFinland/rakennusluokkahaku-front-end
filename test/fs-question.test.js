@@ -20,7 +20,7 @@ describe('question test', async () => {
                 success: true,
             }));
         element = await fixture('<fs-question></fs-question>');
-        // Give the component some time 
+        // Give the component some time
         // to fetch from the stub before running any test
         await sleep(100);
     });
