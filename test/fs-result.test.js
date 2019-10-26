@@ -3,7 +3,7 @@
 import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
-import '../src/fs-list';
+import '../src/fs-result';
 import {classifications, mockResponse} from './data';
 
 let elem;
@@ -13,7 +13,7 @@ describe('List element test suite', () => {
     before(async () => {
         sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
 
-        elem = await fixture('<fs-list></fs-list>');
+        elem = await fixture('<fs-result></fs-result>');
         apiData = classifications;
     });
 

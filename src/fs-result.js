@@ -1,4 +1,4 @@
-class FsList extends HTMLElement {
+class FsResult extends HTMLElement {
     constructor() {
         super();
         this.data = null;
@@ -18,7 +18,7 @@ class FsList extends HTMLElement {
         // Sort the data to make sure it is in the same order as this.data
         if (!event.detail) {
             this.hidden = true;
-            this.renderList();
+            this.render();
             return;
         }
         const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
@@ -31,7 +31,7 @@ class FsList extends HTMLElement {
             return b.score - a.score;
         });
         this.hidden = false;
-        this.renderList();
+        this.render();
     }
 
     get template() {
@@ -56,7 +56,7 @@ class FsList extends HTMLElement {
         if (!this.classifications) {
             return '';
         }
-        // maps classifications to list items
+        // maps classifications to table rows
         const classes = this.classifications.slice(0, 10);
         const rows = classes.map((item, i) => {
             return `
@@ -139,7 +139,7 @@ class FsList extends HTMLElement {
         ).then((res) => res.json());
     }
 
-    renderList() {
+    render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
         }
@@ -150,7 +150,7 @@ class FsList extends HTMLElement {
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
-        // add eventlisteners to listitems
+        // add eventlisteners to info cells
         this.addEventListeners();
     }
 
@@ -206,7 +206,7 @@ class FsList extends HTMLElement {
             return {...item};
         });
 
-        this.renderList();
+        this.render();
     }
 
     disconnectedCallback() {
@@ -221,5 +221,5 @@ class FsList extends HTMLElement {
 }
 
 // check for polyfills
-const register = () => customElements.define('fs-list', FsList);
+const register = () => customElements.define('fs-result', FsResult);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();

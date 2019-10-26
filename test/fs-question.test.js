@@ -20,6 +20,9 @@ describe('question test', async () => {
                 success: true,
             }));
         element = await fixture('<fs-question></fs-question>');
+        // Give the component some time 
+        // to fetch from the stub before running any test
+        await sleep(100);
     });
 
     afterEach(() => {
@@ -27,8 +30,6 @@ describe('question test', async () => {
     });
 
     it('gets initial question from backend', async () => {
-        await sleep(100);
-
         expect(element.question).to.have.keys(['attribute_id', 'attribute_name', 'attribute_question']);
     });
 
