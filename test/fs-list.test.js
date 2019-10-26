@@ -25,20 +25,20 @@ describe('List element test suite', () => {
         expect(elem.data).to.not.equal(null);
     });
 
-    it('renders 10 list items after fetch', () => {
-        const lis = elem.shadowRoot.querySelectorAll('li');
+    it('renders 10 rows after fetch', () => {
+        const rows = elem.shadowRoot.querySelectorAll('tr');
 
-        expect(lis.length).to.be.equal(10);
+        expect(rows.length).to.be.equal(10);
     });
 
     it('sends detail event on click', () => {
         const eventspy = sinon.spy();
         elem.addEventListener('showDetails', eventspy);
 
-        const li = elem.shadowRoot.querySelector('li');
-        li.click();
+        const firstRow = elem.shadowRoot.querySelector('td');
+        firstRow.click();
 
-        expect(li).to.have.class('selected');
+        expect(firstRow).to.have.class('selected');
         expect(eventspy.called).to.equal(true);
     });
 
@@ -58,11 +58,11 @@ describe('List element test suite', () => {
             detail: data,
         };
         elem.updateScores(event);
-        const li = elem.shadowRoot.querySelector('li');
+        const firstRow = elem.shadowRoot.querySelector('tr');
 
         // 0512 is the last one on the list
         // so it has highest score so it should be the first one displayed
-        expect(li.id).to.equal('id0512');
+        expect(firstRow.id).to.equal('id0512');
     });
 
     it('sends complex objects correctly', () => {
@@ -81,13 +81,13 @@ describe('List element test suite', () => {
             detail: data,
         };
         elem.updateScores(event);
-        const li = elem.shadowRoot.querySelector('li');
+        const firstRow = elem.shadowRoot.querySelector('td');
         // check we got the correct one
-        expect(li.id).to.equal('id0512');
+        expect(firstRow.id).to.equal('id0512');
 
         const eventspy = sinon.spy();
         elem.addEventListener('showDetails', eventspy);
-        li.click();
+        firstRow.click();
 
         expect(eventspy.called).to.equal(true);
     });

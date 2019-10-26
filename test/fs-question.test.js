@@ -27,6 +27,8 @@ describe('question test', async () => {
     });
 
     it('gets initial question from backend', async () => {
+        await sleep(100);
+
         expect(element.question).to.have.keys(['attribute_id', 'attribute_name', 'attribute_question']);
     });
 
