@@ -33,32 +33,50 @@ class FsList extends HTMLElement {
         if (!this.data) {
             return '<h1>Error fetching data from api</h1>';
         }
-        const lis = this.createListItems();
-
         return `
         <div class="comp">
             <div class="blue">
                 <h3>Hakutulokset</h3>
             </div>
             <div class="white">  
-                <ul id="classifications">
-                ${lis}
-                </ul>
+                <table id="results">
+                ${this.createRows()}
+                </table>
             </div>
         </div>
     `;
     }
 
-    createListItems() {
-        // map classifications to list items
-        let classificationsToShow = this.classifications.slice(0, 10);
-        classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="id${item.code}">${item.code} ${item.classificationItemNames[0].name} ${item.score ?
-                `Score: ${Number(item.score).toFixed(2)}` :
-                ''}</li>`;
+    createRows() {
+        if (!this.classifications) {
+            return '';
+        }
+        // maps classifications to list items
+        const classes = this.classifications.slice(0, 10);
+        const rows = classes.map((item, i) => {
+            return `
+            <tr id="id${item.code}">
+                <td class="itemInfo" id="id${item.code}">${item.code} ${item.classificationItemNames[0].name}</td>
+                <td class="itemScore" style="background-color:${this.chooseColor(item)}">
+                    ${(item.score * 100).toFixed(0)}%
+                <td>
+            </tr>
+            `;
         });
-        const lis = classificationsToShow.join('');
-        return lis;
+        return rows.join('');
+    }
+
+    chooseColor(item) {
+        const green = 'lightgreen';
+        const yellow = 'yellow';
+        const gray = 'lightgray';
+        let color = 'red';
+        if (item.score >= 0.05) {
+            color = green;
+        } else {
+            color = item.score > 0.015 ? yellow : gray;
+        }
+        return color;
     }
 
     get style() {
@@ -85,25 +103,19 @@ class FsList extends HTMLElement {
         padding:  5px 5px 5px 5px;
         margin: 0px;
       }
-    .white{
+    .white {
         padding: 10px 10px 5px 10px;
         border: 1px solid #c5c5c5;
         width: auto;
     }
-    ul {
-          list-style: none;
-          padding 1px 1px 1px 1px;
-          margin 1px 1px 1px 1px;
-          vertical-align:middle;
-          
-        }
-    li {
-           padding: 1px 1px 1px 1px;
-           margin: 1px 1px 1px -40px;
-           list-style-type: none;
-           cursor: pointer;
+    .itemScore {
+                border-style: solid;
+                border-width: 1px;
+                border-color: black;
+                border-radius: 4px;
+                max-width: 60px;
     }
-    li:hover {
+    .itemInfo:hover {
         background-color: #e0effa;
     }
     .selected {
@@ -138,15 +150,15 @@ class FsList extends HTMLElement {
     }
 
     addEventListeners() {
-        const lis = this.shadowRoot.querySelectorAll('li');
-        lis.forEach((li) => {
-            li.addEventListener('click', (e) => {
-                lis.forEach((li) => {
-                    li.classList.remove('selected');
+        const rows = this.shadowRoot.querySelectorAll('.itemInfo');
+        rows.forEach((row) => {
+            row.addEventListener('click', (e) => {
+                rows.forEach((row) => {
+                    row.classList.remove('selected');
                 });
-                li.classList.add('selected');
+                row.classList.add('selected');
                 const c = this.classifications.find((item) => {
-                    return item.code === li.id.slice(2, 6);
+                    return item.code === row.id.slice(2, 6);
                 });
                 const item = {
                     name: c.classificationItemNames[0].name,
