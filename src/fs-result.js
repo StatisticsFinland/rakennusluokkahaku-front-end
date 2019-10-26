@@ -44,8 +44,10 @@ class FsResult extends HTMLElement {
                 <h3>Hakutulokset</h3>
             </div>
             <div class="white">  
-                <table id="results">
-                ${this.createRows()}
+                <table class="results">
+                    <tbody>
+                        ${this.createRows()}
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -113,12 +115,20 @@ class FsResult extends HTMLElement {
         border: 1px solid #c5c5c5;
         width: auto;
     }
+    .results {
+        width: 100%;
+    }
     .itemScore {
-                border-style: solid;
-                border-width: 1px;
-                border-color: black;
-                border-radius: 4px;
-                max-width: 60px;
+        text-align: right;
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+        border-radius: 4px;
+        max-width: 2ch;
+        overflow: auto;
+    }
+    .itemInfo {
+        text-align: left;
     }
     .itemInfo:hover {
         background-color: #e0effa;
@@ -127,7 +137,6 @@ class FsResult extends HTMLElement {
         background-color: #badcf5 !important;
         font-weight: bold;
     }
-    
     </style>
     `;
     }
