@@ -74,9 +74,9 @@ class FsResult extends HTMLElement {
     }
 
     chooseColor(item) {
-        const green = 'lightgreen';
-        const yellow = 'yellow';
-        const gray = 'lightgray';
+        const green = '#00ff00';
+        const yellow = '#ffff66';
+        const gray = '#dcdcdc';
         let color = 'red';
         if (item.score >= 0.05) {
             color = green;
@@ -119,7 +119,7 @@ class FsResult extends HTMLElement {
         width: 100%;
     }
     .itemScore {
-        text-align: right;
+        text-align: center;
         border-style: solid;
         border-width: 1px;
         border-color: black;
