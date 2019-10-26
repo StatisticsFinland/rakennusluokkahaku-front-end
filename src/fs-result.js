@@ -15,13 +15,14 @@ class FsResult extends HTMLElement {
     }
 
     updateScores(event) {
-        // Sort the data to make sure it is in the same order as this.data
         if (!event.detail) {
             this.hidden = true;
             this.render();
             return;
         }
+        // Sort the event data by id (string) to make sure it is in the same order as this.data
         const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
+        // Map new scores to classifications
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
             newObj.score = newData[i].score;
@@ -167,10 +168,12 @@ class FsResult extends HTMLElement {
         const rows = this.shadowRoot.querySelectorAll('.itemInfo');
         rows.forEach((row) => {
             row.addEventListener('click', (e) => {
+                // .selected-class css highlighting
                 rows.forEach((row) => {
                     row.classList.remove('selected');
                 });
                 row.classList.add('selected');
+                // prepare an object for detail component
                 const c = this.classifications.find((item) => {
                     return item.code === row.id.slice(2, 6);
                 });
