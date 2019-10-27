@@ -1,4 +1,4 @@
-class FsList extends HTMLElement {
+class FsResult extends HTMLElement {
     constructor() {
         super();
         this.data = null;
@@ -15,13 +15,14 @@ class FsList extends HTMLElement {
     }
 
     updateScores(event) {
-        // Sort the data to make sure it is in the same order as this.data
         if (!event.detail) {
             this.hidden = true;
-            this.renderList();
+            this.render();
             return;
         }
+        // Sort the event data by id (string) to make sure it is in the same order as this.data
         const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
+        // Map new scores to classifications
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
             newObj.score = newData[i].score;
@@ -31,39 +32,59 @@ class FsList extends HTMLElement {
             return b.score - a.score;
         });
         this.hidden = false;
-        this.renderList();
+        this.render();
     }
 
     get template() {
         if (!this.data) {
             return '<h1>Error fetching data from api</h1>';
         }
-        const lis = this.createListItems();
-
         return `
         <div class="comp">
             <div class="blue">
                 <h3>Hakutulokset</h3>
             </div>
             <div class="white">  
-                <ul id="classifications">
-                ${lis}
-                </ul>
+                <table class="results">
+                    <tbody>
+                        ${this.createRows()}
+                    </tbody>
+                </table>
             </div>
         </div>
     `;
     }
 
-    createListItems() {
-        // map classifications to list items
-        let classificationsToShow = this.classifications.slice(0, 10);
-        classificationsToShow = classificationsToShow.map((item) => {
-            return `<li id="id${item.code}">${item.code} ${item.classificationItemNames[0].name} ${item.score ?
-                `Score: ${Number(item.score).toFixed(2)}` :
-                ''}</li>`;
+    createRows() {
+        if (!this.classifications) {
+            return '';
+        }
+        // maps classifications to table rows
+        const classes = this.classifications.slice(0, 10);
+        const rows = classes.map((item, i) => {
+            return `
+            <tr class="resultRow">
+                <td class="itemInfo" id="id${item.code}">${item.code} ${item.classificationItemNames[0].name}</td>
+                <td class="itemScore" style="background-color:${this.chooseColor(item)}">
+                    ${(item.score * 100).toFixed(0)}%
+                <td>
+            </tr>
+            `;
         });
-        const lis = classificationsToShow.join('');
-        return lis;
+        return rows.join('');
+    }
+
+    chooseColor(item) {
+        const green = '#00ff00';
+        const yellow = '#ffff66';
+        const gray = '#dcdcdc';
+        let color = 'red';
+        if (item.score >= 0.05) {
+            color = green;
+        } else {
+            color = item.score > 0.015 ? yellow : gray;
+        }
+        return color;
     }
 
     get style() {
@@ -90,32 +111,34 @@ class FsList extends HTMLElement {
         padding:  5px 5px 5px 5px;
         margin: 0px;
       }
-    .white{
+    .white {
         padding: 10px 10px 5px 10px;
         border: 1px solid #c5c5c5;
         width: auto;
     }
-    ul {
-          list-style: none;
-          padding 1px 1px 1px 1px;
-          margin 1px 1px 1px 1px;
-          vertical-align:middle;
-          
-        }
-    li {
-           padding: 1px 1px 1px 1px;
-           margin: 1px 1px 1px -40px;
-           list-style-type: none;
-           cursor: pointer;
+    .results {
+        width: 100%;
     }
-    li:hover {
+    .itemScore {
+        text-align: center;
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+        border-radius: 4px;
+        max-width: 3ch;
+        min-width: 3ch;
+        overflow: auto;
+    }
+    .itemInfo {
+        text-align: left;
+    }
+    .itemInfo:hover {
         background-color: #e0effa;
     }
     .selected {
         background-color: #badcf5 !important;
         font-weight: bold;
     }
-    
     </style>
     `;
     }
@@ -127,7 +150,7 @@ class FsList extends HTMLElement {
         ).then((res) => res.json());
     }
 
-    renderList() {
+    render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
         }
@@ -138,20 +161,22 @@ class FsList extends HTMLElement {
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
-        // add eventlisteners to listitems
+        // add eventlisteners to info cells
         this.addEventListeners();
     }
 
     addEventListeners() {
-        const lis = this.shadowRoot.querySelectorAll('li');
-        lis.forEach((li) => {
-            li.addEventListener('click', (e) => {
-                lis.forEach((li) => {
-                    li.classList.remove('selected');
+        const rows = this.shadowRoot.querySelectorAll('.itemInfo');
+        rows.forEach((row) => {
+            row.addEventListener('click', (e) => {
+                // .selected-class css highlighting
+                rows.forEach((row) => {
+                    row.classList.remove('selected');
                 });
-                li.classList.add('selected');
+                row.classList.add('selected');
+                // prepare an object for detail component
                 const c = this.classifications.find((item) => {
-                    return item.code === li.id.slice(2, 6);
+                    return item.code === row.id.slice(2, 6);
                 });
                 const item = {
                     name: c.classificationItemNames[0].name,
@@ -194,7 +219,7 @@ class FsList extends HTMLElement {
             return {...item};
         });
 
-        this.renderList();
+        this.render();
     }
 
     disconnectedCallback() {
@@ -209,5 +234,5 @@ class FsList extends HTMLElement {
 }
 
 // check for polyfills
-const register = () => customElements.define('fs-list', FsList);
+const register = () => customElements.define('fs-result', FsResult);
 window.WebComponents ? window.WebComponents.waitFor(register) : register();
