@@ -124,13 +124,8 @@ class FsQuestion extends HTMLElement {
     }
 
     async connectedCallback() {
-        // check if function injected in attributes for testing
-        if (this.hasAttribute('fetchQuestion')) {
-            this.question = this.getAttribute('fetchQuestion')();
-        } else {
-            const data = await this.fetchQuestion();
-            this.question = data;
-        }
+        const data = await this.fetchQuestion();
+        this.question = data;
 
         this.render();
     }

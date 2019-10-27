@@ -1,28 +1,36 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture, html} from '@open-wc/testing';
+import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
-import {questions, buildingClasses} from './data';
+import {questions, buildingClasses, mockResponse} from './data';
 
 let element;
-let postAnswerStub;
-let getPreviousStub;
+let fetchStub;
 
 describe('question test', async () => {
-    before(async () => {
-        // inject function for testing
-        const fetchQuestionStub = () => questions.shift();
-        element = await fixture(html`<fs-question .fetchQuestion=${fetchQuestionStub}></fs-question>`);
+    beforeEach(async () => {
+        fetchStub = sinon.stub(window, 'fetch')
+            .onCall(0).resolves(mockResponse(questions[0]))
+            .onCall(1).resolves(mockResponse({
+                building_classes: buildingClasses,
+                new_question: questions[1],
+                success: true,
+            }));
+        element = await fixture('<fs-question></fs-question>');
+        // Give the component some time
+        // to fetch from the stub before running any test
+        await sleep(100);
+    });
 
-        postAnswerStub = sinon.stub(element, 'postAnswer');
-        getPreviousStub = sinon.stub(element, 'getPrevious');
+    afterEach(() => {
+        window.fetch.restore();
     });
 
     it('gets initial question from backend', async () => {
-        expect(element.question).to.be.not.equal(null);
+        expect(element.question).to.have.keys(['attribute_id', 'attribute_name', 'attribute_question']);
     });
 
     it('starts counting correctly', async () => {
@@ -66,64 +74,57 @@ describe('question test', async () => {
     });
 
     it('gets reply from backend, adds back button and keeps counting correctly', async () => {
-        postAnswerStub.returns({
-            building_classes: buildingClasses,
-            new_question: questions[1],
-            success: true,
-        });
+        let buttons = element.shadowRoot.querySelectorAll('button');
 
         expect(element.reply).to.be.equal(null);
+        expect(buttons.length).to.equal(3);
+        expect(element.qNumber).to.be.equal(1);
+
         const okButton = element.shadowRoot.querySelector('.ok');
-        await okButton.click();
+        okButton.click();
+        await sleep(200);
+
+        buttons = element.shadowRoot.querySelectorAll('button');
 
         expect(element.reply).to.be.not.equal(null);
-
-        const buttons = element.shadowRoot.querySelectorAll('button');
-
         expect(buttons.length).to.equal(4);
-        expect(element.qNumber).to.be.equal(3);
+        expect(element.qNumber).to.be.equal(2);
     });
 
     it('back button works as intended', async () => {
-        getPreviousStub.returns({
-            new_question: questions.shift(),
-        });
+        await sleep(100);
+        const okButton = element.shadowRoot.querySelector('.ok');
+        okButton.click();
+        await sleep(100);
+
+        fetchStub.resolves(mockResponse(questions[0]));
+
         const backButton = element.shadowRoot.querySelector('.previous');
-        await backButton.click();
-
-        expect(element.qNumber).to.be.equal(2);
-
-        await backButton.click();
-
-        expect(element.qNumber).to.be.equal(1);
+        backButton.click();
+        await sleep(100);
 
         const buttons = element.shadowRoot.querySelectorAll('button');
 
+        expect(element.qNumber).to.be.equal(1);
         expect(buttons.length).to.equal(3);
     });
 
     it('question changes after answer is provided', async () => {
-        postAnswerStub.returns({
-            building_classes: buildingClasses,
-            new_question: questions.shift(),
-            success: true,
-        });
+        await sleep(100);
         const question = element.question.attribute_name;
         const noButton = element.shadowRoot.querySelector('.no');
-        await noButton.click();
+        noButton.click();
+        await sleep(100);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });
 
     it('provides new question with skip', async () => {
-        postAnswerStub.returns({
-            building_classes: buildingClasses,
-            new_question: questions.shift(),
-            success: true,
-        });
+        await sleep(100);
         const question = element.question.attribute_name;
         const skipButton = element.shadowRoot.querySelector('.skip');
-        await skipButton.click();
+        skipButton.click();
+        await sleep(100);
 
         expect(element.question.attribute_name).to.be.not.equal(question);
     });
@@ -157,3 +158,7 @@ describe('question test', async () => {
         expect(questionText).to.not.contain.html('Sauna');
     });
 });
+
+const sleep = (milliseconds) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
