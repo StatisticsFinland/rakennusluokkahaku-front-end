@@ -131,6 +131,7 @@ class FsResult extends HTMLElement {
     }
     .itemInfo {
         text-align: left;
+        cursor: pointer;
     }
     .itemInfo:hover {
         background-color: #e0effa;
