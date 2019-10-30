@@ -12,6 +12,25 @@ class FsQuestion extends HTMLElement {
         const data = await this.fetchQuestion();
         this.question = data;
 
+        const testQ = {
+            type: 'multi',
+            attribute_question: 'Minkälaisia vessoja tilassa on?',
+            attributes: [
+                {
+                    name: 'WC',
+                    id: '100',
+                },
+                {
+                    name: 'WC, esteetön',
+                    id: '101',
+                },
+                {
+                    name: 'PuuCee',
+                    id: '102',
+                },
+            ],
+        };
+        this.question = testQ;
         this.render();
     }
     // Base html template
@@ -298,20 +317,28 @@ class FsQuestion extends HTMLElement {
     }
     // Event listeners for answer buttons
     addEventListeners() {
-        const okButton = this.shadowRoot.querySelector('.ok');
-        okButton.addEventListener('click', (e) => {
-            this.handleAnswer('yes');
-        });
+        if (this.question.type === 'simple') {
+            const okButton = this.shadowRoot.querySelector('.ok');
+            okButton.addEventListener('click', (e) => {
+                this.handleAnswer('yes');
+            });
 
-        const noButton = this.shadowRoot.querySelector('.no');
-        noButton.addEventListener('click', (e) => {
-            this.handleAnswer('no');
-        });
-        const skipButton = this.shadowRoot.querySelector('.skip');
-        skipButton.addEventListener('click', (e) => {
-            this.handleAnswer('skip');
-        });
-        // add back button if availialbe
+            const noButton = this.shadowRoot.querySelector('.no');
+            noButton.addEventListener('click', (e) => {
+                this.handleAnswer('no');
+            });
+            const skipButton = this.shadowRoot.querySelector('.skip');
+            skipButton.addEventListener('click', (e) => {
+                this.handleAnswer('skip');
+            });
+        }
+        if (this.question.type === 'multi') {
+            const nextButton = this.shadowRoot.querySelector('.next');
+            nextButton.addEventListener('click', (e) => {
+                console.log('klik');
+            });
+        }
+        // Add back button if availialbe
         if (this.qNumber !== 1) {
             const previousButton = this.shadowRoot.querySelector('.previous');
             previousButton.addEventListener('click', (e) => {
