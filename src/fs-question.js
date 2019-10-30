@@ -8,6 +8,7 @@ class FsQuestion extends HTMLElement {
         this.qNumber = 1;
     }
 
+    // template for single questions
     get template() {
         return `
         <div class="comp">
@@ -22,6 +23,55 @@ class FsQuestion extends HTMLElement {
         `;
     }
 
+    // template for multiquestions (NO LOGIC YET / NOT IMPLEMNTED)
+    get multiquestionTemplate() {
+        return `
+        <div class="comp">
+        <p class="question">${this.qNumber}. ${this.questionString}</p>
+        <table align="center">
+            <tr>
+                <th>
+                    <!-- empty header above attributes-->
+                </th>
+                <!-- TODO - make these less hardcoded for language support-->
+                <th>Kyllä</th>
+                <th>Ohita</th>
+                <th>Ei</th>
+            </tr>
+            <!-- loopable section for each attribute in question -->
+            <!-- name:s need to be based on attribute, name defines buttongroup -->
+            <tr>
+                <td>
+                    "attribute goes here with more text so that the wanted behaviour can be tested"
+                </td>
+                <td>
+                    <label class="container">
+                        <input type="radio" name="radio" value="ok">
+                        <span class="checkmark"></span>
+                    </label>
+                </td>
+                <td>
+                    <label class="container">
+                        <input type="radio" checked="checked" name="radio" value="skip">
+                        <span class="checkmark"></span>
+                    </label></td>
+                <td>
+                    <label class="container">
+                        <input type="radio" name="radio" value="no">
+                        <span class="checkmark"></span>
+                    </label>
+                </td>
+            </tr>
+        </table>
+
+        <div class="button-container">
+            <button class="next">Seuraava</button>
+            ${this.qNumber !== 1 ? '<button class="previous">Edellinen</button>' : ''}
+        </div>
+    </div>
+        `;
+    }
+
     get questionString() {
         const qString = this.question.attribute_question;
         return qString ? qString : `Onko rakennuksessa ${this.question.attribute_name}?`;
@@ -29,7 +79,7 @@ class FsQuestion extends HTMLElement {
 
     get style() {
         return `
-        <style> 
+        <style>
         .comp {
             font-family: Arial;
             font-size: 18px;
@@ -40,16 +90,19 @@ class FsQuestion extends HTMLElement {
             border-radius: 2px;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             width: auto;
-          }
-          .question {
+        }
+
+        .question {
             font-size: 18px;
             text-align: center;
-          }
-          .button-container {
+        }
+
+        .button-container {
             text-align: center;
             padding: 10px 10px 5px 10px;
-          }
-          button {
+        }
+
+        button {
             min-width: 80px;
             background-color: #0073b0;
             border-style: hidden;
@@ -57,14 +110,94 @@ class FsQuestion extends HTMLElement {
             border-radius: 4px;
             font-size: 16px;
             padding: 3px;
-            color:white;
+            color: white;
             cursor: pointer;
-          }
-          button:hover {
+        }
+
+        button:hover {
             color: black;
             background-color: #edf3f8;
             border-color: #6c757d;
-          }
+        }
+
+        th {
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        td {
+            padding: 10px;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0px;
+        }
+
+        .container {
+            display: block;
+            position: relative;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the browser's default radio button */
+        .container input {
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Create a custom radio button */
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #eee;
+            border-radius: 50%;
+        }
+
+        /* On mouse-over, add a grey background color */
+        .container:hover input~.checkmark {
+            background-color: #ccc;
+        }
+
+        /* When the radio button is checked, add a blue background */
+        .container input:checked~.checkmark {
+            background-color: #0073b0;
+        }
+
+        /* Create the indicator (the dot/circle - hidden when not checked) */
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the indicator (dot/circle) when checked */
+        .container input:checked~.checkmark:after {
+            display: block;
+        }
+
+        /* Style the indicator (dot/circle) */
+        .container .checkmark:after {
+            top: 7px;
+            left: 7px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+        }
         </style>
         `;
     }
@@ -136,8 +269,15 @@ class FsQuestion extends HTMLElement {
         }
 
         this.shadowRoot.innerHTML = '';
-        const temp = document.createElement('template');
+        let temp;
+        // // implementation ish?
+        // if (this.response.type == 'multi') {
+        //     temp = document.createElement('multiquestionTemplate');
+        //     temp.innerHTML = this.style + this.multiquestionTemplate;
+        // } else {
+        temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
+        // }
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
 
         this.addEventListeners();
