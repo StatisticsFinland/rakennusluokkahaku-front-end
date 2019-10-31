@@ -7,29 +7,108 @@ class FsQuestion extends HTMLElement {
         this.reply = null;
         this.qNumber = 1;
     }
+    // Called after constructor
+    async connectedCallback() {
+        const data = await this.fetchQuestion();
+        this.question = data;
 
+        const testQ = {
+            type: 'multi',
+            attribute_question: 'Minkälaisia vessoja tilassa on?',
+            attributes: [
+                {
+                    name: 'WC',
+                    id: '100',
+                },
+                {
+                    name: 'WC, esteetön',
+                    id: '101',
+                },
+                {
+                    name: 'PuuCee',
+                    id: '102',
+                },
+            ],
+        };
+        this.question = testQ;
+        this.render();
+    }
+    // Base html template
     get template() {
         return `
         <div class="comp">
           <p class="question">${this.qNumber}. ${this.questionString}</p>
-          <div class="button-container">
-            <button class="ok">Kyllä</button>
-            <button class="no">Ei</button>
-            <button class="skip">Ohita</button>
-            ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
-            </div>
+          ${this.question.type === 'simple' ? this.simpleTemplate : this.multiTemplate}
         </div>
         `;
     }
-
+    // Template for single questions
+    get simpleTemplate() {
+        return `
+            <div class="button-container">
+                <button class="ok">Kyllä</button>
+                <button class="no">Ei</button>
+                <button class="skip">Ohita</button>
+                ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
+            </div>
+        `;
+    }
+    // Template for multiple questions
+    get multiTemplate() {
+        const tableRows = this.question.attributes.map((attr) => {
+            const radioName = `radio${attr.id}`;
+            return `
+            <tr>
+                <td>${attr.name}</td>
+                <td>
+                    <label class="container">
+                        <input type="radio" name="${radioName}" value="ok">
+                        <span class="checkmark"></span>
+                    </label>
+                </td>
+                <td>
+                    <label class="container">
+                        <input type="radio" name="${radioName}" value="skip" checked>
+                        <span class="checkmark"></span>
+                    </label></td>
+                <td>
+                    <label class="container">
+                        <input type="radio" name="${radioName}" value="no">
+                        <span class="checkmark"></span>
+                    </label>
+                </td>
+            </tr>
+            `;
+        }).join('');
+        return `
+        <table align="center">
+          <thead>
+            <tr>
+                <th><!-- empty header above attributes--></th>
+                <th>Kyllä</th>
+                <th>Ohita</th>
+                <th>Ei</th>
+            </tr>
+          </thead>
+          <tbody>
+          ${tableRows}
+          </tbody>
+        </table>
+        <div class="button-container">
+            <button class="next">Seuraava</button>
+            ${this.qNumber !== 1 ? '<button class="previous">Edellinen</button>' : ''}
+        </div>
+        `;
+    }
+    // Check whether to use a question template or not
     get questionString() {
         const qString = this.question.attribute_question;
         return qString ? qString : `Onko rakennuksessa ${this.question.attribute_name}?`;
     }
-
+    // Css for all elements
     get style() {
         return `
-        <style> 
+        <style>
         .comp {
             font-family: Arial;
             font-size: 18px;
@@ -40,16 +119,19 @@ class FsQuestion extends HTMLElement {
             border-radius: 2px;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             width: auto;
-          }
-          .question {
+        }
+
+        .question {
             font-size: 18px;
             text-align: center;
-          }
-          .button-container {
+        }
+
+        .button-container {
             text-align: center;
             padding: 10px 10px 5px 10px;
-          }
-          button {
+        }
+
+        button {
             min-width: 80px;
             background-color: #0073b0;
             border-style: hidden;
@@ -57,18 +139,97 @@ class FsQuestion extends HTMLElement {
             border-radius: 4px;
             font-size: 16px;
             padding: 3px;
-            color:white;
+            color: white;
             cursor: pointer;
-          }
-          button:hover {
+        }
+
+        button:hover {
             color: black;
             background-color: #edf3f8;
             border-color: #6c757d;
-          }
+        }
+
+        th {
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        td {
+            padding: 10px;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0px;
+        }
+
+        .container {
+            display: block;
+            position: relative;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the browser's default radio button */
+        .container input {
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Create a custom radio button */
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #eee;
+            border-radius: 50%;
+        }
+
+        /* On mouse-over, add a grey background color */
+        .container:hover input~.checkmark {
+            background-color: #ccc;
+        }
+
+        /* When the radio button is checked, add a blue background */
+        .container input:checked~.checkmark {
+            background-color: #0073b0;
+        }
+
+        /* Create the indicator (the dot/circle - hidden when not checked) */
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the indicator (dot/circle) when checked */
+        .container input:checked~.checkmark:after {
+            display: block;
+        }
+
+        /* Style the indicator (dot/circle) */
+        .container .checkmark:after {
+            top: 7px;
+            left: 7px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+        }
         </style>
         `;
     }
-
     // get the preliminary question
     async fetchQuestion() {
         const url = `${baseUrl}/question`;
@@ -83,7 +244,6 @@ class FsQuestion extends HTMLElement {
             .then((res) => res.json())
             .catch((error) => console.error('Error:', error));
     }
-
     // POST answer and get new question and scores
     async postAnswer(answer) {
         const url = `${baseUrl}/answer`;
@@ -97,7 +257,6 @@ class FsQuestion extends HTMLElement {
             body: JSON.stringify(answer),
         }).then((response) => response.json());
     }
-
     // GET previous question and scores
     async getPrevious() {
         const url = `${baseUrl}/previous`;
@@ -112,8 +271,7 @@ class FsQuestion extends HTMLElement {
             .then((res) => res.json())
             .catch((error) => console.error('Error:', error));
     }
-
-    // sends new classes to list element
+    // Sends new classes to result element
     updateClasses() {
         const event = new CustomEvent('updateScores', {
             bubbles: true,
@@ -122,14 +280,6 @@ class FsQuestion extends HTMLElement {
         });
         this.dispatchEvent(event);
     }
-
-    async connectedCallback() {
-        const data = await this.fetchQuestion();
-        this.question = data;
-
-        this.render();
-    }
-
     render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
@@ -142,8 +292,7 @@ class FsQuestion extends HTMLElement {
 
         this.addEventListeners();
     }
-
-    // handles the logic for responding to user input
+    // Handles the logic for responding to user input
     async handleAnswer(response) {
         const answer = {
             language: 'suomi',
@@ -166,23 +315,30 @@ class FsQuestion extends HTMLElement {
         this.updateClasses();
         this.render();
     }
-
-    // event listeners for answer buttons
+    // Event listeners for answer buttons
     addEventListeners() {
-        const okButton = this.shadowRoot.querySelector('.ok');
-        okButton.addEventListener('click', (e) => {
-            this.handleAnswer('yes');
-        });
+        if (this.question.type === 'simple') {
+            const okButton = this.shadowRoot.querySelector('.ok');
+            okButton.addEventListener('click', (e) => {
+                this.handleAnswer('yes');
+            });
 
-        const noButton = this.shadowRoot.querySelector('.no');
-        noButton.addEventListener('click', (e) => {
-            this.handleAnswer('no');
-        });
-        const skipButton = this.shadowRoot.querySelector('.skip');
-        skipButton.addEventListener('click', (e) => {
-            this.handleAnswer('skip');
-        });
-        // /add back button if availialbe
+            const noButton = this.shadowRoot.querySelector('.no');
+            noButton.addEventListener('click', (e) => {
+                this.handleAnswer('no');
+            });
+            const skipButton = this.shadowRoot.querySelector('.skip');
+            skipButton.addEventListener('click', (e) => {
+                this.handleAnswer('skip');
+            });
+        }
+        if (this.question.type === 'multi') {
+            const nextButton = this.shadowRoot.querySelector('.next');
+            nextButton.addEventListener('click', (e) => {
+                console.log('klik');
+            });
+        }
+        // Add back button if availialbe
         if (this.qNumber !== 1) {
             const previousButton = this.shadowRoot.querySelector('.previous');
             previousButton.addEventListener('click', (e) => {
