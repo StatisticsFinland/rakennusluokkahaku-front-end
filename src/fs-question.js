@@ -316,14 +316,13 @@ class FsQuestion extends HTMLElement {
         this.render();
     }
     async handleMultiAnswer() {
-        const answers = this.question.attributes.map((attr) => {
+        const attributes = this.question.attributes.map((attr) => {
             const checked = this.shadowRoot.querySelector(`input[name="radio${attr.id}"]:checked`);
-            console.log(attr.name, checked.value);
-            const ans = {...attr};
-            ans.response = checked.value;
+            const ans = {...attr,
+                response: checked.value};
             return ans;
         });
-        console.log(answers);
+        console.log(attributes);
     }
     // Event listeners for answer buttons
     addEventListeners() {
