@@ -315,6 +315,16 @@ class FsQuestion extends HTMLElement {
         this.updateClasses();
         this.render();
     }
+    async handleMultiAnswer() {
+        const answers = this.question.attributes.map((attr) => {
+            const checked = this.shadowRoot.querySelector(`input[name="radio${attr.id}"]:checked`);
+            console.log(attr.name, checked.value);
+            const ans = {...attr};
+            ans.response = checked.value;
+            return ans;
+        });
+        console.log(answers);
+    }
     // Event listeners for answer buttons
     addEventListeners() {
         if (this.question.type === 'simple') {
@@ -335,7 +345,7 @@ class FsQuestion extends HTMLElement {
         if (this.question.type === 'multi') {
             const nextButton = this.shadowRoot.querySelector('.next');
             nextButton.addEventListener('click', (e) => {
-                console.log('klik');
+                this.handleMultiAnswer();
             });
         }
         // Add back button if availialbe
