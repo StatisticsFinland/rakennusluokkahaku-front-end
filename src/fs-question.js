@@ -7,76 +7,105 @@ class FsQuestion extends HTMLElement {
         this.reply = null;
         this.qNumber = 1;
     }
+    // Called after constructor
+    async connectedCallback() {
+        const data = await this.fetchQuestion();
+        this.question = data;
 
-    // template for single questions
+        const testQ = {
+            type: 'multi',
+            attribute_question: 'Minkälaisia vessoja tilassa on?',
+            attributes: [
+                {
+                    name: 'WC',
+                    id: '100',
+                },
+                {
+                    name: 'WC, esteetön',
+                    id: '101',
+                },
+                {
+                    name: 'PuuCee',
+                    id: '102',
+                },
+            ],
+        };
+        this.question = testQ;
+        this.render();
+    }
+    // Base html template
     get template() {
         return `
         <div class="comp">
           <p class="question">${this.qNumber}. ${this.questionString}</p>
-          <div class="button-container">
-            <button class="ok">Kyllä</button>
-            <button class="no">Ei</button>
-            <button class="skip">Ohita</button>
-            ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
-            </div>
+          ${this.question.type === 'simple' ? this.simpleTemplate : this.multiTemplate}
         </div>
         `;
     }
-
-    // template for multiquestions (NO LOGIC YET / NOT IMPLEMNTED)
-    get multiquestionTemplate() {
+    // Template for single questions
+    get simpleTemplate() {
         return `
-        <div class="comp">
-        <p class="question">${this.qNumber}. ${this.questionString}</p>
-        <table align="center">
+            <div class="button-container">
+                <button class="ok">Kyllä</button>
+                <button class="no">Ei</button>
+                <button class="skip">Ohita</button>
+                ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
+            </div>
+        `;
+    }
+    // Template for multiple questions
+    get multiTemplate() {
+        const tableRows = this.question.attributes.map((attr) => {
+            const radioName = `radio${attr.id}`;
+            return `
             <tr>
-                <th>
-                    <!-- empty header above attributes-->
-                </th>
-                <!-- TODO - make these less hardcoded for language support-->
-                <th>Kyllä</th>
-                <th>Ohita</th>
-                <th>Ei</th>
-            </tr>
-            <!-- loopable section for each attribute in question -->
-            <!-- name:s need to be based on attribute, name defines buttongroup -->
-            <tr>
-                <td>
-                    "attribute goes here with more text so that the wanted behaviour can be tested"
-                </td>
+                <td>${attr.name}</td>
                 <td>
                     <label class="container">
-                        <input type="radio" name="radio" value="ok">
+                        <input type="radio" name="${radioName}" value="ok">
                         <span class="checkmark"></span>
                     </label>
                 </td>
                 <td>
                     <label class="container">
-                        <input type="radio" checked="checked" name="radio" value="skip">
+                        <input type="radio" name="${radioName}" value="skip" checked>
                         <span class="checkmark"></span>
                     </label></td>
                 <td>
                     <label class="container">
-                        <input type="radio" name="radio" value="no">
+                        <input type="radio" name="${radioName}" value="no">
                         <span class="checkmark"></span>
                     </label>
                 </td>
             </tr>
+            `;
+        }).join('');
+        return `
+        <table align="center">
+          <thead>
+            <tr>
+                <th><!-- empty header above attributes--></th>
+                <th>Kyllä</th>
+                <th>Ohita</th>
+                <th>Ei</th>
+            </tr>
+          </thead>
+          <tbody>
+          ${tableRows}
+          </tbody>
         </table>
-
         <div class="button-container">
             <button class="next">Seuraava</button>
             ${this.qNumber !== 1 ? '<button class="previous">Edellinen</button>' : ''}
         </div>
-    </div>
         `;
     }
-
+    // Check whether to use a question template or not
     get questionString() {
         const qString = this.question.attribute_question;
         return qString ? qString : `Onko rakennuksessa ${this.question.attribute_name}?`;
     }
-
+    // Css for all elements
     get style() {
         return `
         <style>
@@ -201,7 +230,6 @@ class FsQuestion extends HTMLElement {
         </style>
         `;
     }
-
     // get the preliminary question
     async fetchQuestion() {
         const url = `${baseUrl}/question`;
@@ -216,7 +244,6 @@ class FsQuestion extends HTMLElement {
             .then((res) => res.json())
             .catch((error) => console.error('Error:', error));
     }
-
     // POST answer and get new question and scores
     async postAnswer(answer) {
         const url = `${baseUrl}/answer`;
@@ -230,7 +257,6 @@ class FsQuestion extends HTMLElement {
             body: JSON.stringify(answer),
         }).then((response) => response.json());
     }
-
     // GET previous question and scores
     async getPrevious() {
         const url = `${baseUrl}/previous`;
@@ -245,8 +271,7 @@ class FsQuestion extends HTMLElement {
             .then((res) => res.json())
             .catch((error) => console.error('Error:', error));
     }
-
-    // sends new classes to list element
+    // Sends new classes to result element
     updateClasses() {
         const event = new CustomEvent('updateScores', {
             bubbles: true,
@@ -255,35 +280,19 @@ class FsQuestion extends HTMLElement {
         });
         this.dispatchEvent(event);
     }
-
-    async connectedCallback() {
-        const data = await this.fetchQuestion();
-        this.question = data;
-
-        this.render();
-    }
-
     render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
         }
 
         this.shadowRoot.innerHTML = '';
-        let temp;
-        // // implementation ish?
-        // if (this.response.type == 'multi') {
-        //     temp = document.createElement('multiquestionTemplate');
-        //     temp.innerHTML = this.style + this.multiquestionTemplate;
-        // } else {
-        temp = document.createElement('template');
+        const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
-        // }
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
 
         this.addEventListeners();
     }
-
-    // handles the logic for responding to user input
+    // Handles the logic for responding to user input
     async handleAnswer(response) {
         const answer = {
             language: 'suomi',
@@ -306,23 +315,39 @@ class FsQuestion extends HTMLElement {
         this.updateClasses();
         this.render();
     }
-
-    // event listeners for answer buttons
+    async handleMultiAnswer() {
+        const attributes = this.question.attributes.map((attr) => {
+            const checked = this.shadowRoot.querySelector(`input[name="radio${attr.id}"]:checked`);
+            const ans = {...attr,
+                response: checked.value};
+            return ans;
+        });
+        console.log(attributes);
+    }
+    // Event listeners for answer buttons
     addEventListeners() {
-        const okButton = this.shadowRoot.querySelector('.ok');
-        okButton.addEventListener('click', (e) => {
-            this.handleAnswer('yes');
-        });
+        if (this.question.type === 'simple') {
+            const okButton = this.shadowRoot.querySelector('.ok');
+            okButton.addEventListener('click', (e) => {
+                this.handleAnswer('yes');
+            });
 
-        const noButton = this.shadowRoot.querySelector('.no');
-        noButton.addEventListener('click', (e) => {
-            this.handleAnswer('no');
-        });
-        const skipButton = this.shadowRoot.querySelector('.skip');
-        skipButton.addEventListener('click', (e) => {
-            this.handleAnswer('skip');
-        });
-        // /add back button if availialbe
+            const noButton = this.shadowRoot.querySelector('.no');
+            noButton.addEventListener('click', (e) => {
+                this.handleAnswer('no');
+            });
+            const skipButton = this.shadowRoot.querySelector('.skip');
+            skipButton.addEventListener('click', (e) => {
+                this.handleAnswer('skip');
+            });
+        }
+        if (this.question.type === 'multi') {
+            const nextButton = this.shadowRoot.querySelector('.next');
+            nextButton.addEventListener('click', (e) => {
+                this.handleMultiAnswer();
+            });
+        }
+        // Add back button if availialbe
         if (this.qNumber !== 1) {
             const previousButton = this.shadowRoot.querySelector('.previous');
             previousButton.addEventListener('click', (e) => {
