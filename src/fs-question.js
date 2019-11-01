@@ -5,6 +5,7 @@ class FsQuestion extends HTMLElement {
         super();
         this.question = null;
         this.reply = null;
+        this.language = 'suomi';
         this.qNumber = 1;
     }
     // Called after constructor
@@ -30,7 +31,7 @@ class FsQuestion extends HTMLElement {
                 },
             ],
         };
-        this.question = testQ;
+        // this.question = testQ;
         this.render();
     }
     // Base html template
@@ -38,7 +39,7 @@ class FsQuestion extends HTMLElement {
         return `
         <div class="comp">
           <p class="question">${this.qNumber}. ${this.questionString}</p>
-          ${this.question.type === 'simple' ? this.simpleTemplate : this.multiTemplate}
+          ${this.question.type === 'multi' ? this.multiTemplate : this.simpleTemplate}
         </div>
         `;
     }
@@ -292,13 +293,27 @@ class FsQuestion extends HTMLElement {
 
         this.addEventListeners();
     }
+
+    makeAnswer(response) {
+        if (this.question.type === 'multi') {
+            response = this.question.attributes.map((attr) => {
+                const checked = this.shadowRoot.querySelector(`input[name="radio${attr.id}"]:checked`);
+                const ans = {...attr,
+                    response: checked.value};
+                return ans;
+            });
+        }
+        const answer = {
+            language: this.language,
+            response: response,
+            attribute_id: this.question.attribute_id,
+        };
+        return answer;
+    }
+
     // Handles the logic for responding to user input
     async handleAnswer(response) {
-        const answer = {
-            language: 'suomi',
-            attribute_id: this.question.attribute_id,
-            response: response,
-        };
+        const answer = this.makeAnswer();
         if (response === 'previous') {
             this.qNumber--;
             this.reply = await this.getPrevious();
@@ -314,15 +329,6 @@ class FsQuestion extends HTMLElement {
 
         this.updateClasses();
         this.render();
-    }
-    async handleMultiAnswer() {
-        const attributes = this.question.attributes.map((attr) => {
-            const checked = this.shadowRoot.querySelector(`input[name="radio${attr.id}"]:checked`);
-            const ans = {...attr,
-                response: checked.value};
-            return ans;
-        });
-        console.log(attributes);
     }
     // Event listeners for answer buttons
     addEventListeners() {

@@ -30,7 +30,7 @@ describe('question test', async () => {
     });
 
     it('gets initial question from backend', async () => {
-        expect(element.question).to.have.keys(['attribute_id', 'attribute_name', 'attribute_question']);
+        expect(element.question).to.have.keys(['attribute_id', 'attribute_name', 'attribute_question', 'type']);
     });
 
     it('starts counting correctly', async () => {
