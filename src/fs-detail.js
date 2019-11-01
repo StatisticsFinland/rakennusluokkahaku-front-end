@@ -2,11 +2,16 @@ class FsDetail extends HTMLElement {
     constructor() {
         super();
         this.classification = null;
+        this.hidden = true;
 
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
             parentDiv.addEventListener('showDetails', this.updateDetail.bind(this));
         }
+    }
+
+    connectedCallback() {
+        this.render();
     }
 
     updateDetail(event) {
@@ -33,6 +38,7 @@ class FsDetail extends HTMLElement {
                     ${this.includes}
                     ${this.includesAlso}
                     ${this.keywords}
+                    ${this.feedback}
                 </ul>
             </div>
         </div>
@@ -72,7 +78,13 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li class="keywords"><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span></li>
+        <li class="keywords"><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span><hr/></li>
+        `;
+    }
+
+    get feedback() {
+        return `
+        <li class="feedback"><span>Oliko tämä hakemanne luokka?</span> <button class="ok">Kyllä</button> <button class="no">Ei</button></li>
         `;
     }
 
@@ -123,6 +135,22 @@ class FsDetail extends HTMLElement {
         font-weight: bold;
         font-size: 1em;
     }
+    button {
+        min-width: 50px;
+        background-color: #0073b0;
+        border-style: hidden;
+        box-shadow: 2px 2px 1px #888888;
+        border-radius: 4px;
+        font-size: 16px;
+        padding: 3px;
+        color:white;
+        cursor: pointer;
+      }
+    button:hover {
+        color: black;
+        background-color: #edf3f8;
+        border-color: #6c757d;
+    }
     </style>
     `;
     }
@@ -138,12 +166,43 @@ class FsDetail extends HTMLElement {
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
+        if (!this.hidden) this.addEventListeners();
     }
 
-    connectedCallback() {
-        this.render();
+    addEventListeners() {
+        const okButton = this.shadowRoot.querySelector('.ok');
+        okButton.addEventListener('click', (e) => {
+            this.handleAnswer('yes');
+        });
+        const noButton = this.shadowRoot.querySelector('.no');
+        noButton.addEventListener('click', () => {
+            this.handleAnswer('no');
+        });
+    }
+    handleAnswer(str) {
+        const answer = {
+            response: str,
+            class_id: this.classification.code,
+            class_name: this.classification.name,
+        };
+        this.postAnswer(answer);
     }
 
+    // POST answer to endpoint
+    async postAnswer(answer) {
+        const base = 'http://faceted.ddns.net:5000';
+        const endpoint = '/feedback';
+        return await fetch(base + endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'include',
+            body: JSON.stringify(answer),
+        }).then((response) => response.json());
+    }
+    // Cleanup
     disconnectedCallback() {
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
