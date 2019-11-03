@@ -1,62 +1,90 @@
 /* eslint-disable no-unused-expressions */
 import {expect, fixture} from '@open-wc/testing';
+import sinon from 'sinon';
+import sleep from './util';
 
 import '../src/fs-detail';
+import {mockResponse, simpleClassification, complexClassification} from './mocks/detailMock';
 
-let el;
+let element;
+let fetchStub;
 
 describe('Detail element tests', () => {
     before(async () => {
-        el = await fixture('<fs-detail></fs-detail>');
+        element = await fixture('<fs-detail></fs-detail>');
+        await sleep(100);
     });
 
     it('default classification is null', () => {
-        expect(el.classification).to.equal(null);
+        expect(element.classification).to.equal(null);
     });
 
     it('is hidden initially', () => {
-        expect(el.hidden).to.equal(true);
+        expect(element.hidden).to.equal(true);
     });
 
     it('renders correctly when it contains data', () => {
-        const classification = {
-            code: '0110',
-            name: 'Omakotitalot',
-            note: 'Pientalot, joissa on yksi asuinhuoneisto.',
-        };
-        const data = {
-            detail: classification,
-        };
-        el.updateDetail(data);
+        element.updateDetail(simpleClassification);
 
-        const nameh3 = el.shadowRoot.querySelector('h3');
-        const includes = el.shadowRoot.querySelector('.includes');
+        const nameh3 = element.shadowRoot.querySelector('h3');
+        const includes = element.shadowRoot.querySelector('.includes');
 
-        expect(el.hidden).to.equal(false);
+        expect(element.hidden).to.equal(false);
         expect(nameh3).to.contain.html('0110 Omakotitalot');
         expect(includes).to.equal(null);
     });
 
     it('renders all fields correctly', () => {
-        const classification = {
-            code: '0110',
-            name: 'Omakotitalot',
-            note: 'Pientalot, joissa on yksi asuinhuoneisto.',
-            includes: ['pientalot'],
-            excludes: ['kerrostalot'],
-            includesAlso: ['luhtitalot'],
-            keywords: 'yhden asunnon talo, yksiasuntoinen pientalo, yhden asunnon pientalo, yhden asuinhuoneiston talo, townhouse-talo, kaupunkipientalo',
-        };
-        const data = {
-            detail: classification,
-        };
-        el.updateDetail(data);
-        const sr = el.shadowRoot;
+        element.updateDetail(complexClassification);
+        const sr = element.shadowRoot;
 
         expect(sr.querySelector('.note')).to.contain.html('Pientalot, joissa on yksi asuinhuoneisto.');
         expect(sr.querySelector('.includes')).to.contain.html('pientalot');
         expect(sr.querySelector('.excludes')).to.contain.html('kerrostalot');
         expect(sr.querySelector('.includesAlso')).to.contain.html('luhtitalot');
         expect(sr.querySelector('.keywords')).to.contain.html('townhouse-talo');
+        expect(sr.querySelector('.feedback')).to.contain.html('Oliko tämä hakemanne luokka?');
+    });
+});
+
+describe('Feedback tests', () => {
+    before(async () => {
+        fetchStub = sinon.stub(window, 'fetch').resolves(mockResponse);
+        element = await fixture('<fs-detail></fs-detail>');
+    });
+
+    it('attaches event listeners to buttons', () => {
+        element.updateDetail(complexClassification);
+        const okButton = element.shadowRoot.querySelector('.ok');
+        const okSpy = sinon.spy(okButton, 'addEventListener');
+
+        const noButton = element.shadowRoot.querySelector('.no');
+        const noSpy = sinon.spy(noButton, 'addEventListener');
+
+        element.addEventListeners();
+
+        expect(okSpy.calledWith('click')).to.equal(true);
+        expect(noSpy.calledWith('click')).to.equal(true);
+    });
+
+    it('sends POST request on click', () => {
+        const okButton = element.shadowRoot.querySelector('.ok');
+        okButton.click();
+
+        expect(fetchStub.called).to.equal(true);
+    });
+
+    it('doesn\'t render buttons after feedback given', () => {
+        const buttons = element.shadowRoot.querySelectorAll('button');
+
+        expect(buttons.length).to.equal(0);
+    });
+
+    it('has feedback text instead of buttons', () => {
+        expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestasi');
+    });
+
+    after(() => {
+        window.fetch.restore();
     });
 });

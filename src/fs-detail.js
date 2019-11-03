@@ -3,6 +3,7 @@ class FsDetail extends HTMLElement {
         super();
         this.classification = null;
         this.hidden = true;
+        this.answered = false;
 
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
@@ -83,6 +84,11 @@ class FsDetail extends HTMLElement {
     }
 
     get feedback() {
+        if (this.answered) {
+            return `
+            <li class="feedback">Kiitos palautteestasi</li>
+            `;
+        }
         return `
         <li class="feedback"><span>Oliko tämä hakemanne luokka?</span> <button class="ok">Kyllä</button> <button class="no">Ei</button></li>
         `;
@@ -166,26 +172,28 @@ class FsDetail extends HTMLElement {
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
-        if (!this.hidden) this.addEventListeners();
+        if (!this.hidden && !this.answered) this.addEventListeners();
     }
 
     addEventListeners() {
         const okButton = this.shadowRoot.querySelector('.ok');
         okButton.addEventListener('click', (e) => {
-            this.handleAnswer('yes');
+            this.handleClick('yes');
         });
         const noButton = this.shadowRoot.querySelector('.no');
         noButton.addEventListener('click', () => {
-            this.handleAnswer('no');
+            this.handleClick('no');
         });
     }
-    handleAnswer(str) {
+    handleClick(str) {
         const answer = {
             response: str,
             class_id: this.classification.code,
             class_name: this.classification.name,
         };
         this.postAnswer(answer);
+        this.answered = true;
+        this.render();
     }
 
     // POST answer to endpoint
