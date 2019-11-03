@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
-import sleep from './util';
+import {sleep, mockResponse} from './util';
 
 import '../src/fs-detail';
-import {mockResponse, simpleClassification, complexClassification} from './mocks/detailMock';
+import {simpleClassification, complexClassification} from './mocks/detail';
 
 let element;
 let fetchStub;
@@ -47,7 +47,7 @@ describe('Detail element tests', () => {
     });
 });
 
-describe('Feedback tests', () => {
+describe('Feedback test run', () => {
     before(async () => {
         fetchStub = sinon.stub(window, 'fetch').resolves(mockResponse);
         element = await fixture('<fs-detail></fs-detail>');
@@ -68,10 +68,22 @@ describe('Feedback tests', () => {
     });
 
     it('sends POST request on click', () => {
+        expect(fetchStub.called).to.equal(false);
+
         const okButton = element.shadowRoot.querySelector('.ok');
         okButton.click();
 
         expect(fetchStub.called).to.equal(true);
+
+        const c = complexClassification.detail;
+
+        const expectedArgs = {
+            response: 'yes',
+            class_id: c.code,
+            class_name: c.name,
+        };
+
+        expect(fetchStub.args[0][1].body).to.equal(JSON.stringify(expectedArgs));
     });
 
     it('doesn\'t render buttons after feedback given', () => {

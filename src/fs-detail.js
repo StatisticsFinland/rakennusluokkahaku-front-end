@@ -208,7 +208,7 @@ class FsDetail extends HTMLElement {
             mode: 'cors',
             credentials: 'include',
             body: JSON.stringify(answer),
-        }).then((response) => response.json());
+        });
     }
     // Cleanup
     disconnectedCallback() {
