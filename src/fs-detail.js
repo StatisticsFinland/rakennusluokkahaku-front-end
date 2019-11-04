@@ -79,16 +79,12 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li class="keywords"><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span><hr/></li>
+        <li class="keywords"><span class="header">Synonyymit: </span><span>${this.classification.keywords}</span>${this.feedback ? '<hr/>' : ''}</li>
         `;
     }
 
     get feedback() {
-        if (this.answered) {
-            return `
-            <li class="feedback">Kiitos palautteestasi</li>
-            `;
-        }
+        if (this.answered) return '';
         return `
         <li class="feedback"><span>Oliko tämä hakemanne luokka?</span> <button class="ok">Kyllä</button> <button class="no">Ei</button></li>
         `;
@@ -192,12 +188,15 @@ class FsDetail extends HTMLElement {
             class_name: this.classification.name,
         };
         this.postAnswer(answer);
+        // This is shown to the user once and on follorwing renders
+        // the feedback <li> isn't rendered at all.
         this.answered = true;
-        this.render();
+        const feedback = this.shadowRoot.querySelector('.feedback');
+        feedback.textContent = 'Kiitos palautteestasi';
     }
-
     // POST answer to endpoint
     async postAnswer(answer) {
+        if (answer.response === 'no') return;
         const base = 'http://faceted.ddns.net:5000';
         const endpoint = '/feedback';
         return await fetch(base + endpoint, {

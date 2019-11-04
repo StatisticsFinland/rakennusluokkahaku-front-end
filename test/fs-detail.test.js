@@ -45,6 +45,18 @@ describe('Detail element tests', () => {
         expect(sr.querySelector('.keywords')).to.contain.html('townhouse-talo');
         expect(sr.querySelector('.feedback')).to.contain.html('Oliko tämä hakemanne luokka?');
     });
+
+    it('no button doesn\'t call fetch', () => {
+        const fetchSpy = sinon.spy(window, 'fetch');
+        const noButton = element.shadowRoot.querySelector('.no');
+        noButton.click();
+
+        expect(fetchSpy.called).to.equal(false);
+    });
+
+    after(() => {
+        window.fetch.restore();
+    });
 });
 
 describe('Feedback test run', () => {
@@ -94,6 +106,13 @@ describe('Feedback test run', () => {
 
     it('has feedback text instead of buttons', () => {
         expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestasi');
+    });
+
+    it('doesn\'t draw anything on re-render', () => {
+        element.render();
+        const fb = element.shadowRoot.querySelector('.feedback');
+
+        expect(fb).to.equal(null);
     });
 
     after(() => {
