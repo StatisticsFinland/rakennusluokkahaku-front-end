@@ -1,21 +1,25 @@
 // 4 questions to play around with
 const questions = [
     {
+        type: 'simple',
         attribute_id: '1',
         attribute_name: 'Asunnot',
         attribute_question: 'Onko rakennus asunto?',
     },
     {
+        type: 'simple',
         attribute_id: '101',
         attribute_name: 'Asuinhuone',
         attribute_question: '',
     },
     {
+        type: 'simple',
         attribute_id: '102',
         attribute_name: 'Eteinen',
         attribute_question: '',
     },
     {
+        type: 'simple',
         attribute_id: '103',
         attribute_name: 'Keittiö',
         attribute_question: '',
