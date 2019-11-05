@@ -1,4 +1,4 @@
-const baseUrl = 'http://faceted.ddns.net:5000';
+const baseUrl = 'http://0.0.0.0:5000';
 
 class FsQuestion extends HTMLElement {
     constructor() {
@@ -12,26 +12,6 @@ class FsQuestion extends HTMLElement {
     async connectedCallback() {
         const data = await this.fetchQuestion();
         this.question = data;
-
-        const testQ = {
-            type: 'multi',
-            attribute_question: 'Minkälaisia vessoja tilassa on?',
-            attributes: [
-                {
-                    name: 'WC',
-                    id: '100',
-                },
-                {
-                    name: 'WC, esteetön',
-                    id: '101',
-                },
-                {
-                    name: 'PuuCee',
-                    id: '102',
-                },
-            ],
-        };
-        // this.question = testQ;
         this.render();
     }
     // Base html template
@@ -313,7 +293,7 @@ class FsQuestion extends HTMLElement {
 
     // Handles the logic for responding to user input
     async handleAnswer(response) {
-        const answer = this.makeAnswer();
+        const answer = this.makeAnswer(response);
         if (response === 'previous') {
             this.qNumber--;
             this.reply = await this.getPrevious();
