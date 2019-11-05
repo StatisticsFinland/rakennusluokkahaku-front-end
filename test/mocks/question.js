@@ -26,6 +26,7 @@ const questions = [
     },
 ];
 
+// 2 multiquestions for testingpourposes
 const multiQuestions = [
     {
         type: 'multi',
@@ -72,8 +73,6 @@ const multiQuestions = [
         ],
     },
 ];
-
-export {};
 
 // 3 building classes to play around with
 const buildingClasses = [
