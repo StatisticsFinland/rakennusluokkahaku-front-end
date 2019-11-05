@@ -79,7 +79,7 @@ const buildingClasses = [
     {
         class_id: '0110',
         class_name: 'Omakotitalot',
-        score: 0.50,
+        score: 0.5,
     },
     {
         class_id: '0111',
