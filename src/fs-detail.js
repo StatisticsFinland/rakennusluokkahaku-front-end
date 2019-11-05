@@ -3,6 +3,7 @@ class FsDetail extends HTMLElement {
         super();
         this.classification = null;
         this.hidden = true;
+        this.answered = false;
 
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
@@ -78,11 +79,12 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li class="keywords"><span class="header">Hakusanat: </span><span>${this.classification.keywords}</span><hr/></li>
+        <li class="keywords"><span class="header">Synonyymit: </span><span>${this.classification.keywords}</span>${this.feedback ? '<hr/>' : ''}</li>
         `;
     }
 
     get feedback() {
+        if (this.answered) return '';
         return `
         <li class="feedback"><span>Oliko tämä hakemanne luokka?</span> <button class="ok">Kyllä</button> <button class="no">Ei</button></li>
         `;
@@ -166,30 +168,35 @@ class FsDetail extends HTMLElement {
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
-        if (!this.hidden) this.addEventListeners();
+        if (!this.hidden && !this.answered) this.addEventListeners();
     }
 
     addEventListeners() {
         const okButton = this.shadowRoot.querySelector('.ok');
         okButton.addEventListener('click', (e) => {
-            this.handleAnswer('yes');
+            this.handleClick('yes');
         });
         const noButton = this.shadowRoot.querySelector('.no');
         noButton.addEventListener('click', () => {
-            this.handleAnswer('no');
+            this.handleClick('no');
         });
     }
-    handleAnswer(str) {
+    handleClick(str) {
         const answer = {
             response: str,
             class_id: this.classification.code,
             class_name: this.classification.name,
         };
         this.postAnswer(answer);
+        // This is shown to the user once and on follorwing renders
+        // the feedback <li> isn't rendered at all.
+        this.answered = true;
+        const feedback = this.shadowRoot.querySelector('.feedback');
+        feedback.textContent = 'Kiitos palautteestasi';
     }
-
     // POST answer to endpoint
     async postAnswer(answer) {
+        if (answer.response === 'no') return;
         const base = 'http://faceted.ddns.net:5000';
         const endpoint = '/feedback';
         return await fetch(base + endpoint, {
@@ -200,7 +207,7 @@ class FsDetail extends HTMLElement {
             mode: 'cors',
             credentials: 'include',
             body: JSON.stringify(answer),
-        }).then((response) => response.json());
+        });
     }
     // Cleanup
     disconnectedCallback() {

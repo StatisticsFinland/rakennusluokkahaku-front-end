@@ -1,59 +1,5 @@
 /* eslint-disable max-len*/
 
-function mockResponse(body) {
-    return new window.Response(JSON.stringify(body), {
-        status: 200,
-        headers: {'Content-type': 'application/json'},
-    });
-}
-
-// 4 questions to play around with
-const questions = [
-    {
-        attribute_id: '1',
-        attribute_name: 'Asunnot',
-        attribute_question: 'Onko rakennus asunto?',
-        type: 'simple',
-    },
-    {
-        attribute_id: '101',
-        attribute_name: 'Asuinhuone',
-        attribute_question: '',
-        type: 'simple',
-    },
-    {
-        attribute_id: '102',
-        attribute_name: 'Eteinen',
-        attribute_question: '',
-        type: 'simple',
-    },
-    {
-        attribute_id: '103',
-        attribute_name: 'Keittiö',
-        attribute_question: '',
-        type: 'simple',
-    },
-];
-
-// 3 building classes to play around with
-const buildingClasses = [
-    {
-        class_id: '0110',
-        class_name: 'Omakotitalot',
-        score: 0.50,
-    },
-    {
-        class_id: '0111',
-        class_name: 'Paritalot',
-        score: 0.25,
-    },
-    {
-        class_id: '0112',
-        class_name: 'Rivitalot',
-        score: 0.25,
-    },
-];
-
 // 11 classifications to play around with
 const classifications = [
     {
@@ -787,4 +733,4 @@ const classifications = [
     },
 ];
 
-export {questions, buildingClasses, classifications, mockResponse};
+export {classifications};
