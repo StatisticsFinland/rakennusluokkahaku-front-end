@@ -8,13 +8,14 @@ import '../src/fs-question';
 import {questions, buildingClasses, mockResponse} from './data';
 
 let element;
-let fetchStub;
+let fetchSimpleStub;
 
 describe('question test', async () => {
     beforeEach(async () => {
-        fetchStub = sinon.stub(window, 'fetch')
+        fetchSimpleStub = sinon.stub(window, 'fetch')
             .onCall(0).resolves(mockResponse(questions[0]))
             .onCall(1).resolves(mockResponse({
+                type: 'simple',
                 building_classes: buildingClasses,
                 new_question: questions[1],
                 success: true,
@@ -97,7 +98,7 @@ describe('question test', async () => {
         okButton.click();
         await sleep(100);
 
-        fetchStub.resolves(mockResponse(questions[0]));
+        fetchSimpleStub.resolves(mockResponse(questions[0]));
 
         const backButton = element.shadowRoot.querySelector('.previous');
         backButton.click();
@@ -131,6 +132,7 @@ describe('question test', async () => {
 
     it('Renders attribute_name based question string from reply', () => {
         const q = {
+            type: 'simple',
             attribute_name: 'Kirjasto',
             attribute_id: '0240',
         };
@@ -145,6 +147,7 @@ describe('question test', async () => {
 
     it('Renders the optional question string from reply', () => {
         const q = {
+            type: 'simple',
             attribute_name: 'Sauna',
             attribute_id: '0110',
             attribute_question: 'Erillinen kysymys?',
