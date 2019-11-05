@@ -1,4 +1,4 @@
-const baseUrl = 'http://0.0.0.0:5000';
+const baseUrl = 'http://faceted.ddns.net:5000';
 
 class FsQuestion extends HTMLElement {
     constructor() {
