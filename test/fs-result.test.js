@@ -4,7 +4,8 @@ import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-result';
-import {classifications, mockResponse} from './data';
+import {classifications} from './mocks/result';
+import {mockResponse} from './util';
 
 let elem;
 let apiData;

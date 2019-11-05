@@ -5,7 +5,8 @@ import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
-import {questions, buildingClasses, mockResponse} from './data';
+import {questions, buildingClasses} from './mocks/question';
+import {sleep, mockResponse} from './util';
 
 let element;
 let fetchStub;
@@ -158,7 +159,3 @@ describe('question test', async () => {
         expect(questionText).to.not.contain.html('Sauna');
     });
 });
-
-const sleep = (milliseconds) => {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
