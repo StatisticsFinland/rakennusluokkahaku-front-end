@@ -1,4 +1,4 @@
-// 4 questions to play around with
+// 4 simple questions to play around with
 const questions = [
     {
         type: 'simple',
@@ -26,6 +26,55 @@ const questions = [
     },
 ];
 
+const multiQuestions = [
+    {
+        type: 'multi',
+        attribute_question: 'Minkälaisia vessoja tilassa on?',
+        attributes: [
+            {
+                name: 'WC',
+                id: '100',
+            },
+            {
+                name: 'WC, esteetön',
+                id: '101',
+            },
+            {
+                name: 'PuuCee',
+                id: '102',
+            },
+        ],
+    },
+    {
+        type: 'multi',
+        attribute_question: 'Minkälaista toimintaa rakennuksessa on?',
+        attributes: [
+            {
+                name: 'Sairaan hoitoa',
+                id: '100',
+            },
+            {
+                name: 'Koulutusta',
+                id: '101',
+            },
+            {
+                name: 'Juttuja',
+                id: '102',
+            },
+            {
+                name: 'muita juttuja',
+                id: '103',
+            },
+            {
+                name: 'vielä lisää asioita',
+                id: '104',
+            },
+        ],
+    },
+];
+
+export {};
+
 // 3 building classes to play around with
 const buildingClasses = [
     {
@@ -45,4 +94,4 @@ const buildingClasses = [
     },
 ];
 
-export {questions, buildingClasses};
+export {questions, multiQuestions, buildingClasses};

@@ -330,7 +330,7 @@ class FsQuestion extends HTMLElement {
         if (this.question.type === 'multi') {
             const nextButton = this.shadowRoot.querySelector('.next');
             nextButton.addEventListener('click', (e) => {
-                this.handleMultiAnswer();
+                this.handleAnswer('next');
             });
         }
         // Add back button if availialbe

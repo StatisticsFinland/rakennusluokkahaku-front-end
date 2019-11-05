@@ -5,11 +5,12 @@ import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
-import {questions, buildingClasses} from './mocks/question';
+import {questions, multiQuestions, buildingClasses} from './mocks/question';
 import {sleep, mockResponse} from './util';
 
 let element;
 let fetchSimpleStub;
+let fetchMultiStub;
 
 describe('question test', async () => {
     beforeEach(async () => {
@@ -160,5 +161,69 @@ describe('question test', async () => {
 
         expect(questionText).to.contain.html('Erillinen kysymys?');
         expect(questionText).to.not.contain.html('Sauna');
+    });
+});
+
+describe('Multiquestion test', async () => {
+    beforeEach(async () => {
+        fetchMultiStub = sinon.stub(window, 'fetch')
+            .onCall(0).resolves(mockResponse(multiQuestions[0]))
+            .onCall(1).resolves(mockResponse({
+                type: 'multi',
+                building_classes: buildingClasses,
+                new_question: multiQuestions[1],
+                success: true,
+            }));
+        element = await fixture('<fs-question></fs-question>');
+        // time to fetch from the stub before running any test
+        await sleep(100);
+    });
+
+    afterEach(() => {
+        window.fetch.restore();
+    });
+
+    it('applies correct amount of buttons initially', async () => {
+        const buttons = element.shadowRoot.querySelectorAll('button');
+
+        expect(buttons.length).to.equal(1);
+    });
+
+    it('back button appears if it is not the initial question', async () => {
+        const nextButton = element.shadowRoot.querySelector('.next');
+        nextButton.click();
+        await sleep(100);
+
+        const buttons = element.shadowRoot.querySelectorAll('button');
+
+        expect(buttons.length).to.equal(2);
+        expect(element.qNumber).to.equal(2);
+    });
+
+    it('back button for multi questions works as intended', async () => {
+        const q = element.question.attribute_question;
+        const nextButton = element.shadowRoot.querySelector('.next');
+        nextButton.click();
+        await sleep(100);
+
+        fetchMultiStub.resolves(mockResponse(multiQuestions[0]));
+        const prevButton = element.shadowRoot.querySelector('.previous');
+        prevButton.click();
+        await sleep(100);
+
+        expect(element.qNumber).to.equal(1);
+        expect(element.question.attribute_question).to.equal(q);
+    });
+
+    it('alternatives can be clicked and it makes a difference', async () => {
+        // checks preselected value which should be "skip"
+        const preselected = element.shadowRoot.querySelector(`input[name="radio100"]:checked`);
+        // clicks on first selectable option, aka: ok
+        const radio = element.shadowRoot.querySelector(`input[name="radio100"]`);
+        radio.click();
+        // saves new selected value
+        const afterselect = element.shadowRoot.querySelector(`input[name="radio100"]:checked`);
+        // makes sure they are different
+        expect(afterselect).to.not.equal(preselected);
     });
 });
