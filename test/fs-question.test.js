@@ -227,3 +227,53 @@ describe('Multiquestion test', async () => {
         expect(afterselect).to.not.equal(preselected);
     });
 });
+
+describe('Multiquestion POST:s', async () => {
+    before( async () =>{
+        fetchMultiStub = sinon.stub(window, 'fetch')
+            .onCall(0).resolves(mockResponse(multiQuestions[0]))
+            .onCall(1).resolves(mockResponse({
+                type: 'multi',
+                building_classes: buildingClasses,
+                new_question: multiQuestions[1],
+                success: true,
+            }));
+        element = await fixture('<fs-question></fs-question>');
+        // time to fetch from the stub before running any test
+        await sleep(100);
+    });
+
+    it('sends correctly formatted POST on click', () => {
+        const radio = element.shadowRoot.querySelector(`input[name="radio100"]`);
+        radio.click();
+        const radio2 = element.shadowRoot.querySelector(`input#radio102n`);
+        radio2.click();
+        const nextButton = element.shadowRoot.querySelector('.next');
+        nextButton.click();
+
+        const expectedArgs = {
+            language: element.language,
+            response: [
+                {
+                    attribute_id: '100',
+                    response: 'yes',
+                },
+                {
+                    attribute_id: '101',
+                    response: 'skip',
+                },
+                {
+                    attribute_id: '102',
+                    response: 'no',
+                },
+            ],
+        };
+        console.log(fetchMultiStub.args[1][1].body);
+
+        expect(fetchMultiStub.args[1][1].body).to.equal(JSON.stringify(expectedArgs));
+    });
+
+    after(() => {
+        window.fetch.restore();
+    });
+});

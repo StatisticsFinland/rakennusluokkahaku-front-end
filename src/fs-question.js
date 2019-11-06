@@ -37,24 +37,24 @@ class FsQuestion extends HTMLElement {
     // Template for multiple questions
     get multiTemplate() {
         const tableRows = this.question.attributes.map((attr) => {
-            const radioName = `radio${attr.id}`;
+            const radioName = `radio${attr.attribute_id}`;
             return `
             <tr>
                 <td>${attr.name}</td>
                 <td>
                     <label class="container">
-                        <input type="radio" name="${radioName}" value="ok">
+                        <input type="radio" id="${radioName}y" name="${radioName}" value="yes">
                         <span class="checkmark"></span>
                     </label>
                 </td>
                 <td>
                     <label class="container">
-                        <input type="radio" name="${radioName}" value="skip" checked>
+                        <input type="radio" id="${radioName}s" name="${radioName}" value="skip" checked>
                         <span class="checkmark"></span>
                     </label></td>
                 <td>
                     <label class="container">
-                        <input type="radio" name="${radioName}" value="no">
+                        <input type="radio" id="${radioName}n" name="${radioName}" value="no">
                         <span class="checkmark"></span>
                     </label>
                 </td>
@@ -275,18 +275,25 @@ class FsQuestion extends HTMLElement {
     }
 
     makeAnswer(response) {
+        let res;
         if (this.question.type === 'multi') {
-            response = this.question.attributes.map((attr) => {
-                const checked = this.shadowRoot.querySelector(`input[name="radio${attr.id}"]:checked`);
-                const ans = {...attr,
+            res = this.question.attributes.map((attr) => {
+                const checked = this.shadowRoot.querySelector(`input[name="radio${attr.attribute_id}"]:checked`);
+                res = {attribute_id: attr.attribute_id,
                     response: checked.value};
-                return ans;
+                return res;
             });
+        } else {
+            res = [
+                {
+                    attribute_id: this.question.attribute_id,
+                    response: response,
+                },
+            ];
         }
         const answer = {
             language: this.language,
-            response: response,
-            attribute_id: this.question.attribute_id,
+            response: res,
         };
         return answer;
     }

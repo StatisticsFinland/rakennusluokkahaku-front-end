@@ -34,15 +34,15 @@ const multiQuestions = [
         attributes: [
             {
                 name: 'WC',
-                id: '100',
+                attribute_id: '100',
             },
             {
                 name: 'WC, esteetön',
-                id: '101',
+                attribute_id: '101',
             },
             {
                 name: 'PuuCee',
-                id: '102',
+                attribute_id: '102',
             },
         ],
     },
@@ -52,23 +52,23 @@ const multiQuestions = [
         attributes: [
             {
                 name: 'Sairaan hoitoa',
-                id: '100',
+                attribute_id: '100',
             },
             {
                 name: 'Koulutusta',
-                id: '101',
+                attribute_id: '101',
             },
             {
                 name: 'Juttuja',
-                id: '102',
+                attribute_id: '102',
             },
             {
                 name: 'muita juttuja',
-                id: '103',
+                attribute_id: '103',
             },
             {
                 name: 'vielä lisää asioita',
-                id: '104',
+                attribute_id: '104',
             },
         ],
     },
