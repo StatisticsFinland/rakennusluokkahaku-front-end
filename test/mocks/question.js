@@ -33,15 +33,15 @@ const multiQuestions = [
         attribute_question: 'Minkälaisia vessoja tilassa on?',
         attributes: [
             {
-                name: 'WC',
+                attribute_name: 'WC',
                 attribute_id: '100',
             },
             {
-                name: 'WC, esteetön',
+                attribute_name: 'WC, esteetön',
                 attribute_id: '101',
             },
             {
-                name: 'PuuCee',
+                attribute_name: 'PuuCee',
                 attribute_id: '102',
             },
         ],
@@ -51,23 +51,23 @@ const multiQuestions = [
         attribute_question: 'Minkälaista toimintaa rakennuksessa on?',
         attributes: [
             {
-                name: 'Sairaan hoitoa',
+                attribute_name: 'Sairaan hoitoa',
                 attribute_id: '100',
             },
             {
-                name: 'Koulutusta',
+                attribute_name: 'Koulutusta',
                 attribute_id: '101',
             },
             {
-                name: 'Juttuja',
+                attribute_name: 'Juttuja',
                 attribute_id: '102',
             },
             {
-                name: 'muita juttuja',
+                attribute_name: 'muita juttuja',
                 attribute_id: '103',
             },
             {
-                name: 'vielä lisää asioita',
+                attribute_name: 'vielä lisää asioita',
                 attribute_id: '104',
             },
         ],

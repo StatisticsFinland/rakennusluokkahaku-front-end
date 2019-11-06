@@ -183,6 +183,13 @@ describe('Multiquestion test', async () => {
         window.fetch.restore();
     });
 
+    it('renders correctly', async () => {
+        expect(element.shadowRoot.querySelector('.question')).to.contain.html('Minkälaisia vessoja tilassa on?');
+        element.question.attributes.forEach((attribute) =>{
+            expect(element.shadowRoot.querySelector(`#attr${attribute.attribute_id}`)).to.contain.html(attribute.attribute_name);
+        });
+    });
+
     it('applies correct amount of buttons initially', async () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
 
@@ -268,7 +275,6 @@ describe('Multiquestion POST:s', async () => {
                 },
             ],
         };
-        console.log(fetchMultiStub.args[1][1].body);
 
         expect(fetchMultiStub.args[1][1].body).to.equal(JSON.stringify(expectedArgs));
     });

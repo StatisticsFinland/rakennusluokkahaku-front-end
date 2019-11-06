@@ -39,8 +39,8 @@ class FsQuestion extends HTMLElement {
         const tableRows = this.question.attributes.map((attr) => {
             const radioName = `radio${attr.attribute_id}`;
             return `
-            <tr>
-                <td>${attr.name}</td>
+            <tr id="attr${attr.attribute_id}">
+                <td>${attr.attribute_name}</td>
                 <td>
                     <label class="container">
                         <input type="radio" id="${radioName}y" name="${radioName}" value="yes">
