@@ -236,6 +236,37 @@ describe('Multiquestion test', async () => {
     });
 });
 
+describe('Single question POST:s', async () => {
+    before( async () =>{
+        fetchSimpleStub = sinon.stub(window, 'fetch')
+            .onCall(0).resolves(mockResponse(questions[0]))
+            .onCall(1).resolves(mockResponse(questions[1]));
+        element = await fixture('<fs-question></fs-question>');
+        await sleep(100);
+    });
+
+    it('sends singular response inside array', () => {
+        const okButton = element.shadowRoot.querySelector('.ok');
+        okButton.click();
+
+        const expectedArgs = {
+            language: element.language,
+            response: [
+                {
+                    attribute_id: questions[0].attribute_id,
+                    response: 'yes',
+                },
+            ],
+        };
+
+        expect(fetchSimpleStub.args[1][1].body).to.equal(JSON.stringify(expectedArgs));
+    });
+
+    after(() => {
+        window.fetch.restore();
+    });
+});
+
 describe('Multiquestion POST:s', async () => {
     before( async () =>{
         fetchMultiStub = sinon.stub(window, 'fetch')
