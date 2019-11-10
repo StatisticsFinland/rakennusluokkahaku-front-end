@@ -5,6 +5,7 @@ import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
+
 import {questions, multiQuestions, buildingClasses} from './mocks/question';
 import {sleep, mockResponse} from './util';
 
@@ -283,3 +284,4 @@ describe('Multiquestion POST:s', async () => {
         window.fetch.restore();
     });
 });
+
