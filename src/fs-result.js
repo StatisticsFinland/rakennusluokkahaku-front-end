@@ -125,8 +125,8 @@ class FsResult extends HTMLElement {
         border-width: 1px;
         border-color: black;
         border-radius: 4px;
-        max-width: 3ch;
-        min-width: 3ch;
+        max-width: 4ch;
+        min-width: 4ch;
         overflow: auto;
     }
     .itemInfo {
