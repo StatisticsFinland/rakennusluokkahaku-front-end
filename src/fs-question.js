@@ -5,8 +5,12 @@ class FsQuestion extends HTMLElement {
         super();
         this.question = null;
         this.reply = null;
-        this.language = 'suomi';
+        this.language = 'fi';
         this.qNumber = 1;
+        this.yesButton = null;
+        this.noButton = null;
+        this.skipButton = null;
+        this.previousButton = null;
     }
     // Called after constructor
     async connectedCallback() {
@@ -27,10 +31,10 @@ class FsQuestion extends HTMLElement {
     get simpleTemplate() {
         return `
             <div class="button-container">
-                <button class="ok">Kyllä</button>
-                <button class="no">Ei</button>
-                <button class="skip">Ohita</button>
-                ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
+                <button class="ok">${this.yesButton}</button>
+                <button class="no">${this.noButton}</button>
+                <button class="skip">${this.skipButton}</button>
+                ${this.qNumber !== 1 ? `<button class="previous">${this.previousButton}</button>` : ''}
             </div>
         `;
     }
@@ -261,6 +265,41 @@ class FsQuestion extends HTMLElement {
         });
         this.dispatchEvent(event);
     }
+
+    // Monitors the value of language attribute
+    static get observedAttributes() {
+        return ['language'];
+    }
+
+    // Reacts to changes in the value of language attribute
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) {
+            return;
+        } else if (name === 'language') {
+            this.language = newValue;
+            this.setLanguage();
+        }
+    }
+
+    setLanguage() {
+        if (this.language === 'en') {
+            this.yesButton = 'Yes';
+            this.noButton = 'No';
+            this.skipButton = 'Skip';
+            this.previousButton = 'Previous';
+        } else if (this.language === 'sv') {
+            this.yesButton = 'Ja';
+            this.noButton = 'Nej';
+            this.skipButton = 'Håppa över frågan';
+            this.previousButton = 'Förra frågan';
+        } else if (this.language === 'fi') {
+            this.yesButton = 'Kyllä';
+            this.noButton = 'Ei';
+            this.skipButton = 'Ohita';
+            this.previousButton = 'Edellinen';
+        }
+    }
+
     render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
@@ -272,6 +311,7 @@ class FsQuestion extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
 
         this.addEventListeners();
+        this.setLanguage();
     }
 
     makeAnswer(response) {
