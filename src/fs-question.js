@@ -383,7 +383,7 @@ class FsQuestion extends HTMLElement {
 const languages = {
     'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava'},
     'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next'},
-    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Håppa över frågan', 'previousText': 'Förra frågan', 'nextText': 'Nästa frågan'}};
+    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Håppa över', 'previousText': 'Föregående', 'nextText': 'Nästa'}};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);
