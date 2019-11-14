@@ -7,7 +7,7 @@ class FsDetail extends HTMLElement {
         this.language = 'fi';
         this.yesButton = null;
         this.noButton = null;
-        this.feedbackQuestion = null;
+        this.fbQuestion = null;
         this.feedbackReply = null;
         this.excludesText = null;
         this.includesText = null;
@@ -95,7 +95,7 @@ class FsDetail extends HTMLElement {
     get feedback() {
         if (this.answered) return '';
         return `
-        <li class="feedback"><span>${this.feedbackQuestion}</span> <button class="ok">${this.yesButton}</button> <button class="no">${this.noButton}</button></li>
+        <li class="feedback"><span>${this.fbQuestion}</span> <button class="ok">${this.yesButton}</button> <button class="no">${this.noButton}</button></li>
         `;
     }
 
@@ -190,7 +190,7 @@ class FsDetail extends HTMLElement {
     setLanguage() {
         this.yesButton = languages[this.language]['yesButton'];
         this.noButton = languages[this.language]['noButton'];
-        this.feedbackQuestion = languages[this.language]['feedbackQuestion'];
+        this.fbQuestion = languages[this.language]['feedbackQuestion'];
         this.feedbackReply = languages[this.language]['feedbackReply'];
         this.excludesText = languages[this.language]['excludesText'];
         this.includesText = languages[this.language]['includesText'];
