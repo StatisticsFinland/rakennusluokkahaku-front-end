@@ -256,7 +256,7 @@ class FsDetail extends HTMLElement {
 }
 
 const languages = {
-    'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'feedbackQuestion': 'Oliko tämä hakemasi luokka?', 'feedbackReply': 'Kiitos palautteestasi!',
+    'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'feedbackQuestion': 'Oliko tämä hakemanne luokka?', 'feedbackReply': 'Kiitos palautteestanne!',
         'excludesText': 'Tähän ei kuulu: ', 'includesText': 'Tähän kuuluu: ', 'includesAlsoText': 'Tähän kuuluu myös: ', 'keywordsText': 'Synonyymit: '},
     'en': {'yesButton': 'Yes', 'noButton': 'No', 'feedbackQuestion': 'Is this the building class you are looking for?',
         'feedbackReply': 'Thank you for your feedback!', 'excludesText': 'Excludes: ', 'includesText': 'Includes: ', 'includesAlsoText': 'Includes also:',

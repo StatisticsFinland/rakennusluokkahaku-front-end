@@ -7,11 +7,11 @@ class FsQuestion extends HTMLElement {
         this.reply = null;
         this.language = 'fi';
         this.qNumber = 1;
-        this.yesButton = null;
-        this.noButton = null;
-        this.skipButton = null;
-        this.previousButton = null;
-        this.nextButton = null;
+        this.yesText = null;
+        this.noText = null;
+        this.skipText = null;
+        this.previousText = null;
+        this.nextText = null;
     }
     // Called after constructor
     async connectedCallback() {
@@ -32,10 +32,10 @@ class FsQuestion extends HTMLElement {
     get simpleTemplate() {
         return `
             <div class="button-container">
-                <button class="ok">${this.yesButton}</button>
-                <button class="no">${this.noButton}</button>
-                <button class="skip">${this.skipButton}</button>
-                ${this.qNumber !== 1 ? `<button class="previous">${this.previousButton}</button>` : ''}
+                <button class="ok">${this.yesText}</button>
+                <button class="no">${this.noText}</button>
+                <button class="skip">${this.skipText}</button>
+                ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
             </div>
         `;
     }
@@ -71,9 +71,9 @@ class FsQuestion extends HTMLElement {
           <thead>
             <tr>
                 <th><!-- empty header above attributes--></th>
-                <th>Kyllä</th>
-                <th>Ohita</th>
-                <th>Ei</th>
+                <th>${this.yesText}</th>
+                <th>${this.skipText}</th>
+                <th>${this.noText}</th>
             </tr>
           </thead>
           <tbody>
@@ -81,8 +81,8 @@ class FsQuestion extends HTMLElement {
           </tbody>
         </table>
         <div class="button-container">
-            <button class="next">${this.nextButton}</button>
-            ${this.qNumber !== 1 ? `<button class="previous">${this.previousButton}</button>` : ''}
+            <button class="next">${this.nextText}</button>
+            ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
         </div>
         `;
     }
@@ -283,11 +283,11 @@ class FsQuestion extends HTMLElement {
     }
 
     setLanguage() {
-        this.yesButton = languages[this.language]['yesButton'];
-        this.noButton = languages[this.language]['noButton'];
-        this.skipButton = languages[this.language]['skipButton'];
-        this.previousButton = languages[this.language]['previousButton'];
-        this.nextButton = languages[this.language]['nextButton'];
+        this.yesText = languages[this.language]['yesText'];
+        this.noText = languages[this.language]['noText'];
+        this.skipText = languages[this.language]['skipText'];
+        this.previousText = languages[this.language]['previousText'];
+        this.nextText = languages[this.language]['nextText'];
     }
 
     render() {
@@ -381,9 +381,9 @@ class FsQuestion extends HTMLElement {
 }
 
 const languages = {
-    'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'skipButton': 'Ohita', 'previousButton': 'Edellinen', 'nextButton': 'Seuraava'},
-    'en': {'yesButton': 'Yes', 'noButton': 'No', 'skipButton': 'Skip', 'previousButton': 'Previous', 'nextButton': 'Next'},
-    'se': {'yesButton': 'Ja', 'noButton': 'Nej', 'skipButton': 'Håppa över frågan', 'previousButton': 'Förra frågan', 'nextButton': 'Nästa frågan'}};
+    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava'},
+    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next'},
+    'se': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Håppa över frågan', 'previousText': 'Förra frågan', 'nextText': 'Nästa frågan'}};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);

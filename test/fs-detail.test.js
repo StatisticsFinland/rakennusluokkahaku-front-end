@@ -105,7 +105,7 @@ describe('Feedback test run', () => {
     });
 
     it('has feedback text instead of buttons', () => {
-        expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestasi');
+        expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestanne!');
     });
 
     it('doesn\'t draw anything on re-render', () => {
