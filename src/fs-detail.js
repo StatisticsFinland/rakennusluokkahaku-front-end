@@ -261,7 +261,7 @@ const languages = {
     'en': {'yesButton': 'Yes', 'noButton': 'No', 'feedbackQuestion': 'Is this the building class you are looking for?',
         'feedbackReply': 'Thank you for your feedback!', 'excludesText': 'Excludes: ', 'includesText': 'Includes: ', 'includesAlsoText': 'Includes also:',
         'keywordsText': 'Keywords: '},
-    'se': {'yesButton': 'Ja', 'noButton': 'Nej', 'feedbackQuestion': 'Är detta byggnadsklassen ni var efter?', 'feedbackReply':
+    'sv': {'yesButton': 'Ja', 'noButton': 'Nej', 'feedbackQuestion': 'Är detta byggnadsklassen ni var efter?', 'feedbackReply':
         'Tack för responsen!', 'excludesText': 'Innehåller inte: ', 'includesText': 'Innehåller: ', 'includesAlsoText': 'Innehåller också: ',
     'keywordsText': 'Nyckelord: '}};
 
