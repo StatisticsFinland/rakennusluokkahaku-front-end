@@ -67,7 +67,7 @@ class FsQuestion extends HTMLElement {
             `;
         }).join('');
         return `
-        <table align="center">
+        <table class="multi-table" align="center">
           <thead>
             <tr>
                 <th><!-- empty header above attributes--></th>

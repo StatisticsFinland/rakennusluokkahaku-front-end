@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture} from '@open-wc/testing';
+import {expect, fixture, elementUpdated} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';
@@ -316,3 +316,112 @@ describe('Multiquestion POST:s', async () => {
     });
 });
 
+describe('Language tests', () => {
+    describe('.language', () => {
+        it('is bound to the `language` attribute', async () => {
+            const el = await fixture('<fs-question language="en"></fs-question>');
+
+            expect(el.language).to.eq('en');
+        });
+    });
+
+    describe('changes button language correctly with simple question', async () => {
+        beforeEach(async () => {
+            fetchSimpleStub = sinon.stub(window, 'fetch')
+                .onCall(0).resolves(mockResponse(questions[0]))
+                .onCall(1).resolves(mockResponse({
+                    type: 'simple',
+                    building_classes: buildingClasses,
+                    new_question: questions[1],
+                    success: true,
+                }));
+        });
+
+        afterEach(() => {
+            window.fetch.restore();
+        });
+
+        it('to English', async () => {
+            element = await fixture('<fs-question language="en"></fs-question>');
+
+            await sleep(100);
+
+            const okButton = element.shadowRoot.querySelector('.ok');
+            okButton.click();
+            await sleep(200);
+
+            expect(okButton.textContent).to.eq('Yes');
+            expect(element.shadowRoot.querySelector('.no').textContent).to.eq('No');
+            expect(element.shadowRoot.querySelector('.skip').textContent).to.eq('Skip');
+            expect(element.shadowRoot.querySelector('.previous').textContent).to.eq('Previous');
+        });
+
+        it('to Swedish', async () => {
+            element = await fixture('<fs-question language="sv"></fs-question>');
+
+            await sleep(100);
+
+            const okButton = element.shadowRoot.querySelector('.ok');
+            okButton.click();
+            await sleep(200);
+
+            expect(okButton.textContent).to.eq('Ja');
+            expect(element.shadowRoot.querySelector('.no').textContent).to.eq('Nej');
+            expect(element.shadowRoot.querySelector('.skip').textContent).to.eq('Håppa över');
+            expect(element.shadowRoot.querySelector('.previous').textContent).to.eq('Föregående');
+        });
+    });
+
+    describe('changes button language correctly with multi question', async () => {
+        beforeEach(async () => {
+            fetchMultiStub = sinon.stub(window, 'fetch')
+                .onCall(0).resolves(mockResponse(multiQuestions[0]))
+                .onCall(1).resolves(mockResponse({
+                    type: 'multi',
+                    building_classes: buildingClasses,
+                    new_question: multiQuestions[1],
+                    success: true,
+                }));
+        });
+
+        afterEach(() => {
+            window.fetch.restore();
+        });
+
+        it('multi to English', async () => {
+            element = await fixture('<fs-question language="en"></fs-question>');
+
+            await sleep(100);
+
+            const nextButton = element.shadowRoot.querySelector('.next');
+            nextButton.click();
+            await sleep(200);
+
+            expect(nextButton.textContent).to.eq('Next');
+            expect(element.shadowRoot.querySelector('.previous').textContent).to.eq('Previous');
+            const table = element.shadowRoot.querySelector('.multi-table');
+
+            expect(table).to.contain.html('Yes');
+            expect(table).to.contain.html('No');
+            expect(table).to.contain.html('Skip');
+        });
+
+        it('multi to Swedish', async () => {
+            element = await fixture('<fs-question language="sv"></fs-question>');
+
+            await sleep(100);
+
+            const nextButton = element.shadowRoot.querySelector('.next');
+            nextButton.click();
+            await sleep(200);
+
+            expect(nextButton.textContent).to.eq('Nästa');
+            expect(element.shadowRoot.querySelector('.previous').textContent).to.eq('Föregående');
+            const table = element.shadowRoot.querySelector('.multi-table');
+
+            expect(table).to.contain.html('Ja');
+            expect(table).to.contain.html('Nej');
+            expect(table).to.contain.html('Håppa över');
+        });
+    });
+});
