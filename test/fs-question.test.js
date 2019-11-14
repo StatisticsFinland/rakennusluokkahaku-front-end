@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
 
-import {expect, fixture, elementUpdated} from '@open-wc/testing';
+import {expect, fixture} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-question';

@@ -5,7 +5,7 @@ import sinon from 'sinon';
 
 import '../src/fs-result';
 import {classifications} from './mocks/result';
-import {mockResponse} from './util';
+import {sleep, mockResponse} from './util';
 
 let elem;
 let apiData;
@@ -102,3 +102,41 @@ describe('List element test suite', () => {
         expect(elem.hidden).to.equal(true);
     });
 });
+
+describe('Language tests', () => {
+    describe('.language', () => {
+        it('is bound to the `language` attribute', async () => {
+            const el = await fixture('<fs-question language="en"></fs-question>');
+
+            expect(el.language).to.eq('en');
+        });
+    });
+
+    describe('changes header text language correctly', async () => {
+        beforeEach(async () => {
+            sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
+        });
+
+        afterEach(() => {
+            window.fetch.restore();
+        });
+
+        it('to English', async () => {
+            const el = await fixture('<fs-result language="en"></fs-result>');
+
+            await sleep(100);
+
+            expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Results');
+        });
+
+        it('to Swedish', async () => {
+            const el = await fixture('<fs-result language="sv"></fs-result>');
+
+            await sleep(100);
+
+            expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Resultater');
+        });
+    });
+});
+
+
