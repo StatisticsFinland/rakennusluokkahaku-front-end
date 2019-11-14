@@ -11,6 +11,7 @@ class FsQuestion extends HTMLElement {
         this.noButton = null;
         this.skipButton = null;
         this.previousButton = null;
+        this.nextButton = null;
     }
     // Called after constructor
     async connectedCallback() {
@@ -80,8 +81,8 @@ class FsQuestion extends HTMLElement {
           </tbody>
         </table>
         <div class="button-container">
-            <button class="next">Seuraava</button>
-            ${this.qNumber !== 1 ? '<button class="previous">Edellinen</button>' : ''}
+            <button class="next">${this.nextButton}</button>
+            ${this.qNumber !== 1 ? `<button class="previous">${this.previousButton}</button>` : ''}
         </div>
         `;
     }
@@ -282,22 +283,12 @@ class FsQuestion extends HTMLElement {
     }
 
     setLanguage() {
-        if (this.language === 'en') {
-            this.yesButton = 'Yes';
-            this.noButton = 'No';
-            this.skipButton = 'Skip';
-            this.previousButton = 'Previous';
-        } else if (this.language === 'sv') {
-            this.yesButton = 'Ja';
-            this.noButton = 'Nej';
-            this.skipButton = 'Håppa över frågan';
-            this.previousButton = 'Förra frågan';
-        } else if (this.language === 'fi') {
-            this.yesButton = 'Kyllä';
-            this.noButton = 'Ei';
-            this.skipButton = 'Ohita';
-            this.previousButton = 'Edellinen';
-        }
+        this.yesButton = languages[this.language]['yesButton'];
+        this.noButton = languages[this.language]['noButton'];
+        this.skipButton = languages[this.language]['skipButton'];
+        this.previousButton = languages[this.language]['previousButton'];
+        this.nextButton = languages[this.language]['nextButton'];
+        
     }
 
     render() {
@@ -389,6 +380,11 @@ class FsQuestion extends HTMLElement {
         }
     }
 }
+
+const languages = {
+    'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'skipButton': 'Ohita', 'previousButton': 'Edellinen', 'nextButton': 'Seuraava'},
+    'en': {'yesButton': 'Yes', 'noButton': 'No', 'skipButton': 'Skip', 'previousButton': 'Previous', 'nextButton': 'Next'},
+    'sv': {'yesButton': 'Ja', 'noButton': 'Nej', 'skipButton': 'Håppa över frågan', 'previousButton': 'Förra frågan', 'nextButton': 'Nästa frågan'}};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);
