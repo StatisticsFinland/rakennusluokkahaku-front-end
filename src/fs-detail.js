@@ -146,6 +146,12 @@ class FsDetail extends HTMLElement {
         font-weight: bold;
         font-size: 1em;
     }
+
+    .feedback {
+        color: #0073b0;
+        font-weight: bold;
+    }
+
     button {
         min-width: 50px;
         background-color: #0073b0;
