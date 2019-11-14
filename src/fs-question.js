@@ -7,11 +7,6 @@ class FsQuestion extends HTMLElement {
         this.reply = null;
         this.language = 'fi';
         this.qNumber = 1;
-        this.yesText = null;
-        this.noText = null;
-        this.skipText = null;
-        this.previousText = null;
-        this.nextText = null;
     }
     // Called after constructor
     async connectedCallback() {

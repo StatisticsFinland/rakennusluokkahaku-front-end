@@ -5,14 +5,6 @@ class FsDetail extends HTMLElement {
         this.hidden = true;
         this.answered = false;
         this.language = 'fi';
-        this.yesButton = null;
-        this.noButton = null;
-        this.fbQuestion = null;
-        this.feedbackReply = null;
-        this.excludesText = null;
-        this.includesText = null;
-        this.includesAlsoText = null;
-        this.keywordsText = null;
 
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {

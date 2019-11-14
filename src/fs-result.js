@@ -4,7 +4,6 @@ class FsResult extends HTMLElement {
         this.data = null;
         this.classifications = null;
         this.hidden = true;
-        this.headerText = null;
         this.language = 'fi';
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
