@@ -288,7 +288,6 @@ class FsQuestion extends HTMLElement {
         this.skipButton = languages[this.language]['skipButton'];
         this.previousButton = languages[this.language]['previousButton'];
         this.nextButton = languages[this.language]['nextButton'];
-        
     }
 
     render() {
@@ -384,7 +383,7 @@ class FsQuestion extends HTMLElement {
 const languages = {
     'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'skipButton': 'Ohita', 'previousButton': 'Edellinen', 'nextButton': 'Seuraava'},
     'en': {'yesButton': 'Yes', 'noButton': 'No', 'skipButton': 'Skip', 'previousButton': 'Previous', 'nextButton': 'Next'},
-    'sv': {'yesButton': 'Ja', 'noButton': 'Nej', 'skipButton': 'Håppa över frågan', 'previousButton': 'Förra frågan', 'nextButton': 'Nästa frågan'}};
+    'se': {'yesButton': 'Ja', 'noButton': 'Nej', 'skipButton': 'Håppa över frågan', 'previousButton': 'Förra frågan', 'nextButton': 'Nästa frågan'}};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);

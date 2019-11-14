@@ -5,6 +5,7 @@ class FsResult extends HTMLElement {
         this.classifications = null;
         this.hidden = true;
         this.headerText = null;
+        this.language = 'fi';
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
@@ -170,7 +171,7 @@ class FsResult extends HTMLElement {
     setLanguage() {
         if (this.language === 'en') {
             this.headerText = 'Results';
-        } else if (this.language === 'sv') {
+        } else if (this.language === 'se') {
             this.headerText = 'Resultater';
         } else if (this.language === 'fi') {
             this.headerText = 'Hakutulokset';
