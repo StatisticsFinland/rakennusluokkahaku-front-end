@@ -257,10 +257,10 @@ const languages = {
     'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'feedbackQuestion': 'Oliko tämä hakemanne luokka?', 'feedbackReply': 'Kiitos palautteestanne!',
         'excludesText': 'Tähän ei kuulu: ', 'includesText': 'Tähän kuuluu: ', 'includesAlsoText': 'Tähän kuuluu myös: ', 'keywordsText': 'Synonyymit: '},
     'en': {'yesButton': 'Yes', 'noButton': 'No', 'feedbackQuestion': 'Is this the building class you are looking for?',
-        'feedbackReply': 'Thank you for your feedback!', 'excludesText': 'Excludes: ', 'includesText': 'Includes: ', 'includesAlsoText': 'Includes also:',
+        'feedbackReply': 'Thank you for your feedback!', 'excludesText': 'Excludes: ', 'includesText': 'Includes: ', 'includesAlsoText': 'Also includes:',
         'keywordsText': 'Keywords: '},
-    'sv': {'yesButton': 'Ja', 'noButton': 'Nej', 'feedbackQuestion': 'Är detta byggnadsklassen ni var efter?', 'feedbackReply':
-        'Tack för responsen!', 'excludesText': 'Innehåller inte: ', 'includesText': 'Innehåller: ', 'includesAlsoText': 'Innehåller också: ',
+    'sv': {'yesButton': 'Ja', 'noButton': 'Nej', 'feedbackQuestion': 'Är detta byggnadsklassen ni var ute efter?', 'feedbackReply':
+        'Tack för responsen!', 'excludesText': 'Innehåller ej: ', 'includesText': 'Innehåller: ', 'includesAlsoText': 'Innehåller också: ',
     'keywordsText': 'Nyckelord: '}};
 
 customElements.define('fs-detail', FsDetail);

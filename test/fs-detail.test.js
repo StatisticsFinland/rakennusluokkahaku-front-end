@@ -145,7 +145,7 @@ describe('Language tests', () => {
             expect(sr.querySelector('.feedback')).to.contain.html('Is this the building class you are looking for?');
             expect(sr.querySelector('.white')).to.contain.html('Excludes');
             expect(sr.querySelector('.white')).to.contain.html('Includes');
-            expect(sr.querySelector('.white')).to.contain.html('Includes also');
+            expect(sr.querySelector('.white')).to.contain.html('Also includes');
             expect(sr.querySelector('.white')).to.contain.html('Keywords');
 
             okButton.click();
@@ -165,8 +165,8 @@ describe('Language tests', () => {
 
             expect(okButton.textContent).to.eq('Ja');
             expect(sr.querySelector('.no').textContent).to.eq('Nej');
-            expect(sr.querySelector('.feedback')).to.contain.html('Är detta byggnadsklassen ni var efter?');
-            expect(sr.querySelector('.white')).to.contain.html('Innehåller inte');
+            expect(sr.querySelector('.feedback')).to.contain.html('Är detta byggnadsklassen ni var ute efter?');
+            expect(sr.querySelector('.white')).to.contain.html('Innehåller ej');
             expect(sr.querySelector('.white')).to.contain.html('Innehåller');
             expect(sr.querySelector('.white')).to.contain.html('Innehåller också');
             expect(sr.querySelector('.white')).to.contain.html('Nyckelord');
