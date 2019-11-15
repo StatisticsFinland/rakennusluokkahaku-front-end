@@ -367,7 +367,7 @@ describe('Language tests', () => {
 
             expect(okButton.textContent).to.eq('Ja');
             expect(element.shadowRoot.querySelector('.no').textContent).to.eq('Nej');
-            expect(element.shadowRoot.querySelector('.skip').textContent).to.eq('Håppa över');
+            expect(element.shadowRoot.querySelector('.skip').textContent).to.eq('Hoppa över');
             expect(element.shadowRoot.querySelector('.previous').textContent).to.eq('Föregående');
         });
     });
@@ -421,7 +421,7 @@ describe('Language tests', () => {
 
             expect(table).to.contain.html('Ja');
             expect(table).to.contain.html('Nej');
-            expect(table).to.contain.html('Håppa över');
+            expect(table).to.contain.html('Hoppa över');
         });
     });
 });

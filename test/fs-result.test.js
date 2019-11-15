@@ -134,7 +134,7 @@ describe('Language tests', () => {
 
             await sleep(100);
 
-            expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Resultater');
+            expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Resultat');
         });
     });
 });

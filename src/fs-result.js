@@ -171,7 +171,7 @@ class FsResult extends HTMLElement {
         if (this.language === 'en') {
             this.headerText = 'Results';
         } else if (this.language === 'sv') {
-            this.headerText = 'Resultater';
+            this.headerText = 'Resultat';
         } else if (this.language === 'fi') {
             this.headerText = 'Hakutulokset';
         }
