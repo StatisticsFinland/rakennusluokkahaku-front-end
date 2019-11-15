@@ -4,6 +4,7 @@ class FsDetail extends HTMLElement {
         this.classification = null;
         this.hidden = true;
         this.answered = false;
+        this.language = 'fi';
 
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
@@ -52,7 +53,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-            <li class="excludes"><span class="header">Tähän ei kuulu: </span><span>${this.classification.excludes}</span><hr/></li>
+            <li class="excludes"><span class="header">${this.excludesText}</span><span>${this.classification.excludes}</span><hr/></li>
             `;
     }
 
@@ -61,7 +62,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li class="includes"><span class="header">Tähän kuuluu: </span><span>${this.classification.includes}</span><hr/></li>
+        <li class="includes"><span class="header">${this.includesText}</span><span>${this.classification.includes}</span><hr/></li>
         `;
     }
 
@@ -70,7 +71,7 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li class="includesAlso"><span class="header">Tähän kuuluu myös: </span><span>${this.classification.includesAlso}</span><hr/></li>
+        <li class="includesAlso"><span class="header">${this.includesAlsoText}</span><span>${this.classification.includesAlso}</span><hr/></li>
         `;
     }
 
@@ -79,14 +80,14 @@ class FsDetail extends HTMLElement {
             return '';
         }
         return `
-        <li class="keywords"><span class="header">Synonyymit: </span><span>${this.classification.keywords}</span>${this.feedback ? '<hr/>' : ''}</li>
+        <li class="keywords"><span class="header">${this.keywordsText}</span><span>${this.classification.keywords}</span>${this.feedback ? '<hr/>' : ''}</li>
         `;
     }
 
     get feedback() {
         if (this.answered) return '';
         return `
-        <li class="feedback"><span>Oliko tämä hakemanne luokka?</span> <button class="ok">Kyllä</button> <button class="no">Ei</button></li>
+        <li class="feedback"><span>${this.fbQuestion}</span> <button class="ok">${this.yesButton}</button> <button class="no">${this.noButton}</button></li>
         `;
     }
 
@@ -137,6 +138,12 @@ class FsDetail extends HTMLElement {
         font-weight: bold;
         font-size: 1em;
     }
+
+    .feedback {
+        color: #0073b0;
+        font-weight: bold;
+    }
+
     button {
         min-width: 50px;
         background-color: #0073b0;
@@ -157,6 +164,32 @@ class FsDetail extends HTMLElement {
     `;
     }
 
+    // Monitors the value of language attribute
+    static get observedAttributes() {
+        return ['language'];
+    }
+
+    // Reacts to changes in the value of language attribute
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) {
+            return;
+        } else if (name === 'language') {
+            this.language = newValue;
+            this.setLanguage();
+        }
+    }
+
+    setLanguage() {
+        this.yesButton = languages[this.language]['yesButton'];
+        this.noButton = languages[this.language]['noButton'];
+        this.fbQuestion = languages[this.language]['feedbackQuestion'];
+        this.feedbackReply = languages[this.language]['feedbackReply'];
+        this.excludesText = languages[this.language]['excludesText'];
+        this.includesText = languages[this.language]['includesText'];
+        this.includesAlsoText = languages[this.language]['includesAlsoText'];
+        this.keywordsText = languages[this.language]['keywordsText'];
+    }
+
     render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
@@ -169,6 +202,7 @@ class FsDetail extends HTMLElement {
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         if (!this.hidden && !this.answered) this.addEventListeners();
+        this.setLanguage();
     }
 
     addEventListeners() {
@@ -181,6 +215,7 @@ class FsDetail extends HTMLElement {
             this.handleClick('no');
         });
     }
+
     handleClick(str) {
         const answer = {
             response: str,
@@ -192,7 +227,7 @@ class FsDetail extends HTMLElement {
         // the feedback <li> isn't rendered at all.
         this.answered = true;
         const feedback = this.shadowRoot.querySelector('.feedback');
-        feedback.textContent = 'Kiitos palautteestasi';
+        feedback.textContent = this.feedbackReply;
     }
     // POST answer to endpoint
     async postAnswer(answer) {
@@ -217,4 +252,17 @@ class FsDetail extends HTMLElement {
         }
     }
 }
+
+const languages = {
+    'fi': {'yesButton': 'Kyllä', 'noButton': 'Ei', 'feedbackQuestion': 'Oliko tämä hakemanne luokka?', 'feedbackReply': 'Kiitos palautteestanne!',
+        'excludesText': 'Tähän ei kuulu: ', 'includesText': 'Tähän kuuluu: ', 'includesAlsoText': 'Tähän kuuluu myös: ', 'keywordsText': 'Synonyymit: '},
+    'en': {'yesButton': 'Yes', 'noButton': 'No', 'feedbackQuestion': 'Is this the building class you are looking for?',
+        'feedbackReply': 'Thank you for your feedback!', 'excludesText': 'Excludes: ', 'includesText': 'Includes: ', 'includesAlsoText': 'Also includes:',
+        'keywordsText': 'Keywords: '},
+    'sv': {'yesButton': 'Ja', 'noButton': 'Nej', 'feedbackQuestion': 'Är detta byggnadsklassen ni var ute efter?', 'feedbackReply':
+        'Tack för responsen!', 'excludesText': 'Innehåller ej: ', 'includesText': 'Innehåller: ', 'includesAlsoText': 'Innehåller också: ',
+    'keywordsText': 'Nyckelord: '}};
+
 customElements.define('fs-detail', FsDetail);
+
+

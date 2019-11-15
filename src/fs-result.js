@@ -4,6 +4,7 @@ class FsResult extends HTMLElement {
         this.data = null;
         this.classifications = null;
         this.hidden = true;
+        this.language = 'fi';
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
         if (parentDiv) {
@@ -42,7 +43,7 @@ class FsResult extends HTMLElement {
         return `
         <div class="comp">
             <div class="blue">
-                <h3>Hakutulokset</h3>
+                <h3>${this.headerText}</h3>
             </div>
             <div class="white">  
                 <table class="results">
@@ -151,6 +152,32 @@ class FsResult extends HTMLElement {
         ).then((res) => res.json());
     }
 
+    // Monitors the value of language attribute
+    static get observedAttributes() {
+        return ['language'];
+    }
+
+    // Reacts to changes in the value of language attribute
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) {
+            return;
+        } else if (name === 'language') {
+            this.language = newValue;
+            this.setLanguage();
+        }
+    }
+
+    setLanguage() {
+        if (this.language === 'en') {
+            this.headerText = 'Results';
+        } else if (this.language === 'sv') {
+            this.headerText = 'Resultat';
+        } else if (this.language === 'fi') {
+            this.headerText = 'Hakutulokset';
+        }
+    }
+
+
     render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
@@ -164,6 +191,7 @@ class FsResult extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         // add eventlisteners to info cells
         this.addEventListeners();
+        this.setLanguage();
     }
 
     addEventListeners() {

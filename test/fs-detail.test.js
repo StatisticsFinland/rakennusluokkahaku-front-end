@@ -105,7 +105,7 @@ describe('Feedback test run', () => {
     });
 
     it('has feedback text instead of buttons', () => {
-        expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestasi');
+        expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestanne!');
     });
 
     it('doesn\'t draw anything on re-render', () => {
@@ -117,5 +117,63 @@ describe('Feedback test run', () => {
 
     after(() => {
         window.fetch.restore();
+    });
+});
+
+describe('Language tests', () => {
+    describe('.language', () => {
+        it('is bound to the `language` attribute', async () => {
+            const el = await fixture('<fs-detail language="sv"></fs-detail>');
+
+            expect(el.language).to.eq('sv');
+        });
+    });
+
+    describe('changes button and text language correctly', async () => {
+        it('to English', async () => {
+            element = await fixture('<fs-detail language="en"></fs-detail>');
+
+            await sleep(100);
+
+            element.updateDetail(complexClassification);
+            const sr = element.shadowRoot;
+
+            const okButton = sr.querySelector('.ok');
+
+            expect(okButton.textContent).to.eq('Yes');
+            expect(sr.querySelector('.no').textContent).to.eq('No');
+            expect(sr.querySelector('.feedback')).to.contain.html('Is this the building class you are looking for?');
+            expect(sr.querySelector('.white')).to.contain.html('Excludes');
+            expect(sr.querySelector('.white')).to.contain.html('Includes');
+            expect(sr.querySelector('.white')).to.contain.html('Also includes');
+            expect(sr.querySelector('.white')).to.contain.html('Keywords');
+
+            okButton.click();
+
+            expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Thank you for your feedback!');
+        });
+
+        it('to Swedish', async () => {
+            element = await fixture('<fs-detail language="sv"></fs-detail>');
+
+            await sleep(100);
+
+            element.updateDetail(complexClassification);
+            const sr = element.shadowRoot;
+
+            const okButton = sr.querySelector('.ok');
+
+            expect(okButton.textContent).to.eq('Ja');
+            expect(sr.querySelector('.no').textContent).to.eq('Nej');
+            expect(sr.querySelector('.feedback')).to.contain.html('Är detta byggnadsklassen ni var ute efter?');
+            expect(sr.querySelector('.white')).to.contain.html('Innehåller ej');
+            expect(sr.querySelector('.white')).to.contain.html('Innehåller');
+            expect(sr.querySelector('.white')).to.contain.html('Innehåller också');
+            expect(sr.querySelector('.white')).to.contain.html('Nyckelord');
+
+            okButton.click();
+
+            expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Tack för responsen!');
+        });
     });
 });

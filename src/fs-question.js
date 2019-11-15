@@ -5,7 +5,7 @@ class FsQuestion extends HTMLElement {
         super();
         this.question = null;
         this.reply = null;
-        this.language = 'suomi';
+        this.language = 'fi';
         this.qNumber = 1;
     }
     // Called after constructor
@@ -27,10 +27,10 @@ class FsQuestion extends HTMLElement {
     get simpleTemplate() {
         return `
             <div class="button-container">
-                <button class="ok">Kyllä</button>
-                <button class="no">Ei</button>
-                <button class="skip">Ohita</button>
-                ${this.qNumber !== 1 ? `<button class="previous">Edellinen</button>` : ''}
+                <button class="ok">${this.yesText}</button>
+                <button class="no">${this.noText}</button>
+                <button class="skip">${this.skipText}</button>
+                ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
             </div>
         `;
     }
@@ -62,13 +62,13 @@ class FsQuestion extends HTMLElement {
             `;
         }).join('');
         return `
-        <table align="center">
+        <table class="multi-table" align="center">
           <thead>
             <tr>
                 <th><!-- empty header above attributes--></th>
-                <th>Kyllä</th>
-                <th>Ohita</th>
-                <th>Ei</th>
+                <th>${this.yesText}</th>
+                <th>${this.skipText}</th>
+                <th>${this.noText}</th>
             </tr>
           </thead>
           <tbody>
@@ -76,8 +76,8 @@ class FsQuestion extends HTMLElement {
           </tbody>
         </table>
         <div class="button-container">
-            <button class="next">Seuraava</button>
-            ${this.qNumber !== 1 ? '<button class="previous">Edellinen</button>' : ''}
+            <button class="next">${this.nextText}</button>
+            ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
         </div>
         `;
     }
@@ -261,6 +261,30 @@ class FsQuestion extends HTMLElement {
         });
         this.dispatchEvent(event);
     }
+
+    // Monitors the value of language attribute
+    static get observedAttributes() {
+        return ['language'];
+    }
+
+    // Reacts to changes in the value of language attribute
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue === newValue) {
+            return;
+        } else if (name === 'language') {
+            this.language = newValue;
+            this.setLanguage();
+        }
+    }
+
+    setLanguage() {
+        this.yesText = languages[this.language]['yesText'];
+        this.noText = languages[this.language]['noText'];
+        this.skipText = languages[this.language]['skipText'];
+        this.previousText = languages[this.language]['previousText'];
+        this.nextText = languages[this.language]['nextText'];
+    }
+
     render() {
         if (!this.shadowRoot) {
             this.attachShadow({mode: 'open'});
@@ -272,6 +296,7 @@ class FsQuestion extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
 
         this.addEventListeners();
+        this.setLanguage();
     }
 
     makeAnswer(response) {
@@ -349,6 +374,11 @@ class FsQuestion extends HTMLElement {
         }
     }
 }
+
+const languages = {
+    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava'},
+    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next'},
+    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa'}};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);
