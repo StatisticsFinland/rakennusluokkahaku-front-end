@@ -22,8 +22,7 @@ describe('question test', async () => {
                 building_classes: buildingClasses,
                 new_question: questions[1],
                 success: true,
-            }))
-            .onCall(2).resolves(mockResponse(questions[0]));
+            }));
 
         element = await fixture('<fs-question></fs-question>');
         // Give the component some time
