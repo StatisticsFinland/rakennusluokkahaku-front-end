@@ -10,7 +10,7 @@ import {sleep, mockResponse} from './util';
 let elem;
 let apiData;
 
-describe('List element test suite', () => {
+describe('Result element test suite', () => {
     before(async () => {
         sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
 
@@ -105,10 +105,29 @@ describe('List element test suite', () => {
 
 describe('Language tests', () => {
     describe('.language', () => {
-        it('is bound to the `language` attribute', async () => {
-            const el = await fixture('<fs-question language="en"></fs-question>');
+        let el;
+        let fetchStub;
 
+        before(async () => {
+            fetchStub = sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
+            el = await fixture('<fs-result language="en"></fs-result>');
+        });
+
+        after(() => {
+            window.fetch.restore();
+        });
+
+        it('is bound to the `language` attribute', async () => {
             expect(el.language).to.eq('en');
+        });
+
+        it('is used when fetching classifications', async () => {
+            const url = 'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=';
+
+            expect(fetchStub.calledWith(url + 'en')).to.equal(true);
+            el = await fixture('<fs-result language="sv"></fs-result>');
+
+            expect(fetchStub.calledWith(url + 'sv')).to.equal(true);
         });
     });
 
