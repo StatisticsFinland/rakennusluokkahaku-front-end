@@ -12,6 +12,7 @@ class FsQuestion extends HTMLElement {
     async connectedCallback() {
         const data = await this.fetchQuestion();
         this.question = data;
+        this.setLanguage();
         this.render();
     }
     // Base html template
@@ -296,7 +297,6 @@ class FsQuestion extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
 
         this.addEventListeners();
-        this.setLanguage();
     }
 
     makeAnswer(response) {
