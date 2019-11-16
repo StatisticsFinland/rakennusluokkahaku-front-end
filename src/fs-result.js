@@ -191,7 +191,6 @@ class FsResult extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         // add eventlisteners to info cells
         this.addEventListeners();
-        this.setLanguage();
     }
 
     addEventListeners() {
@@ -247,7 +246,7 @@ class FsResult extends HTMLElement {
         this.classifications = this.data.map((item) => {
             return {...item};
         });
-
+        this.setLanguage();
         this.render();
     }
 
