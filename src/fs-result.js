@@ -148,7 +148,7 @@ class FsResult extends HTMLElement {
     // Fetch classifications from stat.fi API
     async fetchData() {
         return await fetch(
-            'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=fi'
+            'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=' + this.language
         ).then((res) => res.json());
     }
 
@@ -191,7 +191,6 @@ class FsResult extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         // add eventlisteners to info cells
         this.addEventListeners();
-        this.setLanguage();
     }
 
     addEventListeners() {
@@ -247,7 +246,7 @@ class FsResult extends HTMLElement {
         this.classifications = this.data.map((item) => {
             return {...item};
         });
-
+        this.setLanguage();
         this.render();
     }
 
