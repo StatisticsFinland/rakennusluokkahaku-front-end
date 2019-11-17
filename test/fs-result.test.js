@@ -108,7 +108,7 @@ describe('Language tests', () => {
         it('is bound to the `language` attribute', async () => {
             const el = await fixture('<fs-question language="en"></fs-question>');
 
-            expect(el.language).to.eq('en');
+            expect(el.getAttribute('language')).to.eq('en');
         });
     });
 

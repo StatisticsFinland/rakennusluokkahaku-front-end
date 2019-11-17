@@ -23,6 +23,7 @@ describe('question test', async () => {
                 new_question: questions[1],
                 success: true,
             }));
+
         element = await fixture('<fs-question></fs-question>');
         // Give the component some time
         // to fetch from the stub before running any test
@@ -162,6 +163,19 @@ describe('question test', async () => {
 
         expect(questionText).to.contain.html('Erillinen kysymys?');
         expect(questionText).to.not.contain.html('Sauna');
+    });
+
+    it('Disables buttons when one is clicked', () => {
+        const buttons = element.shadowRoot.querySelectorAll('button');
+        buttons.forEach((button) => {
+            expect(button.disabled).to.equal(false);
+        });
+        const button = element.shadowRoot.querySelector('.ok');
+        button.click();
+
+        buttons.forEach((button) => {
+            expect(button.disabled).to.equal(true);
+        });
     });
 });
 
