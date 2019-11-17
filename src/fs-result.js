@@ -22,7 +22,7 @@ class FsResult extends HTMLElement {
             return;
         }
         // Sort the event data by id (string) to make sure it is in the same order as this.data
-        const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
+        const newData = event.detail.building_classes.sort((a, b) => a.class_id.localeCompare(b.class_id));
         // Map new scores to classifications
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -32,6 +32,7 @@ class FsResult extends HTMLElement {
         this.classifications.sort((a, b) => {
             return b.score - a.score;
         });
+        this.question_number = event.detail.question_number;
         this.hidden = false;
         this.render();
     }
@@ -39,6 +40,14 @@ class FsResult extends HTMLElement {
     get template() {
         if (!this.data) {
             return '<h1>Error fetching data from api</h1>';
+        }
+        // Do not show results if not enough questions asked or not high enough probability
+        if (this.question_number < 6 && this.classifications[0].score < 0.2) {
+            return `
+                <div class="blue">
+                    <h3>Answer more questions</h3>
+                </div>
+            `;
         }
         return `
         <div class="comp">

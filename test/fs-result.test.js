@@ -26,10 +26,8 @@ describe('Result element test suite', () => {
         expect(elem.data).to.not.equal(null);
     });
 
-    it('renders 10 rows after fetch', () => {
-        const rows = elem.shadowRoot.querySelectorAll('tr');
-
-        expect(rows.length).to.be.equal(10);
+    it('is hidden after fetch', () => {
+        expect(elem.hidden).to.equal(true);
     });
 
     it('sends detail event on click', () => {
@@ -56,7 +54,9 @@ describe('Result element test suite', () => {
         // add a duplicate
         data.push({class_id: '0512', class_name: 'asd', score: 0});
         const event = {
-            detail: data,
+            detail: {
+                building_classes: data,
+            },
         };
         elem.updateScores(event);
         const firstRow = elem.shadowRoot.querySelector('td');
@@ -79,7 +79,9 @@ describe('Result element test suite', () => {
         // 0512 has fields ex ja inca so we want it on top of list
         data.find((item) => item.class_id === '0512').score = 999;
         const event = {
-            detail: data,
+            detail: {
+                building_classes: data,
+            },
         };
         elem.updateScores(event);
         const firstRow = elem.shadowRoot.querySelector('td');
@@ -91,6 +93,44 @@ describe('Result element test suite', () => {
         firstRow.click();
 
         expect(eventspy.called).to.equal(true);
+    });
+
+    it('does not render results if less than 6 questions asked and no probability is higher than 20%', () => {
+        // generate test data
+        const data = apiData.map((item, i) => {
+            return {
+                class_name: item.classificationItemNames[0].name,
+                class_id: item.code,
+                score: 0.19,
+            };
+        });
+        const event = {
+            detail: {
+                building_classes: data,
+                question_number: 5,
+            },
+        };
+        elem.updateScores(event);
+        const results = elem.shadowRoot.querySelector('results');
+
+        expect(results).to.equal(null);
+    });
+
+    it('renders 10 rows if 6 questions asked', () => {
+        elem.question_number = 6;
+        elem.render();
+        const rows = elem.shadowRoot.querySelectorAll('tr');
+
+        expect(rows.length).to.be.equal(10);
+    });
+
+    it('renders 10 rows if there is probability higher than 20%', () => {
+        elem.question_number = 5;
+        elem.classifications[0].score = 0.2;
+        elem.render();
+        const rows = elem.shadowRoot.querySelectorAll('tr');
+
+        expect(rows.length).to.be.equal(10);
     });
 
     it('is hidden if no data is provided', () => {
