@@ -199,8 +199,10 @@ class FsResult extends HTMLElement {
 
     addEventListeners() {
         const listener = (e) => {
-            // checks if enter key was pressed
-            console.log(e.target);
+            // Checks if enter key was pressed. e.code is null if this was a click event.
+            if (e.code && e.code !== 'Enter') {
+                return;
+            }
             const row = e.target;
             // .selected-class css highlighting
             const rows = this.shadowRoot.querySelectorAll('.itemInfo');
@@ -208,7 +210,7 @@ class FsResult extends HTMLElement {
                 row.classList.remove('selected');
             });
             row.classList.add('selected');
-            // prepare an object for detail component
+            // Prepare an object for detail component
             const c = this.classifications.find((item) => {
                 return item.code === row.id.slice(2, 6);
             });
@@ -218,23 +220,31 @@ class FsResult extends HTMLElement {
                 code: c.code,
                 note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
             };
+            // Cleans dupes and ''s and ','s from the arrays.
+            const cleanArray = (arr) => {
+                return Array.from(new Set(arr))
+                    .filter((item) => item.trim().length > 1)
+                    .map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+            };
             const ex = c.explanatoryNotes[0].excludes;
             if (ex && ex.join('').replace(',', '').trim()) {
-                item.excludes = Array.from(new Set(ex)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+                item.excludes = cleanArray(ex);
             }
             const inc = c.explanatoryNotes[0].includes;
             if (inc && inc.join('').replace(',', '').trim()) {
-                item.includes = inc;
+                item.includes = cleanArray(inc);
             }
             const incA = c.explanatoryNotes[0].includesAlso;
             if (incA && incA.join('').replace(' ', '').trim()) {
-                item.includesAlso = Array.from(new Set(incA)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+                item.includesAlso = cleanArray(incA);
             }
+            console.log(item);
             const event = new CustomEvent('showDetails', {
                 detail: item,
                 bubbles: true,
                 composed: true,
             });
+            console.log(event);
             this.dispatchEvent(event);
         };
         const rows = this.shadowRoot.querySelectorAll('.itemInfo');
