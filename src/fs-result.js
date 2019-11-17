@@ -45,7 +45,7 @@ class FsResult extends HTMLElement {
         if (this.question_number < 6 && this.classifications[0].score < 0.2) {
             return `
                 <div class="blue">
-                    <h3>Answer more questions</h3>
+                    <h3>${this.instructionText}</h3>
                 </div>
             `;
         }
@@ -178,10 +178,13 @@ class FsResult extends HTMLElement {
 
     setLanguage() {
         if (this.language === 'en') {
+            this.instructionText = 'Find your building class by answering presented questions';
             this.headerText = 'Results';
         } else if (this.language === 'sv') {
+            this.instructionText = 'Hitta din byggklass genom att svara på presenterade frågor';
             this.headerText = 'Resultat';
         } else if (this.language === 'fi') {
+            this.instructionText = 'Löydä rakennusluokkasi vastaamalla esitettyihin kysymyksiin';
             this.headerText = 'Hakutulokset';
         }
     }
