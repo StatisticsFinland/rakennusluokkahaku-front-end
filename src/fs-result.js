@@ -65,7 +65,7 @@ class FsResult extends HTMLElement {
         const rows = classes.map((item, i) => {
             return `
             <tr class="resultRow">
-                <td class="itemInfo" id="id${item.code}">${item.code} ${item.classificationItemNames[0].name}</td>
+                <td class="itemInfo" id="id${item.code}" tabindex=0>${item.code} ${item.classificationItemNames[0].name}</td>
                 <td class="itemScore" style="background-color:${this.chooseColor(item)}">
                     ${(item.score * 100).toFixed(0)}%
                 <td>
@@ -137,6 +137,9 @@ class FsResult extends HTMLElement {
     .itemInfo:hover {
         background-color: #e0effa;
     }
+    .itemInfo:focus {
+        background-color: #e0effa;
+    }
     .selected {
         background-color: #badcf5 !important;
         font-weight: bold;
@@ -195,46 +198,49 @@ class FsResult extends HTMLElement {
     }
 
     addEventListeners() {
+        const listener = (e) => {
+            // checks if enter key was pressed
+            console.log(e.target);
+            const row = e.target;
+            // .selected-class css highlighting
+            const rows = this.shadowRoot.querySelectorAll('.itemInfo');
+            rows.forEach((row) => {
+                row.classList.remove('selected');
+            });
+            row.classList.add('selected');
+            // prepare an object for detail component
+            const c = this.classifications.find((item) => {
+                return item.code === row.id.slice(2, 6);
+            });
+            const item = {
+                name: c.classificationItemNames[0].name,
+                keywords: c.classificationIndexEntry[0].text.join(', '),
+                code: c.code,
+                note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
+            };
+            const ex = c.explanatoryNotes[0].excludes;
+            if (ex && ex.join('').replace(',', '').trim()) {
+                item.excludes = Array.from(new Set(ex)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+            }
+            const inc = c.explanatoryNotes[0].includes;
+            if (inc && inc.join('').replace(',', '').trim()) {
+                item.includes = inc;
+            }
+            const incA = c.explanatoryNotes[0].includesAlso;
+            if (incA && incA.join('').replace(' ', '').trim()) {
+                item.includesAlso = Array.from(new Set(incA)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+            }
+            const event = new CustomEvent('showDetails', {
+                detail: item,
+                bubbles: true,
+                composed: true,
+            });
+            this.dispatchEvent(event);
+        };
         const rows = this.shadowRoot.querySelectorAll('.itemInfo');
         rows.forEach((row) => {
-            row.addEventListener('click', (e) => {
-                // .selected-class css highlighting
-                rows.forEach((row) => {
-                    row.classList.remove('selected');
-                });
-                row.classList.add('selected');
-                // prepare an object for detail component
-                const c = this.classifications.find((item) => {
-                    return item.code === row.id.slice(2, 6);
-                });
-                const item = {
-                    name: c.classificationItemNames[0].name,
-                    keywords: c.classificationIndexEntry[0].text.join(', '),
-                    code: c.code,
-                    note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
-                };
-                const ex = c.explanatoryNotes[0].excludes;
-                if (ex && ex.join('').replace(',', '').trim()) {
-                    item.excludes = Array.from(new Set(ex)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-                }
-                /* FIXME: kysy asiakkaalta
-                Näitä ei ole koko datassa
-                const inc = c.explanatoryNotes[0].includes;
-                if (inc && inc.join('').replace(',', '').trim()) {
-                    item.includes = inc;
-                }
-                */
-                const incA = c.explanatoryNotes[0].includesAlso;
-                if (incA && incA.join('').replace(' ', '').trim()) {
-                    item.includesAlso = Array.from(new Set(incA)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
-                }
-                const event = new CustomEvent('showDetails', {
-                    detail: item,
-                    bubbles: true,
-                    composed: true,
-                });
-                this.dispatchEvent(event);
-            });
+            row.addEventListener('click', listener);
+            row.onkeydown = listener;
         });
     }
 
