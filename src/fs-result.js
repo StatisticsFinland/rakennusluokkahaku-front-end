@@ -220,7 +220,7 @@ class FsResult extends HTMLElement {
                 code: c.code,
                 note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
             };
-            // Cleans dupes and ''s and ','s from the arrays.
+            // Cleans dupes, ''s and ','s from the arrays.
             const cleanArray = (arr) => {
                 return Array.from(new Set(arr))
                     .filter((item) => item.trim().length > 1)
@@ -238,13 +238,11 @@ class FsResult extends HTMLElement {
             if (incA && incA.join('').replace(' ', '').trim()) {
                 item.includesAlso = cleanArray(incA);
             }
-            console.log(item);
             const event = new CustomEvent('showDetails', {
                 detail: item,
                 bubbles: true,
                 composed: true,
             });
-            console.log(event);
             this.dispatchEvent(event);
         };
         const rows = this.shadowRoot.querySelectorAll('.itemInfo');
