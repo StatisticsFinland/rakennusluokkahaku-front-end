@@ -8,14 +8,20 @@ import {classifications} from './mocks/result';
 import {sleep, mockResponse} from './util';
 
 let elem;
-let apiData;
+let testData;
 
 describe('Result element test suite', () => {
     before(async () => {
         sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
 
         elem = await fixture('<fs-result></fs-result>');
-        apiData = classifications;
+        testData = classifications.map((item, i) => {
+            return {
+                class_name: item.classificationItemNames[0].name,
+                class_id: item.code,
+                score: i,
+            };
+        });
     });
 
     after(() => {
@@ -26,31 +32,9 @@ describe('Result element test suite', () => {
         expect(elem.data).to.not.equal(null);
     });
 
-    it('is hidden after fetch', () => {
-        expect(elem.hidden).to.equal(true);
-    });
-
-    it('sends detail event on click', () => {
-        const eventspy = sinon.spy();
-        elem.addEventListener('showDetails', eventspy);
-
-        const firstRow = elem.shadowRoot.querySelector('td');
-        firstRow.click();
-
-        expect(firstRow).to.have.class('selected');
-        expect(eventspy.called).to.equal(true);
-    });
-
     it('updates list based on scores', () => {
         // construct some test data
-        let data = apiData.filter((item) => item.level === 3 && item.code !== '1919');
-        data = data.map((item, i) => {
-            return {
-                class_name: item.classificationItemNames[0].name,
-                class_id: item.code,
-                score: i,
-            };
-        });
+        const data = [...testData];
         // add a duplicate
         data.push({class_id: '0512', class_name: 'asd', score: 0});
         const event = {
@@ -68,14 +52,7 @@ describe('Result element test suite', () => {
 
     it('sends complex objects correctly', () => {
         // generate test data
-        let data = apiData.filter((item) => item.level === 3 && item.code !== '1919');
-        data = data.map((item, i) => {
-            return {
-                class_name: item.classificationItemNames[0].name,
-                class_id: item.code,
-                score: i,
-            };
-        });
+        const data = [...testData];
         // 0512 has fields ex ja inca so we want it on top of list
         data.find((item) => item.class_id === '0512').score = 999;
         const event = {
@@ -97,13 +74,8 @@ describe('Result element test suite', () => {
 
     it('does not render results if less than 6 questions asked and no probability is higher than 20%', () => {
         // generate test data
-        const data = apiData.map((item, i) => {
-            return {
-                class_name: item.classificationItemNames[0].name,
-                class_id: item.code,
-                score: 0.19,
-            };
-        });
+        const data = [...testData];
+        data.forEach((one) => one.score = 0.19);
         const event = {
             detail: {
                 building_classes: data,
@@ -116,21 +88,52 @@ describe('Result element test suite', () => {
         expect(results).to.equal(null);
     });
 
+    it('instead renders instructions', () => {
+        expect(elem.shadowRoot.querySelector('.blue').textContent).to.contain(elem.instructionText);
+    });
+
     it('renders 10 rows if 6 questions asked', () => {
-        elem.question_number = 6;
-        elem.render();
+        // generate test data
+        const data = [...testData];
+        data.forEach((one) => one.score = 0.19);
+        const event = {
+            detail: {
+                building_classes: data,
+                question_number: 6,
+            },
+        };
+        elem.updateScores(event);
         const rows = elem.shadowRoot.querySelectorAll('tr');
 
         expect(rows.length).to.be.equal(10);
     });
 
     it('renders 10 rows if there is probability higher than 20%', () => {
-        elem.question_number = 5;
-        elem.classifications[0].score = 0.2;
-        elem.render();
+        // generate test data
+        const data = [...testData];
+        data.forEach((one) => one.score = 0.19);
+        data[0].score = 0.2;
+        const event = {
+            detail: {
+                building_classes: data,
+                question_number: 5,
+            },
+        };
+        elem.updateScores(event);
         const rows = elem.shadowRoot.querySelectorAll('tr');
 
         expect(rows.length).to.be.equal(10);
+    });
+
+    it('sends detail event on click', () => {
+        const eventspy = sinon.spy();
+        elem.addEventListener('showDetails', eventspy);
+
+        const firstRow = elem.shadowRoot.querySelector('td');
+        firstRow.click();
+
+        expect(firstRow).to.have.class('selected');
+        expect(eventspy.called).to.equal(true);
     });
 
     it('is hidden if no data is provided', () => {
@@ -185,6 +188,13 @@ describe('Language tests', () => {
             const el = await fixture('<fs-result language="en"></fs-result>');
 
             await sleep(100);
+            const event = {
+                detail: {
+                    building_classes: testData,
+                    question_number: 6,
+                },
+            };
+            el.updateScores(event);
 
             expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Results');
         });
@@ -193,6 +203,13 @@ describe('Language tests', () => {
             const el = await fixture('<fs-result language="sv"></fs-result>');
 
             await sleep(100);
+            const event = {
+                detail: {
+                    building_classes: testData,
+                    question_number: 6,
+                },
+            };
+            el.updateScores(event);
 
             expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Resultat');
         });
