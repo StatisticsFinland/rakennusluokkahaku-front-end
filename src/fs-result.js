@@ -3,7 +3,6 @@ class FsResult extends HTMLElement {
         super();
         this.data = null;
         this.classifications = null;
-        this.hidden = true;
         this.language = 'fi';
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
@@ -32,7 +31,8 @@ class FsResult extends HTMLElement {
         this.classifications.sort((a, b) => {
             return b.score - a.score;
         });
-        this.question_number = event.detail.question_number;
+        // Do not show results if not enough questions asked or not high enough probability
+        this.showResults = event.detail.question_number < 6 && this.classifications[0].score < 0.2 ? false : true;
         this.hidden = false;
         this.render();
     }
@@ -42,7 +42,7 @@ class FsResult extends HTMLElement {
             return '<h1>Error fetching data from api</h1>';
         }
         // Do not show results if not enough questions asked or not high enough probability
-        if (this.question_number < 6 && this.classifications[0].score < 0.2) {
+        if (!this.showResults) {
             return `
                 <div class="blue">
                     <h3>${this.instructionText}</h3>
@@ -258,6 +258,7 @@ class FsResult extends HTMLElement {
         this.classifications = this.data.map((item) => {
             return {...item};
         });
+        this.showResults = false;
         this.setLanguage();
         this.render();
     }
