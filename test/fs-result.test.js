@@ -118,6 +118,7 @@ describe('Language tests', () => {
         });
 
         it('is bound to the `language` attribute', async () => {
+            expect(el.getAttribute('language')).to.eq('en');
             expect(el.language).to.eq('en');
         });
 

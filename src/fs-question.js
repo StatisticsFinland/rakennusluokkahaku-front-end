@@ -325,6 +325,7 @@ class FsQuestion extends HTMLElement {
 
     // Handles the logic for responding to user input
     async handleAnswer(response) {
+        this.disableButtons();
         const answer = this.makeAnswer(response);
         if (response === 'previous') {
             this.qNumber--;
@@ -365,13 +366,21 @@ class FsQuestion extends HTMLElement {
                 this.handleAnswer('next');
             });
         }
-        // Add back button if availialbe
+        // Add back button if available
         if (this.qNumber !== 1) {
             const previousButton = this.shadowRoot.querySelector('.previous');
             previousButton.addEventListener('click', (e) => {
                 this.handleAnswer('previous');
             });
         }
+    }
+
+    // Disables the ui buttons until an answer has been got from backend.
+    disableButtons() {
+        const buttons = this.shadowRoot.querySelectorAll('button');
+        buttons.forEach((button) => {
+            button.disabled = true;
+        });
     }
 }
 
