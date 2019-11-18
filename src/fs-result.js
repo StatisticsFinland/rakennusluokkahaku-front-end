@@ -3,7 +3,6 @@ class FsResult extends HTMLElement {
         super();
         this.data = null;
         this.classifications = null;
-        this.hidden = true;
         this.language = 'fi';
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
@@ -22,7 +21,7 @@ class FsResult extends HTMLElement {
             return;
         }
         // Sort the event data by id (string) to make sure it is in the same order as this.data
-        const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
+        const newData = event.detail.building_classes.sort((a, b) => a.class_id.localeCompare(b.class_id));
         // Map new scores to classifications
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -32,6 +31,8 @@ class FsResult extends HTMLElement {
         this.classifications.sort((a, b) => {
             return b.score - a.score;
         });
+        // Do not show results if not enough questions asked or not high enough probability
+        this.showResults = event.detail.question_number < 6 && this.classifications[0].score < 0.2 ? false : true;
         this.hidden = false;
         this.render();
     }
@@ -39,6 +40,14 @@ class FsResult extends HTMLElement {
     get template() {
         if (!this.data) {
             return '<h1>Error fetching data from api</h1>';
+        }
+        // Do not show results if not enough questions asked or not high enough probability
+        if (!this.showResults) {
+            return `
+                <div class="blue">
+                    <h3>${this.instructionText}</h3>
+                </div>
+            `;
         }
         return `
         <div class="comp">
@@ -169,10 +178,13 @@ class FsResult extends HTMLElement {
 
     setLanguage() {
         if (this.language === 'en') {
+            this.instructionText = 'Find your building class by answering presented questions';
             this.headerText = 'Results';
         } else if (this.language === 'sv') {
+            this.instructionText = 'Hitta din byggklass genom att svara på presenterade frågor';
             this.headerText = 'Resultat';
         } else if (this.language === 'fi') {
+            this.instructionText = 'Löydä rakennusluokkasi vastaamalla esitettyihin kysymyksiin';
             this.headerText = 'Hakutulokset';
         }
     }
@@ -246,6 +258,7 @@ class FsResult extends HTMLElement {
         this.classifications = this.data.map((item) => {
             return {...item};
         });
+        this.showResults = false;
         this.setLanguage();
         this.render();
     }

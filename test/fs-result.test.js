@@ -8,14 +8,20 @@ import {classifications} from './mocks/result';
 import {sleep, mockResponse} from './util';
 
 let elem;
-let apiData;
+let testData;
 
 describe('Result element test suite', () => {
     before(async () => {
         sinon.stub(window, 'fetch').resolves(mockResponse(classifications));
 
         elem = await fixture('<fs-result></fs-result>');
-        apiData = classifications;
+        testData = classifications.map((item, i) => {
+            return {
+                class_name: item.classificationItemNames[0].name,
+                class_id: item.code,
+                score: i,
+            };
+        });
     });
 
     after(() => {
@@ -26,7 +32,94 @@ describe('Result element test suite', () => {
         expect(elem.data).to.not.equal(null);
     });
 
-    it('renders 10 rows after fetch', () => {
+    it('updates list based on scores', () => {
+        // construct some test data
+        const data = [...testData];
+        // add a duplicate
+        data.push({class_id: '0512', class_name: 'asd', score: 0});
+        const event = {
+            detail: {
+                building_classes: data,
+            },
+        };
+        elem.updateScores(event);
+        const firstRow = elem.shadowRoot.querySelector('td');
+
+        // 0512 is the last one on the list
+        // so it has highest score so it should be the first one displayed
+        expect(firstRow.id).to.equal('id0512');
+    });
+
+    it('sends complex objects correctly', () => {
+        // generate test data
+        const data = [...testData];
+        // 0512 has fields ex ja inca so we want it on top of list
+        data.find((item) => item.class_id === '0512').score = 999;
+        const event = {
+            detail: {
+                building_classes: data,
+            },
+        };
+        elem.updateScores(event);
+        const firstRow = elem.shadowRoot.querySelector('td');
+        // check we got the correct one
+        expect(firstRow.id).to.equal('id0512');
+
+        const eventspy = sinon.spy();
+        elem.addEventListener('showDetails', eventspy);
+        firstRow.click();
+
+        expect(eventspy.called).to.equal(true);
+    });
+
+    it('does not render results if less than 6 questions asked and no probability is higher than 20%', () => {
+        // generate test data
+        const data = [...testData];
+        data.forEach((one) => one.score = 0.19);
+        const event = {
+            detail: {
+                building_classes: data,
+                question_number: 5,
+            },
+        };
+        elem.updateScores(event);
+        const results = elem.shadowRoot.querySelector('results');
+
+        expect(results).to.equal(null);
+    });
+
+    it('instead renders instructions', () => {
+        expect(elem.shadowRoot.querySelector('.blue').textContent).to.contain(elem.instructionText);
+    });
+
+    it('renders 10 rows if 6 questions asked', () => {
+        // generate test data
+        const data = [...testData];
+        data.forEach((one) => one.score = 0.19);
+        const event = {
+            detail: {
+                building_classes: data,
+                question_number: 6,
+            },
+        };
+        elem.updateScores(event);
+        const rows = elem.shadowRoot.querySelectorAll('tr');
+
+        expect(rows.length).to.be.equal(10);
+    });
+
+    it('renders 10 rows if there is probability higher than 20%', () => {
+        // generate test data
+        const data = [...testData];
+        data.forEach((one) => one.score = 0.19);
+        data[0].score = 0.2;
+        const event = {
+            detail: {
+                building_classes: data,
+                question_number: 5,
+            },
+        };
+        elem.updateScores(event);
         const rows = elem.shadowRoot.querySelectorAll('tr');
 
         expect(rows.length).to.be.equal(10);
@@ -40,56 +133,6 @@ describe('Result element test suite', () => {
         firstRow.click();
 
         expect(firstRow).to.have.class('selected');
-        expect(eventspy.called).to.equal(true);
-    });
-
-    it('updates list based on scores', () => {
-        // construct some test data
-        let data = apiData.filter((item) => item.level === 3 && item.code !== '1919');
-        data = data.map((item, i) => {
-            return {
-                class_name: item.classificationItemNames[0].name,
-                class_id: item.code,
-                score: i,
-            };
-        });
-        // add a duplicate
-        data.push({class_id: '0512', class_name: 'asd', score: 0});
-        const event = {
-            detail: data,
-        };
-        elem.updateScores(event);
-        const firstRow = elem.shadowRoot.querySelector('td');
-
-        // 0512 is the last one on the list
-        // so it has highest score so it should be the first one displayed
-        expect(firstRow.id).to.equal('id0512');
-    });
-
-    it('sends complex objects correctly', () => {
-        // generate test data
-        let data = apiData.filter((item) => item.level === 3 && item.code !== '1919');
-        data = data.map((item, i) => {
-            return {
-                class_name: item.classificationItemNames[0].name,
-                class_id: item.code,
-                score: i,
-            };
-        });
-        // 0512 has fields ex ja inca so we want it on top of list
-        data.find((item) => item.class_id === '0512').score = 999;
-        const event = {
-            detail: data,
-        };
-        elem.updateScores(event);
-        const firstRow = elem.shadowRoot.querySelector('td');
-        // check we got the correct one
-        expect(firstRow.id).to.equal('id0512');
-
-        const eventspy = sinon.spy();
-        elem.addEventListener('showDetails', eventspy);
-        firstRow.click();
-
         expect(eventspy.called).to.equal(true);
     });
 
@@ -145,6 +188,13 @@ describe('Language tests', () => {
             const el = await fixture('<fs-result language="en"></fs-result>');
 
             await sleep(100);
+            const event = {
+                detail: {
+                    building_classes: testData,
+                    question_number: 6,
+                },
+            };
+            el.updateScores(event);
 
             expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Results');
         });
@@ -153,6 +203,13 @@ describe('Language tests', () => {
             const el = await fixture('<fs-result language="sv"></fs-result>');
 
             await sleep(100);
+            const event = {
+                detail: {
+                    building_classes: testData,
+                    question_number: 6,
+                },
+            };
+            el.updateScores(event);
 
             expect(el.shadowRoot.querySelector('.blue').textContent).to.contain('Resultat');
         });

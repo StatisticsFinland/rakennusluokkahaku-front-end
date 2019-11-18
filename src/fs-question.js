@@ -257,7 +257,10 @@ class FsQuestion extends HTMLElement {
     updateClasses() {
         const event = new CustomEvent('updateScores', {
             bubbles: true,
-            detail: this.reply.building_classes,
+            detail: {
+                building_classes: this.reply.building_classes,
+                question_number: this.qNumber,
+            },
             composed: true,
         });
         this.dispatchEvent(event);
