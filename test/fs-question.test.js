@@ -165,6 +165,26 @@ describe('question test', async () => {
         expect(questionText).to.not.contain.html('Sauna');
     });
 
+    it('Does not render infobox if attribute does not have tooltip', () => {
+        const info = element.shadowRoot.querySelector('.info');
+
+        expect(info).to.equal(null);
+    });
+
+    it('Renders infobox with tooltip if attribute has tooltip', () => {
+        const q = {
+            type: 'simple',
+            attribute_name: 'Kirjasto',
+            attribute_id: '0240',
+            attribute_tooltip: 'Placeholder',
+        };
+        element.question = q;
+        element.render();
+        const info = element.shadowRoot.querySelector('.info');
+
+        expect(info.textContent).to.contain(element.question.attribute_tooltip);
+    });
+
     it('Disables buttons when one is clicked', () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
         buttons.forEach((button) => {

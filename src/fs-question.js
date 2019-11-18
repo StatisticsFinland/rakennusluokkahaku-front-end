@@ -19,7 +19,10 @@ class FsQuestion extends HTMLElement {
     get template() {
         return `
         <div class="comp">
-          <p class="question">${this.qNumber}. ${this.questionString}</p>
+          <p class="question">
+            ${this.qNumber}. ${this.questionString}
+            ${this.question.attribute_tooltip ? this.tooltipTemplate(this.question.attribute_tooltip) : ''}
+          </p>
           ${this.question.type === 'multi' ? this.multiTemplate : this.simpleTemplate}
         </div>
         `;
@@ -82,6 +85,18 @@ class FsQuestion extends HTMLElement {
         </div>
         `;
     }
+
+    tooltipTemplate(tooltip) {
+        return `
+            <span class="info">
+                <span class="icon" tabindex=0>
+                    <img src="assets/info.png">
+                </span>
+                <span class="tooltip">${tooltip}</span>
+            </span>
+        `;
+    }
+
     // Check whether to use a question template or not
     get questionString() {
         const qString = this.question.attribute_question;
@@ -208,6 +223,35 @@ class FsQuestion extends HTMLElement {
             height: 10px;
             border-radius: 50%;
             background: white;
+        }
+
+        /* Styles for tooltip */
+        .info {
+            position: relative;
+        }
+    
+        .tooltip {
+            font-size: 0.7em;
+            width: 10em;
+            display: inline-block;
+            border: 1px solid black;
+            padding: 0.33em;
+            background: white;
+            border-radius: 10px;
+            opacity: 0;
+            transition: 0.6s all;
+            position: absolute;
+            top: 1em;
+            left: 0.7em;
+            z-index: 3;
+        }
+
+        img {
+            width: 0.8em;
+        }
+    
+        .icon:hover + .tooltip, .icon:focus + .tooltip {
+            opacity: 1;
         }
         </style>
         `;
