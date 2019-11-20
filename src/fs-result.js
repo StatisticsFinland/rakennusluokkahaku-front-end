@@ -44,8 +44,9 @@ class FsResult extends HTMLElement {
         // Do not show results if not enough questions asked or not high enough probability
         if (!this.showResults) {
             return `
-                <div class="blue">
-                    <h3>${this.instructionText}</h3>
+                <div class="blue" style="text-align: center;margin-left:10px;margin-right:10px;">
+                    <h4>${this.instructionText[0]}</h4>
+                    <h4>${this.instructionText[1]}</h4>
                 </div>
             `;
         }
@@ -178,13 +179,22 @@ class FsResult extends HTMLElement {
 
     setLanguage() {
         if (this.language === 'en') {
-            this.instructionText = 'Find your building class by answering presented questions';
+            this.instructionText = [
+                'Find the building category that best matches your building by answering the presented questions.',
+                'Search results will appear here.',
+            ];
             this.headerText = 'Results';
         } else if (this.language === 'sv') {
-            this.instructionText = 'Hitta din byggklass genom att svara på presenterade frågor';
+            this.instructionText = [
+                'Svara på frågorna för att hitta den byggkategori som bäst passar din byggnad',
+                'Sökresultaten visas här.',
+            ];
             this.headerText = 'Resultat';
         } else if (this.language === 'fi') {
-            this.instructionText = 'Löydä rakennusluokkasi vastaamalla esitettyihin kysymyksiin';
+            this.instructionText = [
+                'Löydä rakennustasi parhaiten vastaava rakennusluokka vastaamalla esitettyihin kysymyksiin.',
+                'Haun tulokset ilmestyvät tähän.',
+            ];
             this.headerText = 'Hakutulokset';
         }
     }
