@@ -28,10 +28,10 @@ class FsQuestion extends HTMLElement {
     get simpleTemplate() {
         return `
             <div class="button-container">
-                <button class="ok">${this.yesText}</button>
-                <button class="no">${this.noText}</button>
-                <button class="skip">${this.skipText}</button>
-                ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
+                <button class="ok" tabindex=0>${this.yesText}</button>
+                <button class="no" tabindex=0>${this.noText}</button>
+                <button class="skip" tabindex=0>${this.skipText}</button>
+                ${this.qNumber !== 1 ? `<button class="previous" tabindex=0>${this.previousText}</button>` : ''}
             </div>
         `;
     }
@@ -77,7 +77,7 @@ class FsQuestion extends HTMLElement {
           </tbody>
         </table>
         <div class="button-container">
-            <button class="next">${this.nextText}</button>
+            <button class="next" tabindex=0>${this.nextText}</button>
             ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
         </div>
         `;
@@ -127,7 +127,13 @@ class FsQuestion extends HTMLElement {
 
         button:hover {
             color: black;
-            background-color: #edf3f8;
+            background-color: #badcf5;
+            border-color: #6c757d;
+        }
+
+        button:focus {
+            color: black;
+            background-color: #badcf5;
             border-color: #6c757d;
         }
 
