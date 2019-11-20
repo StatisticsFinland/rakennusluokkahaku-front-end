@@ -1,4 +1,4 @@
-const baseUrl = 'http://faceted.ddns.net:5000';
+const baseUrl = 'http://0.0.0.0:5000';
 
 class FsQuestion extends HTMLElement {
     constructor() {
@@ -214,7 +214,7 @@ class FsQuestion extends HTMLElement {
     }
     // get the preliminary question
     async fetchQuestion() {
-        const url = `${baseUrl}/question`;
+        const url = `${baseUrl}/question?lang=${this.language}`;
         return await fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -228,7 +228,7 @@ class FsQuestion extends HTMLElement {
     }
     // POST answer and get new question and scores
     async postAnswer(answer) {
-        const url = `${baseUrl}/answer`;
+        const url = `${baseUrl}/answer?lang=${this.language}`;
         return await fetch(url, {
             method: 'POST',
             headers: {
@@ -241,7 +241,7 @@ class FsQuestion extends HTMLElement {
     }
     // GET previous question and scores
     async getPrevious() {
-        const url = `${baseUrl}/previous`;
+        const url = `${baseUrl}/previous?lang=${this.language}`;
         return await fetch(url, {
             method: 'GET',
             mode: 'cors',
