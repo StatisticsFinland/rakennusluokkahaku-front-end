@@ -241,7 +241,7 @@ class FsQuestion extends HTMLElement {
     }
     // GET previous question and scores
     async getPrevious() {
-        const url = `${baseUrl}/previous?lang=${this.language}`;
+        const url = `${baseUrl}/previous`;
         return await fetch(url, {
             method: 'GET',
             mode: 'cors',
