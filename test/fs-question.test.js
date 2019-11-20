@@ -225,6 +225,17 @@ describe('Multiquestion test', async () => {
         });
     });
 
+    it('renders infobox if attribute has tooltip', () => {
+        const attribute = element.question.attributes[1];
+        attribute.attribute_tooltip = 'Placeholder';
+        element.render();
+        const infoAll = element.shadowRoot.querySelectorAll('.info');
+        const info = element.shadowRoot.getElementById('attr' + attribute.attribute_id).querySelector('.info');
+
+        expect(infoAll.length).to.equal(1);
+        expect(info.textContent).to.contain(attribute.attribute_tooltip);
+    });
+
     it('applies correct amount of buttons initially', async () => {
         const buttons = element.shadowRoot.querySelectorAll('button');
 
