@@ -79,7 +79,19 @@ describe('Feedback test run', () => {
         expect(noSpy.calledWith('click')).to.equal(true);
     });
 
-    it('sends POST request on click', () => {
+    it('Doesn\'t fully hide the buttons if no is clicked', () => {
+        const noButton = element.shadowRoot.querySelector('.no');
+        noButton.click();
+
+        expect(element.shadowRoot.querySelector('.feedback')).to.contain.html('Kiitos palautteestanne!');
+
+        element.render();
+
+        expect(element.shadowRoot.querySelectorAll('button').length).to.equal(2);
+        expect(element.answered).to.equal(false);
+    });
+
+    it('sends POST request on yes-click', () => {
         expect(fetchStub.called).to.equal(false);
 
         const okButton = element.shadowRoot.querySelector('.ok');
@@ -112,6 +124,7 @@ describe('Feedback test run', () => {
         element.render();
         const fb = element.shadowRoot.querySelector('.feedback');
 
+        expect(element.answered).to.equal(true);
         expect(fb).to.equal(null);
     });
 
