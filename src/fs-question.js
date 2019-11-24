@@ -220,7 +220,7 @@ class FsQuestion extends HTMLElement {
     }
     // get the preliminary question
     async fetchQuestion() {
-        const url = `${baseUrl}/question`;
+        const url = `${baseUrl}/question?lang=${this.language}`;
         return await fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -234,7 +234,7 @@ class FsQuestion extends HTMLElement {
     }
     // POST answer and get new question and scores
     async postAnswer(answer) {
-        const url = `${baseUrl}/answer`;
+        const url = `${baseUrl}/answer?lang=${this.language}`;
         return await fetch(url, {
             method: 'POST',
             headers: {
