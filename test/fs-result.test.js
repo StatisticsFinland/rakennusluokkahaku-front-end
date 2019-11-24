@@ -89,7 +89,10 @@ describe('Result element test suite', () => {
     });
 
     it('instead renders instructions', () => {
-        expect(elem.shadowRoot.querySelector('.blue').textContent).to.contain(elem.instructionText);
+        const instructions = elem.shadowRoot.querySelector('.blue').textContent;
+
+        expect(instructions).to.contain(elem.instructionText[0]);
+        expect(instructions).to.contain(elem.instructionText[1]);
     });
 
     it('renders 10 rows if 6 questions asked', () => {
