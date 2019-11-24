@@ -19,7 +19,10 @@ class FsQuestion extends HTMLElement {
     get template() {
         return `
         <div class="comp">
-          <p class="question">${this.qNumber}. ${this.questionString}</p>
+          <p class="question">
+            ${this.qNumber}. ${this.questionString}
+            ${this.question.attribute_tooltip ? this.tooltipTemplate(this.question.attribute_tooltip) : ''}
+          </p>
           ${this.question.type === 'multi' ? this.multiTemplate : this.simpleTemplate}
         </div>
         `;
@@ -37,11 +40,14 @@ class FsQuestion extends HTMLElement {
     }
     // Template for multiple questions
     get multiTemplate() {
+        // Check if there is any tooltips
+        const tooltips = this.question.attributes.find((attr) => attr.attribute_tooltip) !== undefined;
         const tableRows = this.question.attributes.map((attr) => {
             const radioName = `radio${attr.attribute_id}`;
             return `
             <tr id="attr${attr.attribute_id}">
                 <td>${attr.attribute_name}</td>
+                ${!tooltips ? '' : attr.attribute_tooltip ? '<td>' + this.tooltipTemplate(attr.attribute_tooltip) + '</td>' : '<td></td>'}
                 <td>
                     <label class="container">
                         <input type="radio" id="${radioName}y" name="${radioName}" value="yes">
@@ -67,6 +73,7 @@ class FsQuestion extends HTMLElement {
           <thead>
             <tr>
                 <th><!-- empty header above attributes--></th>
+                ${!tooltips ? '' : '<th><!-- empty header above tooltips--></th>'}
                 <th>${this.yesText}</th>
                 <th>${this.skipText}</th>
                 <th>${this.noText}</th>
@@ -82,6 +89,18 @@ class FsQuestion extends HTMLElement {
         </div>
         `;
     }
+
+    tooltipTemplate(tooltip) {
+        return `
+            <span class="info">
+                <span class="icon" tabindex=0>
+                    <img src="assets/info.png">
+                </span>
+                <span class="tooltip">${tooltip}</span>
+            </span>
+        `;
+    }
+
     // Check whether to use a question template or not
     get questionString() {
         const qString = this.question.attribute_question;
@@ -214,6 +233,35 @@ class FsQuestion extends HTMLElement {
             height: 10px;
             border-radius: 50%;
             background: white;
+        }
+
+        /* Styles for tooltip */
+        .info {
+            position: relative;
+        }
+    
+        .tooltip {
+            font-size: 0.8em;
+            width: 13em;
+            display: inline-block;
+            border: 1px solid black;
+            padding: 0.33em;
+            background: #eee;
+            border-radius: 10px;
+            opacity: 0;
+            transition: 0.6s all;
+            position: absolute;
+            top: 1.4em;
+            right: -6.5em;
+        }
+
+        img {
+            width: 0.9em;
+        }
+    
+        .icon:hover + .tooltip, .icon:focus + .tooltip {
+            opacity: 1;
+            z-index: 3;
         }
         </style>
         `;
