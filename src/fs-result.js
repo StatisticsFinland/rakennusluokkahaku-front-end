@@ -3,7 +3,6 @@ class FsResult extends HTMLElement {
         super();
         this.data = null;
         this.classifications = null;
-        this.hidden = true;
         this.language = 'fi';
         // listen to score updates from question-element
         const parentDiv = document.getElementById('faceted');
@@ -22,7 +21,7 @@ class FsResult extends HTMLElement {
             return;
         }
         // Sort the event data by id (string) to make sure it is in the same order as this.data
-        const newData = event.detail.sort((a, b) => a.class_id.localeCompare(b.class_id));
+        const newData = event.detail.building_classes.sort((a, b) => a.class_id.localeCompare(b.class_id));
         // Map new scores to classifications
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -32,6 +31,8 @@ class FsResult extends HTMLElement {
         this.classifications.sort((a, b) => {
             return b.score - a.score;
         });
+        // Do not show results if not enough questions asked or not high enough probability
+        this.showResults = event.detail.question_number < 6 && this.classifications[0].score < 0.2 ? false : true;
         this.hidden = false;
         this.render();
     }
@@ -39,6 +40,15 @@ class FsResult extends HTMLElement {
     get template() {
         if (!this.data) {
             return '<h1>Error fetching data from api</h1>';
+        }
+        // Do not show results if not enough questions asked or not high enough probability
+        if (!this.showResults) {
+            return `
+                <div class="blue" style="text-align: center;margin-left:10px;margin-right:10px;">
+                    <h4>${this.instructionText[0]}</h4>
+                    <h4>${this.instructionText[1]}</h4>
+                </div>
+            `;
         }
         return `
         <div class="comp">
@@ -65,7 +75,7 @@ class FsResult extends HTMLElement {
         const rows = classes.map((item, i) => {
             return `
             <tr class="resultRow">
-                <td class="itemInfo" id="id${item.code}">${item.code} ${item.classificationItemNames[0].name}</td>
+                <td class="itemInfo" id="id${item.code}" tabindex=0>${item.code} ${item.classificationItemNames[0].name}</td>
                 <td class="itemScore" style="background-color:${this.chooseColor(item)}">
                     ${(item.score * 100).toFixed(0)}%
                 <td>
@@ -137,6 +147,9 @@ class FsResult extends HTMLElement {
     .itemInfo:hover {
         background-color: #e0effa;
     }
+    .itemInfo:focus {
+        background-color: #e0effa;
+    }
     .selected {
         background-color: #badcf5 !important;
         font-weight: bold;
@@ -148,7 +161,7 @@ class FsResult extends HTMLElement {
     // Fetch classifications from stat.fi API
     async fetchData() {
         return await fetch(
-            'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=fi'
+            'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=' + this.language
         ).then((res) => res.json());
     }
 
@@ -169,10 +182,22 @@ class FsResult extends HTMLElement {
 
     setLanguage() {
         if (this.language === 'en') {
+            this.instructionText = [
+                'Find the building category that best matches your building by answering the presented questions.',
+                'Search results will appear here.',
+            ];
             this.headerText = 'Results';
         } else if (this.language === 'sv') {
+            this.instructionText = [
+                'Svara på frågorna för att hitta den byggkategori som bäst passar din byggnad',
+                'Sökresultaten visas här.',
+            ];
             this.headerText = 'Resultat';
         } else if (this.language === 'fi') {
+            this.instructionText = [
+                'Löydä rakennustasi parhaiten vastaava rakennusluokka vastaamalla esitettyihin kysymyksiin.',
+                'Haun tulokset ilmestyvät tähän.',
+            ];
             this.headerText = 'Hakutulokset';
         }
     }
@@ -191,50 +216,60 @@ class FsResult extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         // add eventlisteners to info cells
         this.addEventListeners();
-        this.setLanguage();
     }
 
     addEventListeners() {
+        const listener = (e) => {
+            // Checks if enter key was pressed. e.code is null if this was a click event.
+            if (e.code && e.code !== 'Enter') {
+                return;
+            }
+            const row = e.target;
+            // .selected-class css highlighting
+            const rows = this.shadowRoot.querySelectorAll('.itemInfo');
+            rows.forEach((row) => {
+                row.classList.remove('selected');
+            });
+            row.classList.add('selected');
+            // Prepare an object for detail component
+            const c = this.classifications.find((item) => {
+                return item.code === row.id.slice(2, 6);
+            });
+            const item = {
+                name: c.classificationItemNames[0].name,
+                keywords: c.classificationIndexEntry[0].text.join(', '),
+                code: c.code,
+                note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
+            };
+            // Cleans dupes, ''s and ','s from the arrays.
+            const cleanArray = (arr) => {
+                return Array.from(new Set(arr))
+                    .filter((item) => item.trim().length > 1)
+                    .map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+            };
+            const ex = c.explanatoryNotes[0].excludes;
+            if (ex && ex.join('').replace(',', '').trim()) {
+                item.excludes = cleanArray(ex);
+            }
+            const inc = c.explanatoryNotes[0].includes;
+            if (inc && inc.join('').replace(',', '').trim()) {
+                item.includes = cleanArray(inc);
+            }
+            const incA = c.explanatoryNotes[0].includesAlso;
+            if (incA && incA.join('').replace(' ', '').trim()) {
+                item.includesAlso = cleanArray(incA);
+            }
+            const event = new CustomEvent('showDetails', {
+                detail: item,
+                bubbles: true,
+                composed: true,
+            });
+            this.dispatchEvent(event);
+        };
         const rows = this.shadowRoot.querySelectorAll('.itemInfo');
         rows.forEach((row) => {
-            row.addEventListener('click', (e) => {
-                // .selected-class css highlighting
-                rows.forEach((row) => {
-                    row.classList.remove('selected');
-                });
-                row.classList.add('selected');
-                // prepare an object for detail component
-                const c = this.classifications.find((item) => {
-                    return item.code === row.id.slice(2, 6);
-                });
-                const item = {
-                    name: c.classificationItemNames[0].name,
-                    keywords: c.classificationIndexEntry[0].text.join(', '),
-                    code: c.code,
-                    note: c.explanatoryNotes[0].generalNote[c.explanatoryNotes[0].generalNote.length - 1],
-                };
-                const ex = c.explanatoryNotes[0].excludes;
-                if (ex && ex.join('').replace(',', '').trim()) {
-                    item.excludes = Array.from(new Set(ex)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-                }
-                /* FIXME: kysy asiakkaalta
-                Näitä ei ole koko datassa
-                const inc = c.explanatoryNotes[0].includes;
-                if (inc && inc.join('').replace(',', '').trim()) {
-                    item.includes = inc;
-                }
-                */
-                const incA = c.explanatoryNotes[0].includesAlso;
-                if (incA && incA.join('').replace(' ', '').trim()) {
-                    item.includesAlso = Array.from(new Set(incA)).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
-                }
-                const event = new CustomEvent('showDetails', {
-                    detail: item,
-                    bubbles: true,
-                    composed: true,
-                });
-                this.dispatchEvent(event);
-            });
+            row.addEventListener('click', listener);
+            row.onkeydown = listener;
         });
     }
 
@@ -247,7 +282,8 @@ class FsResult extends HTMLElement {
         this.classifications = this.data.map((item) => {
             return {...item};
         });
-
+        this.showResults = false;
+        this.setLanguage();
         this.render();
     }
 

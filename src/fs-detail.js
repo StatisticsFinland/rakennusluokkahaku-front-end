@@ -13,6 +13,7 @@ class FsDetail extends HTMLElement {
     }
 
     connectedCallback() {
+        this.setLanguage();
         this.render();
     }
 
@@ -202,7 +203,6 @@ class FsDetail extends HTMLElement {
         temp.innerHTML = this.style + this.template;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
         if (!this.hidden && !this.answered) this.addEventListeners();
-        this.setLanguage();
     }
 
     addEventListeners() {

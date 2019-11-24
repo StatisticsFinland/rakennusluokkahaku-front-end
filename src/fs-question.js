@@ -12,6 +12,7 @@ class FsQuestion extends HTMLElement {
     async connectedCallback() {
         const data = await this.fetchQuestion();
         this.question = data;
+        this.setLanguage();
         this.render();
     }
     // Base html template
@@ -27,10 +28,10 @@ class FsQuestion extends HTMLElement {
     get simpleTemplate() {
         return `
             <div class="button-container">
-                <button class="ok">${this.yesText}</button>
-                <button class="no">${this.noText}</button>
-                <button class="skip">${this.skipText}</button>
-                ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
+                <button class="ok" tabindex=0>${this.yesText}</button>
+                <button class="no" tabindex=0>${this.noText}</button>
+                <button class="skip" tabindex=0>${this.skipText}</button>
+                ${this.qNumber !== 1 ? `<button class="previous" tabindex=0>${this.previousText}</button>` : ''}
             </div>
         `;
     }
@@ -76,7 +77,7 @@ class FsQuestion extends HTMLElement {
           </tbody>
         </table>
         <div class="button-container">
-            <button class="next">${this.nextText}</button>
+            <button class="next" tabindex=0>${this.nextText}</button>
             ${this.qNumber !== 1 ? `<button class="previous">${this.previousText}</button>` : ''}
         </div>
         `;
@@ -126,7 +127,13 @@ class FsQuestion extends HTMLElement {
 
         button:hover {
             color: black;
-            background-color: #edf3f8;
+            background-color: #badcf5;
+            border-color: #6c757d;
+        }
+
+        button:focus {
+            color: black;
+            background-color: #badcf5;
             border-color: #6c757d;
         }
 
@@ -256,7 +263,10 @@ class FsQuestion extends HTMLElement {
     updateClasses() {
         const event = new CustomEvent('updateScores', {
             bubbles: true,
-            detail: this.reply.building_classes,
+            detail: {
+                building_classes: this.reply.building_classes,
+                question_number: this.qNumber,
+            },
             composed: true,
         });
         this.dispatchEvent(event);
@@ -296,7 +306,6 @@ class FsQuestion extends HTMLElement {
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
 
         this.addEventListeners();
-        this.setLanguage();
     }
 
     makeAnswer(response) {
@@ -325,6 +334,7 @@ class FsQuestion extends HTMLElement {
 
     // Handles the logic for responding to user input
     async handleAnswer(response) {
+        this.disableButtons();
         const answer = this.makeAnswer(response);
         if (response === 'previous') {
             this.qNumber--;
@@ -365,13 +375,21 @@ class FsQuestion extends HTMLElement {
                 this.handleAnswer('next');
             });
         }
-        // Add back button if availialbe
+        // Add back button if available
         if (this.qNumber !== 1) {
             const previousButton = this.shadowRoot.querySelector('.previous');
             previousButton.addEventListener('click', (e) => {
                 this.handleAnswer('previous');
             });
         }
+    }
+
+    // Disables the ui buttons until an answer has been got from backend.
+    disableButtons() {
+        const buttons = this.shadowRoot.querySelectorAll('button');
+        buttons.forEach((button) => {
+            button.disabled = true;
+        });
     }
 }
 
