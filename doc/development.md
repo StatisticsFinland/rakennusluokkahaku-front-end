@@ -44,6 +44,38 @@ Install project dependencies.
 pip install -r requirements.txt
 ```
 
+### Importing data and users
+
+##### NOTE: only do these steps on initial setup, since they will alter app.db. Ideally only do these steps with during initial setup as this requires you to delete or in some other way remove app.db from the root directory.
+
+
+
+#### Setting up the user
+
+From the root of the project navigate to the "data" folder and open the file "user.json".
+In here you can set a admin user for the project by editing the defaults (user: "admin" , username: "admin" and password:"admin") to whatever you'd like.
+
+#### Importing the .CSV data
+
+##### NOTE: The .csv file names are case sensitive. For replacementfiles to work the have to be named in the exact same way the current ones are.
+
+Importing the data comes down to one command. While in the root of the project:
+```bash
+py import_data.py data app.db
+```
+Note that in the current version this throws an error:
+```bash
+Failed to read building data: [Errno 2] File b'attributes.csv' does not exist: b'attributes.csv'
+Substituting placeholder data!
+...\FaceTed-Backend\venv\lib\site-packages\flask_sqlalchemy\__init__.py:835: FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and 
+will be disabled by default in the future.  Set it to True or False to suppress this warning.  
+  'SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and '
+```
+which can be ignored as it has to do with the structure of the project, and does not affect the script. As previously stated running this script might cause issues if app.db already exists.
+
+The script should create app.db in the root of the project root directory, which now contains the data from the .csv files.
+
+
 ### Running the server
 
 #### Note: All shell commands from now on assume you are at the root of the project and the virtual environment is active
@@ -55,6 +87,7 @@ python app.py
 ```
 
 By default it is open at http://0.0.0.0:5000/
+and the adminpanel at: http://0.0.0.0:5000/801fc3
 
 Type the following for a list of available commandline arguments.
 
