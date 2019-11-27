@@ -22,6 +22,9 @@ class FsResult extends HTMLElement {
         }
         // Sort the event data by id (string) to make sure it is in the same order as this.data
         const newData = event.detail.building_classes.sort((a, b) => a.class_id.localeCompare(b.class_id));
+        if (newData.length !== this.data.length) {
+            console.error(`Mismatch of building classess between api and backend: Got ${newData.length}, expected: ${this.data.length}`);
+        }
         // Map new scores to classifications
         this.classifications = this.data.map((item, i) => {
             const newObj = {...item};
@@ -251,9 +254,7 @@ class FsResult extends HTMLElement {
 
     async connectedCallback() {
         const data = await this.fetchData();
-        this.data = data.filter(
-            (item) => item.level === 3 && item.code !== '1919'
-        );
+        this.data = data.filter((item) => item.level === 3);
         // make a deep copy
         this.classifications = this.data.map((item) => {
             return {...item};
