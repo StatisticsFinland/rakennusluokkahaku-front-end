@@ -138,15 +138,6 @@ describe('Result element test suite', () => {
         expect(firstRow).to.have.class('selected');
         expect(eventspy.called).to.equal(true);
     });
-
-    it('is hidden if no data is provided', () => {
-        const event = {
-            detail: null,
-        };
-        elem.updateScores(event);
-
-        expect(elem.hidden).to.equal(true);
-    });
 });
 
 describe('Language tests', () => {

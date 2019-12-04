@@ -15,9 +15,7 @@ class FsResult extends HTMLElement {
     }
 
     updateScores(event) {
-        if (!event.detail) {
-            this.hidden = true;
-            this.render();
+        if (!event.detail || !event.detail.building_classes) {
             return;
         }
         // Sort the event data by id (string) to make sure it is in the same order as this.data
@@ -35,14 +33,15 @@ class FsResult extends HTMLElement {
             return b.score - a.score;
         });
         // Do not show results if not enough questions asked or not high enough probability
-        this.showResults = event.detail.question_number < 6 && this.classifications[0].score < 0.2 ? false : true;
-        this.hidden = false;
+        const MIN_QUESTIONS = 6;
+        const MIN_PROB = 0.2;
+        this.showResults = event.detail.question_number < MIN_QUESTIONS && this.classifications[0].score < MIN_PROB ? false : true;
         this.render();
     }
 
     get template() {
         if (!this.data) {
-            return '<h1>Error fetching data from api</h1>';
+            return '<h1 class="blue">Error fetching data from api</h1>';
         }
         // Do not show results if not enough questions asked or not high enough probability
         if (!this.showResults) {
