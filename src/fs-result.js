@@ -278,7 +278,8 @@ class FsResult extends HTMLElement {
 
     async connectedCallback() {
         const data = await this.fetchData();
-        this.data = data.filter((item) => item.level === 3);
+        console.log(data);
+        this.data = data.filter((item) => item.level === 3 && item.code !== "1919");
         // make a deep copy
         this.classifications = this.data.map((item) => {
             return {...item};

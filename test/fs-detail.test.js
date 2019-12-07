@@ -91,13 +91,18 @@ describe('Feedback test run', () => {
         expect(element.answered).to.equal(false);
     });
 
-    it('sends POST request on yes-click', () => {
+    it('sends POST request on yes-click and sends endSession-event', () => {
         expect(fetchStub.called).to.equal(false);
+
+
+        const eventspy = sinon.spy();
+        element.addEventListener('endSession', eventspy);
 
         const okButton = element.shadowRoot.querySelector('.ok');
         okButton.click();
 
         expect(fetchStub.called).to.equal(true);
+        expect(eventspy.called).to.equal(true);
 
         const c = complexClassification.detail;
 

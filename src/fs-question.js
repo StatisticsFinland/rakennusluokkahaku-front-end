@@ -7,6 +7,10 @@ class FsQuestion extends HTMLElement {
         this.reply = null;
         this.language = 'fi';
         this.qNumber = 1;
+        const parentDiv = document.getElementById('faceted');
+        if (parentDiv) {
+            parentDiv.addEventListener('endSession', this.endSession.bind(this));
+        }
     }
     // Called after constructor
     async connectedCallback() {
@@ -341,6 +345,7 @@ class FsQuestion extends HTMLElement {
         this.skipText = languages[this.language]['skipText'];
         this.previousText = languages[this.language]['previousText'];
         this.nextText = languages[this.language]['nextText'];
+        this.startText = languages[this.language]['startText'];
     }
 
     render() {
@@ -432,6 +437,26 @@ class FsQuestion extends HTMLElement {
         }
     }
 
+    endSession(event) {
+        if (event.detail !== true) return;
+        this.disableButtons();
+        this.shadowRoot.innerHTML = '';
+        const temp = document.createElement('template');
+        temp.innerHTML = this.style + this.endTemplate;
+        this.shadowRoot.appendChild(temp.content.cloneNode(true));
+    }
+
+    get endTemplate() {
+        return `
+            <div class="comp">
+                <p>asd</p>
+                <div class="button-container">
+                    <button class="ok" onclick="location.reload()">${this.startText}</button>
+                </div>
+            </div>
+        `;
+    }
+
     // Disables the ui buttons until an answer has been got from backend.
     disableButtons() {
         const buttons = this.shadowRoot.querySelectorAll('button');
@@ -442,9 +467,10 @@ class FsQuestion extends HTMLElement {
 }
 
 const languages = {
-    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava'},
-    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next'},
-    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa'}};
+    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava', 'startText': 'Aloita alusta'},
+    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next', 'startText': 'Start over'},
+    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa', 'startText': 'Börja om'},
+};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);
