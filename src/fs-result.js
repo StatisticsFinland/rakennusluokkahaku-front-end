@@ -1,3 +1,7 @@
+const apiUrl = 'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=';
+const MIN_PROB = 0.2;
+const MIN_QUESTIONS = 5;
+
 class FsResult extends HTMLElement {
     constructor() {
         super();
@@ -35,7 +39,7 @@ class FsResult extends HTMLElement {
             return b.score - a.score;
         });
         // Do not show results if not enough questions asked or not high enough probability
-        this.showResults = event.detail.question_number < 6 && this.classifications[0].score < 0.2 ? false : true;
+        this.showResults = event.detail.question_number <= MIN_QUESTIONS && this.classifications[0].score < MIN_PROB ? false : true;
         this.hidden = false;
         this.render();
     }
@@ -164,7 +168,7 @@ class FsResult extends HTMLElement {
     // Fetch classifications from stat.fi API
     async fetchData() {
         return await fetch(
-            'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=' + this.language
+            apiUrl + this.language
         ).then((res) => res.json());
     }
 
