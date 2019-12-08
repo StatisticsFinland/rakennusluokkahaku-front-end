@@ -105,6 +105,17 @@ class FsQuestion extends HTMLElement {
         `;
     }
 
+    get endTemplate() {
+        return `
+            <div class="comp">
+                <p class="question">${this.endText}</p>
+                <div class="button-container">
+                    <button class="ok" onclick="location.reload()">${this.startText}</button>
+                </div>
+            </div>
+        `;
+    }
+
     // Check whether to use a question template or not
     get questionString() {
         const qString = this.question.attribute_question;
@@ -340,12 +351,14 @@ class FsQuestion extends HTMLElement {
     }
 
     setLanguage() {
-        this.yesText = languages[this.language]['yesText'];
-        this.noText = languages[this.language]['noText'];
-        this.skipText = languages[this.language]['skipText'];
-        this.previousText = languages[this.language]['previousText'];
-        this.nextText = languages[this.language]['nextText'];
-        this.startText = languages[this.language]['startText'];
+        const json = languages[this.language];
+        this.yesText = json['yesText'];
+        this.noText = json['noText'];
+        this.skipText = json['skipText'];
+        this.previousText = json['previousText'];
+        this.nextText = json['nextText'];
+        this.startText = json['startText'];
+        this.endText = json['endText'];
     }
 
     render() {
@@ -439,25 +452,17 @@ class FsQuestion extends HTMLElement {
 
     endSession(event) {
         if (event.detail !== true) return;
-        this.disableButtons();
+        if (!this.shadowRoot) {
+            this.attachShadow({mode: 'open'});
+        }
         this.shadowRoot.innerHTML = '';
         const temp = document.createElement('template');
         temp.innerHTML = this.style + this.endTemplate;
         this.shadowRoot.appendChild(temp.content.cloneNode(true));
     }
 
-    get endTemplate() {
-        return `
-            <div class="comp">
-                <p>asd</p>
-                <div class="button-container">
-                    <button class="ok" onclick="location.reload()">${this.startText}</button>
-                </div>
-            </div>
-        `;
-    }
 
-    // Disables the ui buttons until an answer has been got from backend.
+    // Disables the ui buttons.
     disableButtons() {
         const buttons = this.shadowRoot.querySelectorAll('button');
         buttons.forEach((button) => {
@@ -467,9 +472,12 @@ class FsQuestion extends HTMLElement {
 }
 
 const languages = {
-    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava', 'startText': 'Aloita alusta'},
-    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next', 'startText': 'Start over'},
-    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa', 'startText': 'Börja om'},
+    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava',
+        'startText': 'Aloita alusta', 'endText': 'Hakusi on päättynyt'},
+    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next',
+        'startText': 'Start over', 'endText': 'Your search has ended'},
+    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa',
+        'startText': 'Börja om', 'endText': 'Din sökning har avslutats'},
 };
 
 // check for polyfills
