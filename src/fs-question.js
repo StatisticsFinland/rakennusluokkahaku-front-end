@@ -7,6 +7,10 @@ class FsQuestion extends HTMLElement {
         this.reply = null;
         this.language = 'fi';
         this.qNumber = 1;
+        const parentDiv = document.getElementById('faceted');
+        if (parentDiv) {
+            parentDiv.addEventListener('endSession', this.endSession.bind(this));
+        }
     }
     // Called after constructor
     async connectedCallback() {
@@ -19,7 +23,10 @@ class FsQuestion extends HTMLElement {
     get template() {
         return `
         <div class="comp">
-          <p class="question">${this.qNumber}. ${this.questionString}</p>
+          <p class="question">
+            ${this.qNumber}. ${this.questionString}
+            ${this.question.attribute_tooltip ? this.tooltipTemplate(this.question.attribute_tooltip) : ''}
+          </p>
           ${this.question.type === 'multi' ? this.multiTemplate : this.simpleTemplate}
         </div>
         `;
@@ -37,11 +44,14 @@ class FsQuestion extends HTMLElement {
     }
     // Template for multiple questions
     get multiTemplate() {
+        // Check if there is any tooltips
+        const tooltips = this.question.attributes.find((attr) => attr.attribute_tooltip) !== undefined;
         const tableRows = this.question.attributes.map((attr) => {
             const radioName = `radio${attr.attribute_id}`;
             return `
             <tr id="attr${attr.attribute_id}">
                 <td>${attr.attribute_name}</td>
+                ${!tooltips ? '' : attr.attribute_tooltip ? '<td>' + this.tooltipTemplate(attr.attribute_tooltip) + '</td>' : '<td></td>'}
                 <td>
                     <label class="container">
                         <input type="radio" id="${radioName}y" name="${radioName}" value="yes">
@@ -67,6 +77,7 @@ class FsQuestion extends HTMLElement {
           <thead>
             <tr>
                 <th><!-- empty header above attributes--></th>
+                ${!tooltips ? '' : '<th><!-- empty header above tooltips--></th>'}
                 <th>${this.yesText}</th>
                 <th>${this.skipText}</th>
                 <th>${this.noText}</th>
@@ -82,6 +93,18 @@ class FsQuestion extends HTMLElement {
         </div>
         `;
     }
+
+    tooltipTemplate(tooltip) {
+        return `
+            <span class="info">
+                <span class="icon" tabindex=0>
+                    <img src="assets/info.png">
+                </span>
+                <span class="tooltip">${tooltip}</span>
+            </span>
+        `;
+    }
+
     // Check whether to use a question template or not
     get questionString() {
         const qString = this.question.attribute_question;
@@ -215,6 +238,35 @@ class FsQuestion extends HTMLElement {
             border-radius: 50%;
             background: white;
         }
+
+        /* Styles for tooltip */
+        .info {
+            position: relative;
+        }
+    
+        .tooltip {
+            font-size: 0.8em;
+            width: 13em;
+            display: inline-block;
+            border: 1px solid black;
+            padding: 0.33em;
+            background: #eee;
+            border-radius: 10px;
+            opacity: 0;
+            transition: 0.6s all;
+            position: absolute;
+            top: 1.4em;
+            right: -6.5em;
+        }
+
+        img {
+            width: 0.9em;
+        }
+    
+        .icon:hover + .tooltip, .icon:focus + .tooltip {
+            opacity: 1;
+            z-index: 3;
+        }
         </style>
         `;
     }
@@ -293,6 +345,7 @@ class FsQuestion extends HTMLElement {
         this.skipText = languages[this.language]['skipText'];
         this.previousText = languages[this.language]['previousText'];
         this.nextText = languages[this.language]['nextText'];
+        this.startText = languages[this.language]['startText'];
     }
 
     render() {
@@ -384,6 +437,26 @@ class FsQuestion extends HTMLElement {
         }
     }
 
+    endSession(event) {
+        if (event.detail !== true) return;
+        this.disableButtons();
+        this.shadowRoot.innerHTML = '';
+        const temp = document.createElement('template');
+        temp.innerHTML = this.style + this.endTemplate;
+        this.shadowRoot.appendChild(temp.content.cloneNode(true));
+    }
+
+    get endTemplate() {
+        return `
+            <div class="comp">
+                <p>asd</p>
+                <div class="button-container">
+                    <button class="ok" onclick="location.reload()">${this.startText}</button>
+                </div>
+            </div>
+        `;
+    }
+
     // Disables the ui buttons until an answer has been got from backend.
     disableButtons() {
         const buttons = this.shadowRoot.querySelectorAll('button');
@@ -394,9 +467,10 @@ class FsQuestion extends HTMLElement {
 }
 
 const languages = {
-    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava'},
-    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next'},
-    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa'}};
+    'fi': {'yesText': 'Kyllä', 'noText': 'Ei', 'skipText': 'Ohita', 'previousText': 'Edellinen', 'nextText': 'Seuraava', 'startText': 'Aloita alusta'},
+    'en': {'yesText': 'Yes', 'noText': 'No', 'skipText': 'Skip', 'previousText': 'Previous', 'nextText': 'Next', 'startText': 'Start over'},
+    'sv': {'yesText': 'Ja', 'noText': 'Nej', 'skipText': 'Hoppa över', 'previousText': 'Föregående', 'nextText': 'Nästa', 'startText': 'Börja om'},
+};
 
 // check for polyfills
 const register = () => customElements.define('fs-question', FsQuestion);
