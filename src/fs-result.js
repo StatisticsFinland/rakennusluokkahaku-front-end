@@ -1,3 +1,7 @@
+const apiUrl = 'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=';
+const MIN_PROB = 0.2;
+const MIN_QUESTIONS = 5;
+
 class FsResult extends HTMLElement {
     constructor() {
         super();
@@ -15,9 +19,7 @@ class FsResult extends HTMLElement {
     }
 
     updateScores(event) {
-        if (!event.detail) {
-            this.hidden = true;
-            this.render();
+        if (!event.detail || !event.detail.building_classes) {
             return;
         }
         // Sort the event data by id (string) to make sure it is in the same order as this.data
@@ -35,14 +37,13 @@ class FsResult extends HTMLElement {
             return b.score - a.score;
         });
         // Do not show results if not enough questions asked or not high enough probability
-        this.showResults = event.detail.question_number < 6 && this.classifications[0].score < 0.2 ? false : true;
-        this.hidden = false;
+        if (!this.showResults) this.showResults = event.detail.question_number < MIN_QUESTIONS + 1 && this.classifications[0].score < MIN_PROB ? false : true;
         this.render();
     }
 
     get template() {
         if (!this.data) {
-            return '<h1>Error fetching data from api</h1>';
+            return '<h1 class="blue">Error fetching data from api</h1>';
         }
         // Do not show results if not enough questions asked or not high enough probability
         if (!this.showResults) {
@@ -164,7 +165,7 @@ class FsResult extends HTMLElement {
     // Fetch classifications from stat.fi API
     async fetchData() {
         return await fetch(
-            'https://data.stat.fi/api/classifications/v1/classifications/rakennus_1_20180712/classificationItems?content=data&meta=max&lang=' + this.language
+            apiUrl + this.language
         ).then((res) => res.json());
     }
 

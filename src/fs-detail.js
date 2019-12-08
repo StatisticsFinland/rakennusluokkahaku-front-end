@@ -1,3 +1,5 @@
+const base = 'http://faceted.ddns.net:5000';
+
 class FsDetail extends HTMLElement {
     constructor() {
         super();
@@ -225,6 +227,12 @@ class FsDetail extends HTMLElement {
             };
             this.postAnswer(answer);
             this.answered = true;
+            const event = new CustomEvent('endSession', {
+                detail: true,
+                bubbles: true,
+                composed: true,
+            });
+            this.dispatchEvent(event);
         }
         // This is shown to the user once and on following renders
         // the feedback <li> isn't rendered at all IF the the answer was true.
@@ -233,7 +241,6 @@ class FsDetail extends HTMLElement {
     }
     // POST answer to endpoint
     async postAnswer(answer) {
-        const base = 'http://faceted.ddns.net:5000';
         const endpoint = '/feedback';
         return await fetch(base + endpoint, {
             method: 'POST',

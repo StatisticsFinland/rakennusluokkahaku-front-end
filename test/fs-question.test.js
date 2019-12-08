@@ -197,6 +197,14 @@ describe('question test', async () => {
             expect(button.disabled).to.equal(true);
         });
     });
+
+    it('Removes normal view and renders end template', () => {
+        const event = {detail: true};
+        element.endSession(event);
+
+        expect(element.shadowRoot.querySelector('.question')).to.contain.html('Hakusi on päättynyt');
+        expect(element.shadowRoot.querySelectorAll('button').length).to.equal(1);
+    });
 });
 
 describe('Multiquestion test', async () => {

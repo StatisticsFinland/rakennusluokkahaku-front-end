@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
-import {expect, fixture} from '@open-wc/testing';
+import {expect, fixture, elementUpdated} from '@open-wc/testing';
 import sinon from 'sinon';
 
 import '../src/fs-result';
@@ -35,8 +35,6 @@ describe('Result element test suite', () => {
     it('updates list based on scores', () => {
         // construct some test data
         const data = [...testData];
-        // add a duplicate
-        data.push({class_id: '0512', class_name: 'asd', score: 0});
         const event = {
             detail: {
                 building_classes: data,
@@ -74,6 +72,7 @@ describe('Result element test suite', () => {
 
     it('does not render results if less than 6 questions asked and no probability is higher than 20%', () => {
         // generate test data
+        elem.showResults = false;
         const data = [...testData];
         data.forEach((one) => one.score = 0.19);
         const event = {
@@ -83,7 +82,7 @@ describe('Result element test suite', () => {
             },
         };
         elem.updateScores(event);
-        const results = elem.shadowRoot.querySelector('results');
+        const results = elem.shadowRoot.querySelector('.results');
 
         expect(results).to.equal(null);
     });
@@ -97,6 +96,7 @@ describe('Result element test suite', () => {
 
     it('renders 10 rows if 6 questions asked', () => {
         // generate test data
+        elem.showResults = false;
         const data = [...testData];
         data.forEach((one) => one.score = 0.19);
         const event = {
@@ -113,6 +113,7 @@ describe('Result element test suite', () => {
 
     it('renders 10 rows if there is probability higher than 20%', () => {
         // generate test data
+        elem.showResults = false;
         const data = [...testData];
         data.forEach((one) => one.score = 0.19);
         data[0].score = 0.2;
@@ -128,6 +129,36 @@ describe('Result element test suite', () => {
         expect(rows.length).to.be.equal(10);
     });
 
+    it('Results are continued to be shown after condition has been met once', () => {
+        // generate test data
+        elem.showResults = false;
+        let data = [...testData];
+        data.forEach((one) => one.score = 1);
+        let event = {
+            detail: {
+                building_classes: data,
+                question_number: 3,
+            },
+        };
+        elem.updateScores(event);
+        let rows = elem.shadowRoot.querySelectorAll('tr');
+
+        expect(rows.length).to.be.equal(10);
+
+        data = [...testData];
+        data.forEach((one) => one.score = 0.1);
+        event = {
+            detail: {
+                building_classes: data,
+                question_number: 4,
+            },
+        };
+        elem.updateScores(event);
+        rows = elem.shadowRoot.querySelectorAll('tr');
+
+        expect(rows.length).to.be.equal(10);
+    });
+
     it('sends detail event on click', () => {
         const eventspy = sinon.spy();
         elem.addEventListener('showDetails', eventspy);
@@ -137,15 +168,6 @@ describe('Result element test suite', () => {
 
         expect(firstRow).to.have.class('selected');
         expect(eventspy.called).to.equal(true);
-    });
-
-    it('is hidden if no data is provided', () => {
-        const event = {
-            detail: null,
-        };
-        elem.updateScores(event);
-
-        expect(elem.hidden).to.equal(true);
     });
 });
 
