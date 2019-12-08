@@ -36,10 +36,8 @@ class FsResult extends HTMLElement {
         this.classifications.sort((a, b) => {
             return b.score - a.score;
         });
-        console.log(this.showResults);
         // Do not show results if not enough questions asked or not high enough probability
         if (!this.showResults) this.showResults = event.detail.question_number < MIN_QUESTIONS + 1 && this.classifications[0].score < MIN_PROB ? false : true;
-        console.log(this.showResults);
         this.render();
     }
 
@@ -281,7 +279,7 @@ class FsResult extends HTMLElement {
 
     async connectedCallback() {
         const data = await this.fetchData();
-        this.data = data.filter((item) => item.level === 3 && item.code !== '1919');
+        this.data = data.filter((item) => item.level === 3);
         // make a deep copy
         this.classifications = this.data.map((item) => {
             return {...item};
