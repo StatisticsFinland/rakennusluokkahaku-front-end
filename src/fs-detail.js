@@ -1,3 +1,5 @@
+const base = 'http://faceted.ddns.net:5000';
+
 class FsDetail extends HTMLElement {
     constructor() {
         super();
@@ -239,7 +241,6 @@ class FsDetail extends HTMLElement {
     }
     // POST answer to endpoint
     async postAnswer(answer) {
-        const base = 'http://faceted.ddns.net:5000';
         const endpoint = '/feedback';
         return await fetch(base + endpoint, {
             method: 'POST',
