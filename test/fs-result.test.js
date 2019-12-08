@@ -83,7 +83,7 @@ describe('Result element test suite', () => {
             },
         };
         elem.updateScores(event);
-        const results = elem.shadowRoot.querySelector('results');
+        const results = elem.shadowRoot.querySelector('.results');
 
         expect(results).to.equal(null);
     });
