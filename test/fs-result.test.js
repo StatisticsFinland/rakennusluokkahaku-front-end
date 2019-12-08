@@ -35,8 +35,6 @@ describe('Result element test suite', () => {
     it('updates list based on scores', () => {
         // construct some test data
         const data = [...testData];
-        // add a duplicate
-        data.push({class_id: '0512', class_name: 'asd', score: 0});
         const event = {
             detail: {
                 building_classes: data,
