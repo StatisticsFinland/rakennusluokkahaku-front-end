@@ -416,6 +416,12 @@ class FsQuestion extends HTMLElement {
         }
 
         this.updateClasses();
+        // Special case for when backend runs out of questions
+        if (this.question.type && this.question.type === 'none') {
+            const e = {detail: true};
+            this.endSession(e);
+            return;
+        }
         this.render();
     }
     // Event listeners for answer buttons
