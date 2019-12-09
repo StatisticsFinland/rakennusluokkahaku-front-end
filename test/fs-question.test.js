@@ -478,3 +478,39 @@ describe('Language tests', () => {
         });
     });
 });
+
+describe('Last question test', async () => {
+    before( async () =>{
+        const empty = {
+            type: 'none',
+            attribute_id: '',
+            attribute_name: '',
+            attribute_question: '',
+        };
+        const q = {
+            new_question: empty,
+            building_classes: [],
+        };
+        fetchSimpleStub = sinon.stub(window, 'fetch')
+            .onCall(0).resolves(mockResponse(questions[0]))
+            .onCall(1).resolves(mockResponse(q));
+        element = await fixture('<fs-question></fs-question>');
+        await sleep(100);
+    });
+
+    it('Sends last update and renders end screen when question with type none is gained from backend', async () => {
+        const spy = sinon.spy();
+        element.addEventListener('updateScores', spy);
+        element.shadowRoot.querySelector('.ok').click();
+
+        await sleep(100);
+
+        expect(spy.called).to.equal(true);
+        expect(element.shadowRoot.querySelector('.question')).to.contain.html('Hakusi on päättynyt');
+        expect(element.shadowRoot.querySelectorAll('button').length).to.equal(1);
+    });
+
+    after(() => {
+        window.fetch.restore();
+    });
+});
