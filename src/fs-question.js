@@ -1,4 +1,4 @@
-const baseUrl = 'http://faceted.ddns.net:5000';
+const baseUrl = 'http://rakennusluokkahaku.westeurope.cloudapp.azure.com/';
 
 class FsQuestion extends HTMLElement {
     constructor() {
@@ -256,6 +256,7 @@ class FsQuestion extends HTMLElement {
         }
     
         .tooltip {
+	    z-index: -1;
             font-size: 0.8em;
             width: 13em;
             display: inline-block;
