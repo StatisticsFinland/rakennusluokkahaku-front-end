@@ -5,13 +5,10 @@
 [![Coverage Status](https://coveralls.io/repos/github/Ohtu-FaceTed/FaceTed-Search/badge.svg?branch=master)](https://coveralls.io/github/Ohtu-FaceTed/FaceTed-Search?branch=master)
 
 ### Backend repository
-https://github.com/Ohtu-FaceTed/FaceTed-Backend
+https://github.com/StatisticsFinland/rakennusluokkahaku
 
 ### Quick start:
 ```
 npm i
 npm start
 ```
-
-### Backlog
-https://github.com/Ohtu-FaceTed/FaceTed-Search/projects/1
